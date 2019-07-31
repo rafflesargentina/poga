@@ -1,0 +1,17 @@
+/node_modules
+/public/hot
+/public/storage
+/public/img
+/public/fonts
+/storage/*.key
+/vendor
+.env
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+*.bak
+/app/Modules/Poga/Resources
+/app/Modules/Poga/Dashboard
+/resources/
