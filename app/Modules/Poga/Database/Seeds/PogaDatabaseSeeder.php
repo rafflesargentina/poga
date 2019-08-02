@@ -14,9 +14,11 @@ class PogaDatabaseSeeder extends Seeder
     public function run()
     {
         $this->call(FormatosTableSeeder::class);
+        $this->call(GruposCaracteristicaTableSeeder::class);
         $this->call(MedidasTableSeeder::class);
         $this->call(RolesTableSeeder::class);
         $this->call(PermissionsTableSeeder::class);
+        $this->call(ServiciosTableSeeder::class);
         $this->call(TiposInmuebleTableSeeder::class);
         $this->call(UsersTableSeeder::class);
     }

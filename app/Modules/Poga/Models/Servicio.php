@@ -18,14 +18,6 @@ class Servicio extends Model
         'nombre',
     ];
 
-
-    /**
-     * The "type" of the auto-incrementing ID.
-     *
-     * @var string
-     */
-    protected $keyType = 'string';
-
     /**
      * The table associated with the model.
      *
@@ -34,21 +26,7 @@ class Servicio extends Model
     protected $table = 'servicios';
 
     /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
-
-    /**
-     * Get the inmuebles for the pais.
+     * Get the inmuebles for the servicio.
      */
     public function inmuebles()
     {
@@ -60,6 +38,6 @@ class Servicio extends Model
      */
     public function proveedores()
     {
-        return $this->hasMany(ProveedorServicio::class, 'id_servicio');
+        return $this->belongsToMany(Proveedor::class, 'proveedor_servicio', 'id_proveedor', 'id_servicio');
     }
 }

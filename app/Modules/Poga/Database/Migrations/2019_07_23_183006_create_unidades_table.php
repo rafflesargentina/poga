@@ -19,7 +19,7 @@ class CreateUnidadesTable extends Migration
             $table->foreign('id_inmueble')->references('id')->on('inmuebles');
             $table->tinyInteger('piso');
             $table->string('numero', 10);
-            $table->unsignedInteger('id_medida');
+            $table->unsignedInteger('id_medida')->nullable();;
             $table->foreign('id_medida')->references('id')->on('medidas');
             $table->decimal('area');
             $table->unsignedInteger('id_inmueble_padre');

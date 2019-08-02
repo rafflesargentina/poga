@@ -57,6 +57,7 @@ class InmuebleController extends Controller
             $items = $this->repository->with(['unidades' => function($query) { return $query->doesntHave('idInmueble.idAdministradorReferente'); }])
                 ->doesntHave('idInmueble.idAdministradorReferente')
                 ->orDoesntHave('unidades.idInmueble.idAdministradorReferente')
+                ->whereHas('idInmueble', function($query) { return $query->where('enum_tabla_hija', 'INMUEBLES_PADRE'); })
                 ->get();
 
             $map = $items->map(
@@ -85,7 +86,7 @@ class InmuebleController extends Controller
         case 'MisInmuebles':
             $user->idPersona->inmuebles->loadMissing('unidades');
 
-            $items = $user->idPersona->inmuebles->where('enum_estado', 'ACTIVO');
+            $items = $user->idPersona->inmuebles->where('enum_estado', 'ACTIVO')->where('enum_tabla_hija', 'INMUEBLES_PADRE');
 
             $map = $items->map(
                 function ($item) {
@@ -113,8 +114,14 @@ class InmuebleController extends Controller
         case 'Nominaciones':
             $role = Role::where('slug', $request->rol)->first();
 
-            $user->idPersona->loadMissing('nominaciones.idInmueble.unidades');
-            $items = $user->idPersona->nominaciones->where('role_id', $role->id);
+            $items = $this->repository->with('idInmueble.nominaciones')
+                ->whereHas('idInmueble', function($query) use($role, $user) {
+                    return $query->where('enum_estado', 'ACTIVO')
+                        ->has('nominaciones');
+//, function($q) use($role, $user) {
+                    //return $q->where('role_id', $role->id); });
+                })->get();
+            //$user->idPersona->whereHas('nominaciones', function($query) { return $query->where('idInmueble.enum_tabla_hija', 'INMUEBLES_PADRE'); });
 
             $map = $items->map(
                 function ($item) {
@@ -189,6 +196,7 @@ class InmuebleController extends Controller
     {
         $this->validate(
             $request, [
+            'administrador' => 'required',
             'formatos' => 'required|array',
             'idDireccion.calle_principal' => 'required',
             'idDireccion.calle_secundaria' => 'required',
@@ -198,7 +206,8 @@ class InmuebleController extends Controller
             'idInmueblePadre.nombre' => 'required',
             'idInmueblePadre.cant_pisos' => 'required',
             'idInmueblePadre.comision_administrador' => 'required',
-            'idPropietarioReferente' => 'required|array',
+            'idInmueblePadre.modalidad_propiedad' => 'required_if:idInmueble.id_tipo_inmueble,1',
+            'idPropietarioReferente' => 'required_if:modalidad_propiedad,UNICO_PROPIETARIO',
             ]
         );
 
@@ -222,6 +231,8 @@ class InmuebleController extends Controller
         if (!$model) {
             abort(404);
         }
+
+        $model->loadMissing('idInmueble.formatos');
 
         return $this->validSuccessJsonResponse('Success', $model);
     }

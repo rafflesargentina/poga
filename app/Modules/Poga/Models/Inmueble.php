@@ -148,7 +148,7 @@ class Inmueble extends Model
     public function personas()
     {
         return $this->belongsToMany(Persona::class, 'inmueble_persona', 'id_inmueble', 'id_persona')
-            ->withPivot(['dia_cobro_mensual','enum_estado','enum_rol','fecha_fin_contrato','fecha_inicio_contrato','id_moneda_salario','referente','salario']);
+            ->withPivot(['dia_cobro_mensual','enum_estado','enum_rol','fecha_fin_contrato','fecha_inicio_contrato','id_moneda_salario','id_persona', 'referente','salario']);
     }
 
     /**

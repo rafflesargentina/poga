@@ -10,7 +10,6 @@
 var map = {
 	"./Home.vue": "./app/Modules/Poga/Resources/Javascript/router/views/Home.vue",
 	"./Inmuebles/CasasEdit.vue": "./app/Modules/Poga/Resources/Javascript/router/views/Inmuebles/CasasEdit.vue",
-	"./Inmuebles/Create.vue": "./app/Modules/Poga/Resources/Javascript/router/views/Inmuebles/Create.vue",
 	"./Inmuebles/DisponiblesParaAdministrar.vue": "./app/Modules/Poga/Resources/Javascript/router/views/Inmuebles/DisponiblesParaAdministrar.vue",
 	"./Inmuebles/DondeFuiNominado.vue": "./app/Modules/Poga/Resources/Javascript/router/views/Inmuebles/DondeFuiNominado.vue",
 	"./Inmuebles/DuplexEdit.vue": "./app/Modules/Poga/Resources/Javascript/router/views/Inmuebles/DuplexEdit.vue",

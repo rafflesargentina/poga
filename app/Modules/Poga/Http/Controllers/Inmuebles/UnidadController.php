@@ -4,6 +4,7 @@ namespace Raffles\Modules\Poga\Http\Controllers\Inmuebles;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 use Raffles\Modules\Poga\Repositories\UnidadRepository;
+use Raffles\Modules\Poga\UseCases\{ BorrarUnidad, CrearUnidad };
 
 use Illuminate\Http\Request;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
@@ -37,7 +38,7 @@ class UnidadController extends Controller
             ]
         );
 
-        $items = $this->repository->findWhere(['id_inmueble_padre' => $request->idInmueblePadre]);
+        $items = $this->repository->whereHas('idInmueble', function($query) { return $query->where('enum_estado', 'ACTIVO'); })->where('id_inmueble_padre', $request->idInmueblePadre)->get();
 
         return $this->validSuccessJsonResponse('Success', $items);
     }
@@ -50,7 +51,26 @@ class UnidadController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate(
+            $request, [
+            'administrador' => 'required',
+            'idInmueble.solicitud_directa_inquilinos' => 'required',
+            'idPropietarioReferente' => 'required_if:modalidad_propiedad,UNICO_PROPIETARIO',
+            'unidad.area_estacionamiento' => 'required',
+            'unidad.area' => 'required',
+            'unidad.id_formato_inmueble' => 'required',
+            'unidad.id_inmueble_padre' => 'required',
+            'unidad.numero' => 'required',
+            'unidad.piso' => 'required',
+            ]
+        );
+
+        $data = $request->all();
+        $user = $request->user('api');
+
+        $unidad = $this->dispatch(new CrearUnidad($data, $user));
+
+        return $this->validSuccessJsonResponse('Success', $unidad);
     }
 
     /**
@@ -125,14 +145,20 @@ class UnidadController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param Request $request
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $model = $this->repository->find($id);
-        $model->delete();
+        $unidad = $this->repository->find($id);
 
-        return $this->validSuccessJsonResponse('Success', $model);
+        if (!$unidad) {
+            abort(404);
+        }
+
+        $unidad = $this->dispatch(new BorrarUnidad($unidad, $request->user('api')));
+
+        return $this->validSuccessJsonResponse('Success');
     }
 }

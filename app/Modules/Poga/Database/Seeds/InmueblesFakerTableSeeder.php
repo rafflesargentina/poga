@@ -30,7 +30,7 @@ class InmueblesFakerTableSeeder extends Seeder
 
         $direccion = Direccion::create(['calle_principal' => 'Libertad', 'calle_secundaria' => 'Concordia', 'numeracion' => '1000', 'latitud' => '-25.2931888426435', 'longitud' => '-57.6444401299804']);
         $inmueble = $user->inmuebles()->create(['id_tipo_inmueble' => '1', 'enum_estado' => 'ACTIVO', 'enum_tabla_hija' => 'INMUEBLES_PADRE']);
-        $inmueblePadre = InmueblePadre::create(['id_inmueble' => $inmueble->id, 'nombre' => 'Edificio con Unidades sin Administrador', 'id_direccion' => $direccion->id, 'cant_pisos' => '3', 'divisible_en_unidades' => 'true', 'modalidad_propiedad' => 'EN_CONDOMINIO', 'comision_administrador' => '5']);
+        $inmueblePadre = InmueblePadre::create(['divisible_en_unidades' => '1', 'id_inmueble' => $inmueble->id, 'nombre' => 'Edificio con Unidades sin Administrador', 'id_direccion' => $direccion->id, 'cant_pisos' => '3', 'divisible_en_unidades' => 'true', 'modalidad_propiedad' => 'EN_CONDOMINIO', 'comision_administrador' => '5']);
         $inmueble->idInmueblePadre()->associate($inmueblePadre->id);
         $inmueble->save();
 
@@ -62,7 +62,7 @@ class InmueblesFakerTableSeeder extends Seeder
 
         $direccion = Direccion::create(['calle_principal' => 'Artigas', 'calle_secundaria' => 'Choferes', 'numeracion' => '611', 'latitud' => '-25.2916367849582', 'longitud' => '-57.6425518548339']);
         $inmueble = $user->inmuebles()->create(['id_tipo_inmueble' => '1', 'enum_estado' => 'ACTIVO', 'enum_tabla_hija' => 'INMUEBLES_PADRE']);
-        $inmueblePadre = InmueblePadre::create(['id_inmueble' => $inmueble->id, 'nombre' => 'Edificio con Unidades Administrado por Mario', 'id_direccion' => $direccion->id, 'cant_pisos' => '3', 'divisible_en_unidades' => 'true', 'modalidad_propiedad' => 'EN_CONDOMINIO', 'comision_administrador' => '5']);
+        $inmueblePadre = InmueblePadre::create(['divisible_en_unidades' => '1', 'id_inmueble' => $inmueble->id, 'nombre' => 'Edificio con Unidades Administrado por Mario', 'id_direccion' => $direccion->id, 'cant_pisos' => '3', 'divisible_en_unidades' => 'true', 'modalidad_propiedad' => 'EN_CONDOMINIO', 'comision_administrador' => '5']);
         $inmueble->idInmueblePadre()->associate($inmueblePadre->id);
         $inmueble->save();
 
@@ -96,7 +96,7 @@ class InmueblesFakerTableSeeder extends Seeder
 
         $direccion = Direccion::create(['calle_principal' => 'Santisima Trinidad', 'calle_secundaria' => 'Julio Correa', 'numeracion' => '2111', 'latitud' => '25.2876789479427', 'longitud' => '-57.653194860205']);
         $inmueble = $user->inmuebles()->create(['id_tipo_inmueble' => '1', 'enum_estado' => 'ACTIVO', 'enum_tabla_hija' => 'INMUEBLES_PADRE']);
-        $inmueblePadre = InmueblePadre::create(['id_inmueble' => $inmueble->id, 'nombre' => 'Edificio con Unidades Administrado por Josue', 'id_direccion' => $direccion->id, 'cant_pisos' => '3', 'divisible_en_unidades' => 'true', 'modalidad_propiedad' => 'EN_CONDOMINIO', 'comision_administrador' => '5']);
+        $inmueblePadre = InmueblePadre::create(['divisible_en_unidades' => '1', 'id_inmueble' => $inmueble->id, 'nombre' => 'Edificio con Unidades Administrado por Josue', 'id_direccion' => $direccion->id, 'cant_pisos' => '3', 'divisible_en_unidades' => 'true', 'modalidad_propiedad' => 'EN_CONDOMINIO', 'comision_administrador' => '5']);
         $inmueble->idInmueblePadre()->associate($inmueblePadre->id);
         $inmueble->save();
 

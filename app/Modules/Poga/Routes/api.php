@@ -10,7 +10,6 @@
 | is assigned the 'api' middleware group. Enjoy building your API!
 |
 */
-
 Route::get('proveedores', ProveedorController::class);
 Route::get('dashboard', DashboardController::class);
 Route::get('inmuebles/personaReferenteDadoRol', Inmuebles\PersonaReferenteDadoRolController::class);
