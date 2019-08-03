@@ -16,11 +16,11 @@ class TiposCaracteristicaTableSeeder extends Seeder
     public function run()
     {
         $tiposCaracteristicas = [
-            ['nombre' => 'El lugar', 'descripcion' => 'El lugar', 'enum_estado' => 'ACTIVO', 'visibilidad_publica' => 'true'],
-            ['nombre' => 'Comodidades', 'descripcion' => 'Comodidades', 'enum_estado' => 'ACTIVO', 'visibilidad_publica' => 'true'],
-            ['nombre' => 'Personal', 'descripcion' => 'Personal', 'enum_estado' => 'ACTIVO', 'visibilidad_publica' => 'true'],
-            ['nombre' => 'Funciones de seguridad', 'descripcion' => 'Funciones de seguridad', 'enum_estado' => 'ACTIVO', 'visibilidad_publica' => 'false'],
-            ['nombre' => 'Normas del inmueble', 'descripcion' => 'Normas del inmueble', 'enum_estado' => 'ACTIVO', 'visibilidad_publica' => 'true'],
+            ['nombre' => 'El lugar', 'descripcion' => 'El lugar', 'enum_estado' => 'ACTIVO', 'visibilidad_publica' => '1'],
+            ['nombre' => 'Comodidades', 'descripcion' => 'Comodidades', 'enum_estado' => 'ACTIVO', 'visibilidad_publica' => '1'],
+            ['nombre' => 'Personal', 'descripcion' => 'Personal', 'enum_estado' => 'ACTIVO', 'visibilidad_publica' => '1'],
+            ['nombre' => 'Funciones de seguridad', 'descripcion' => 'Funciones de seguridad', 'enum_estado' => 'ACTIVO', 'visibilidad_publica' => '0'],
+            ['nombre' => 'Normas del inmueble', 'descripcion' => 'Normas del inmueble', 'enum_estado' => 'ACTIVO', 'visibilidad_publica' => '1'],
         ];
 
         foreach ($tiposCaracteristicas as $tipoCaracteristica) TipoCaracteristica::create($tipoCaracteristica);
