@@ -23,5 +23,7 @@ class PogaDatabaseSeeder extends Seeder
         $this->call(CaracteristicasTableSeeder::class);
         $this->call(TiposInmuebleTableSeeder::class);
         $this->call(UsersTableSeeder::class);
+        $this->call(InmueblesFakerTableSeeder::class);
+        $this->call(MonedasTableSeeder::class);
     }
 }

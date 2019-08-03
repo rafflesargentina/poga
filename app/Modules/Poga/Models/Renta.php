@@ -13,17 +13,13 @@ class Renta extends Model
      */
     protected $fillable = [
         'comision_administrador',
-        'divisible_en_unidades',
-        'dia_mes_pago',
         'dias_multa',
         'enum_estado',
         'expensas',
-        'fecha_alta',
         'fecha_fin',
         'fecha_finalizacion_contrato',
         'fecha_inicio',
         'garantia',
-        'id',
         'id_inmueble',
         'id_inquilino',
         'id_moneda',
@@ -34,13 +30,7 @@ class Renta extends Model
         'prim_comision_admin',
     ];
 
-    /**
-     * The "type" of the auto-incrementing ID.
-     *
-     * @var string
-     */
-    protected $keyType = 'string';
-
+   
     /**
      * The table associated with the model.
      *
@@ -55,20 +45,7 @@ class Renta extends Model
      */
     protected $with = ['idInmueble', 'idInquilino'];
 
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
-
+  
     /**
      * Get the inmueble that owns the inmueble.
      */
@@ -83,5 +60,13 @@ class Renta extends Model
     public function idInquilino()
     {
         return $this->belongsTo(Persona::class, 'id_inquilino');
+    }
+
+    /**
+     * Get the inquilino that owns the renta.
+     */
+    public function idMoneda()
+    {
+        return $this->belongsTo(Moneda::class, 'id_moneda');
     }
 }
