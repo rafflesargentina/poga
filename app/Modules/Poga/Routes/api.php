@@ -45,6 +45,7 @@ Route::apiResource('reservas', Reservas\ReservaController::class);
 Route::apiResource('rentas', Finanzas\RentaController::class);
 Route::apiResource('tipos-caracteristica', Inmuebles\TipoCaracteristicaController::class);
 Route::apiResource('visitas', Visitas\VisitaController::class);
+Route::apiResource('rentas', RentaController::class);
 
 /**
  * Revisados
