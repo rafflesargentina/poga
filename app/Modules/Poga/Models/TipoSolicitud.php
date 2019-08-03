@@ -4,7 +4,7 @@ namespace Raffles\Modules\Poga\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TipoPagare extends Model
+class TipoSolicitud extends Model
 {
     /**
      * The attributes that are mass assignable.
@@ -14,6 +14,7 @@ class TipoPagare extends Model
     protected $fillable = [
         'descripcion',
         'enum_estado',
+        'nombre',
     ];
 
     /**
@@ -21,13 +22,13 @@ class TipoPagare extends Model
      *
      * @var string
      */
-    protected $table = 'tipos_pagare';
+    protected $table = 'tipos_solcitud';
 
     /**
-     * Get the pagares for the tipo pagare.
+     * Get the solicitudes for the tipo solicitud.
      */
-    public function pagares()
+    public function solicitudes()
     {
-        return $this->hasMany(Pagare::class, 'id_tipo_pagare');
+        return $this->hasMany(Solicitud::class, 'id_tipo_solicitud');
     }
 }
