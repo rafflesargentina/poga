@@ -16,8 +16,8 @@ class CreateRentasTable extends Migration
             $table->unsignedInteger('monto');         
             $table->unsignedInteger('prim_comision_administrador');
             $table->unsignedInteger('comision_administrador');
-            $table->datetime('fecha_fin');
-            $table->datetime('fecha_inicio');
+            $table->date('fecha_fin');
+            $table->date('fecha_inicio');
             $table->boolean('multa');
             $table->boolean('expensas');
             $table->tinyInteger('dias_multa')->nullable();

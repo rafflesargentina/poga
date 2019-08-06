@@ -42,6 +42,24 @@ class RentaController extends Controller
         return $this->validSuccessJsonResponse('Success', $items);
     }
 
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Request $request, $id)
+    {
+        $model = $this->repository->find($id);
+
+        if (!$model) {
+            abort(404);
+        }
+
+        return $this->validSuccessJsonResponse('Success', $model);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -54,10 +72,10 @@ class RentaController extends Controller
         $this->validate(
             $request, [
                 'comision_administrador'  => 'required|numeric',
+                'dia_mes_pago' => 'required|numeric|max:28',
                 'dias_multa' => 'required_if:multa,1',                
-                'expensas' => 'numeric',
+                'expensas' => 'boolean',
                 'fecha_fin'  => 'required|date',
-                'fecha_finalizacion_contrato' => 'date',  //???
                 'fecha_inicio' => 'required|date',
                 'garantia'  => 'required|numeric',
                 'id_inmueble' => 'required|numeric',
@@ -66,7 +84,7 @@ class RentaController extends Controller
                 'monto' => 'numeric',
                 'monto_descontado_garantia_finalizacion_contrato'=> 'numeric',
                 'monto_multa_dia' => 'required_if:multa,1|numeric',
-                'multa'=> 'required|numeric',
+                'multa'=> 'required|boolean',
                 'prim_comision_administrador'  => 'required|numeric',
                 
             ]
@@ -76,11 +94,35 @@ class RentaController extends Controller
         $user = $request->user('api');
         $renta = $this->dispatch(new CrearRenta($data, $user));
 
-
         return $this->validSuccessJsonResponse('Success', $renta);
     }
 
-    
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  int                      $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        $this->validate(
+            $request, [
+                'comision_administrador'  => 'required|numeric',
+                'dias_multa' => 'required_if:multa,1',
+                'monto_multa_dia' => 'required_if:multa,1|numeric',
+                'multa'=> 'required|boolean',
+                'prim_comision_administrador'  => 'required|numeric',
+
+            ]
+        );
+
+        $data = $request->all();
+        $user = $request->user('api');
+        $renta = $this->dispatch(new ActualizarRenta($id, $data, $user));
+
+        return $this->validSuccessJsonResponse('Success', $renta);
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -91,15 +133,15 @@ class RentaController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $Renta = $this->repository->find($id);
+        $renta = $this->repository->find($id);
 
-        if (!$Renta) {
+        if (!$renta) {
             abort(404);
         }
 
         $data = $request->all();
         $user = $request->user('api');
-        $renta = $this->dispatch(new BorrarRenta($Renta, $user));
+        $renta = $this->dispatch(new BorrarRenta($renta, $user));
 
         return $this->validSuccessJsonResponse('Success');
     }

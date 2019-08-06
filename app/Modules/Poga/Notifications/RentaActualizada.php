@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class RentaBorrada extends Notification
+class RentaActualizada extends Notification
 {
     use Queueable;
 
@@ -55,9 +55,9 @@ class RentaBorrada extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject('Borraste un contrato de Renta')
+                    ->subject('Actualizaste un contrato de Renta')
                     ->greeting('Hola '.$this->user->idPersona->nombre)
-                    ->line('Borraste el contrato de renta para el inquilino '.$this->renta->idPersona->nombre.'.')
+                    ->line('Actualizaste el contrato de renta para del inquilino '.$this->renta->idPersona->nombre.'.')
                     ->action('Ir a "Rentas"', url('/inmuebles/'.$this->renta->idInmueble->id_inmueble_padre.'/rentas'));
     }
 

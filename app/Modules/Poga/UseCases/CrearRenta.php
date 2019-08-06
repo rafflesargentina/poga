@@ -2,9 +2,8 @@
 
 namespace Raffles\Modules\Poga\UseCases;
 
-use Raffles\Modules\Poga\Models\{ Inmueble, Unidad, User };
-use Raffles\Modules\Poga\Repositories\RentaRepository;
-use Raffles\Modules\Poga\Notifications\UnidadCreada;
+use Raffles\Modules\Poga\Repositories\{ RentaRepository, UnidadRepository };
+use Raffles\Modules\Poga\Notifications\RentaCreada;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -37,65 +36,35 @@ class CrearRenta
     /**
      * Execute the job.
      *
-     * @param InmuebleRepository      $rInmueble      The InmuebleRepository object.
-     * @param UnidadRepository        $rUnidad        The UnidadRepository object.
-     * @param PersonaRepository       $rPersona       The PersonaRepository object.
+     * @param RentaRepository $rRenta The RentaRepository object.
      *
      * @return void
      */
-    public function handle(RentaRepository $rRenta)
+    public function handle(RentaRepository $rRenta, UnidadRepository $rUnidad)
     {
-        $this->crearRenta($rRenta);
+        $renta = $this->crearRenta($rRenta, $rUnidad);
+
+        $this->user->notify(new RentaCreada($renta, $this->user));
+
+        return $renta;
     }
 
     /**
      * @param RentaRepository $repository The RentaRepository object.
      */
-    protected function crearRenta(RentaRepository $repository)
+    protected function crearRenta(RentaRepository $repository, UnidadRepository $rUnidad)
     {
+        $idUnidad = $this->data['id_unidad'];
+        if ($idUnidad) {
+            $unidad = $rUnidad->find($idUnidad)->first();
+            $this->data['id_inmueble'] = $unidad->id_inmueble;
+        }
+
         return $repository->create(array_merge($this->data,
             [
                 //Agregando campos que no se piden en el formulario
-                'enum_estado' => 'ACTIVO',
+                'enum_estado' => 'PENDIENTE',
             ]
         ))[1];
-    }
-
-   
-    protected function crearPagare()
-    {
-       
-    }
-
-    /**
-     * @param PersonaRepository $repository The PersonaRepository object.
-     * @param Unidad            $unidad     The Unidad model.
-     */
-    protected function nominarAdministrador(PersonaRepository $repository, Unidad $unidad)
-    {
-        $id = $this->data['idAdministradorReferente'];
-
-        if ($id) {
-
-            $persona = $repository->find($id)->first();
-
-            $this->dispatch(new NominarAdministradorReferenteParaUnidad($persona, $unidad));
-        }
-    }
-
-    /**
-     * @param PersonaRepository $repository The PersonaRepository object.
-     * @param Unidad            $unidad     The Unidad model.
-     */
-    protected function nominarPropietario(PersonaRepository $repository, Unidad $unidad)
-    {
-        $id = $this->data['idPropietarioReferente'];
-
-        if ($id) {
-
-            $persona = $repository->find($id)->first();
-
-            $this->dispatch(new NominarPropietarioReferenteParaUnidad($persona, $unidad));
-        }
     }
 }
