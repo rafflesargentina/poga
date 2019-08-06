@@ -26,22 +26,4 @@ class RentaRepository extends EloquentRepository
 
         return $items;
     }
-
-    public function create($data){       
-
-        $renta = new Renta($data);
-        $renta->save();
-
-        return $renta;
-
-    }
-
-    public function updateRenta($request,$id){
-       
-        $model = $this->find($id);
-        $model->update($request);
-
-    }
-
-   
 }
