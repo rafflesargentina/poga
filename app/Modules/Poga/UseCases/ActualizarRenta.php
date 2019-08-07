@@ -57,6 +57,6 @@ class ActualizarRenta
      */
     protected function actualizarRenta(RentaRepository $repository)
     {
-        return $repository->update($id, $this->data)[1];
+        return $repository->update($this->id, $this->data)[1];
     }
 }

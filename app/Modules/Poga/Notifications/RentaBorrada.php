@@ -54,11 +54,13 @@ class RentaBorrada extends Notification
      */
     public function toMail($notifiable)
     {
+        $inmueble = $this->renta->idInnmueble;
+
         return (new MailMessage)
                     ->subject('Borraste un contrato de Renta')
                     ->greeting('Hola '.$this->user->idPersona->nombre)
-                    ->line('Borraste el contrato de renta para el inquilino '.$this->renta->idPersona->nombre.'.')
-                    ->action('Ir a "Rentas"', url('/inmuebles/'.$this->renta->idInmueble->id_inmueble_padre.'/rentas'));
+                    ->line('Borraste el contrato de renta para el inmueble: "'.$inmueble->idInmueblePadre->nombre.'"')
+                    ->action('Ir a "Rentas"', url('/inmuebles/'.$inmueble->id_inmueble_padre.'/rentas'));
     }
 
     /**

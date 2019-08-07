@@ -54,11 +54,13 @@ class RentaCreada extends Notification
      */
     public function toMail($notifiable)
     {
+        $inmueble = $this->renta->idInmueble;
+
         return (new MailMessage)
-                    ->subject('Create un contrato de Renta')
+                    ->subject('Creaste un contrato de Renta')
                     ->greeting('Hola '.$this->user->idPersona->nombre)
-                    ->line('Creaste un contrato de renta para el inquilino '.$this->renta->idPersona->nombre.'.')
-                    ->action('Ir a "Rentas"', url('/inmuebles/'.$this->renta->idInmueble->id_inmueble_padre.'/rentas'));
+                    ->line('Creaste un contrato de renta para el inmueble "'.$inmueble->idInmueblePadre->nombre.'"')
+                    ->action('Ir a "Rentas"', url('/inmuebles/'.$inmueble->id_inmueble_padre.'/rentas'));
     }
 
     /**
