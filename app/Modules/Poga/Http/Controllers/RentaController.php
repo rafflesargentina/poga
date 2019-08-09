@@ -34,7 +34,7 @@ class RentaController extends Controller
     public function index(Request $request)
     {
            
-        GenerarPagares::dispatch($this->repository);
+       
         
         $this->validate(
             $request, [
