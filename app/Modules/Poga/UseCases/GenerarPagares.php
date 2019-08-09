@@ -83,7 +83,6 @@ class GenerarPagares implements ShouldQueue
 
             $now = $now = Carbon::now()->startOfDay();              
             $fechaInicioRenta = Carbon::createFromFormat('Y-m-d', $renta->fecha_inicio);  
-            $fechaCreacionComisionRenta = Carbon::create($now->year, $now->month, $fechaInicioRenta->day, 0, 0, 0);
             
             if($now->eq($fechaInicioRenta)){ //Que pasa si se genera una renta con fecha_inicio anterior a la fecha actual?
 
