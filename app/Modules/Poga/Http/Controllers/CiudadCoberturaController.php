@@ -32,11 +32,11 @@ class CiudadCoberturaController extends Controller
     {
         $request->validate(
             [
-            'idPais' => 'required'
+            'id_pais' => 'required'
             ]
         );
 
-        $items = $this->repository->findWhere(['id_pais' => $request->idPais]);
+        $items = $this->repository->findWhere(['id_pais' => $request->id_pais]);
 
         //$url = $this->getBaseUrl()."acceso/login";
         //$client = $this->getHttpClient();
