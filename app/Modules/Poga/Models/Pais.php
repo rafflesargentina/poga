@@ -12,6 +12,7 @@ class Pais extends Model
      * @var array
      */
     protected $fillable = [
+        'id',
         'codigo',
         'disponible_cobertura',
         'enum_estado',
@@ -23,14 +24,9 @@ class Pais extends Model
      *
      * @var string
      */
-    protected $table = 'pais';
+    protected $table = 'paises';
 
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
+    public $incrementing = false;
 
     /**
      * Get the ciudades for the pais.
