@@ -9,6 +9,8 @@ use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
 class PaisCoberturaController extends Controller
 {
+    use FormatsValidJsonResponses;
+
     /**
      * Create a new PaisCoberturaController instance.
      *
@@ -21,8 +23,6 @@ class PaisCoberturaController extends Controller
         $this->repository = $repository;
     }
 
-    use FormatsValidJsonResponses;
-
     /**
      * Display a listing of the resource.
      *
@@ -30,7 +30,7 @@ class PaisCoberturaController extends Controller
      */
     public function index(Request $request)
     {
-        $items = $this->repository->findWhere(['disponible_cobertura' => 'true', 'enum_estado' => 'ACTIVO']);
+        $items = $this->repository->orderBy('nombre', 'asc')->findWhere(['disponible_cobertura' => '1', 'enum_estado' => 'ACTIVO']);
 
         return $this->validSuccessJsonResponse('Success', $items);
     }
