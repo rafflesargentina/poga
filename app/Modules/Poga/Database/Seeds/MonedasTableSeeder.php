@@ -17,13 +17,14 @@ class MonedasTableSeeder extends Seeder
     {
         $monedas = [
             [
-                'moneda' => 'GUARANI', 
-                'abbr' => '?', 
+                'moneda' => 'Guaraní', 
+                'abbr' => 'Gs', 
                 'enum_estado' => 'ACTIVO'
             ], // 1
            
         ];
 
-        foreach ($monedas as $moneda) Moneda::create($moneda);
+        foreach ($monedas as $moneda) { Moneda::create($moneda);
+        }
     }
 }
