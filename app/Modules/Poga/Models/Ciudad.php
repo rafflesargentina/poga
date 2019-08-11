@@ -12,6 +12,7 @@ class Ciudad extends Model
      * @var array
      */
     protected $fillable = [
+        'id',
         'enum_estado',
         'id_departamento',
         'id_pais',
@@ -25,12 +26,7 @@ class Ciudad extends Model
      */
     protected $table = 'ciudades';
 
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
+    public $incrementing = false;
 
     /**
      * Get the ciudades coberturas for the ciudad.
