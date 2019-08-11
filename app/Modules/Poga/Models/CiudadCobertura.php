@@ -2,6 +2,7 @@
 
 namespace Raffles\Modules\Poga\Models;
 
+use Caffeinated\Shinobi\Models\Role;
 use Illuminate\Database\Eloquent\Model;
 
 class CiudadCobertura extends Model
@@ -13,9 +14,9 @@ class CiudadCobertura extends Model
      */
     protected $fillable = [
         'enum_estado',
-        'enum_rol',
         'id_ciudad',
         'id_persona',
+        'role_id',
     ];
 
     /**
@@ -46,5 +47,13 @@ class CiudadCobertura extends Model
     public function idPersona()
     {
         return $this->belongsTo(Persona::class, 'id_persona');
+    }
+
+    /**
+     * Get the role that owns the cobertura.
+     */
+    public function idRol()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
     }
 }

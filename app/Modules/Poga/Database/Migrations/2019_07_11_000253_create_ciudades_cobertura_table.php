@@ -19,8 +19,9 @@ class CreateCiudadesCoberturaTable extends Migration
             $table->foreign('id_persona')->references('id')->on('personas');
             $table->unsignedInteger('id_ciudad');
             $table->foreign('id_ciudad')->references('id')->on('ciudades');
+            $table->unsignedInteger('role_id');
+            $table->foreign('role_id')->references('id')->on('roles');
             $table->enum('enum_estado', ['ACTIVO','INACTIVO']);
-            $table->enum('enum_rol', ['ADMINISTRADOR','CONSERJE','INQUILINO','PROVEEDOR']);
             $table->timestamps();
         });
     }
