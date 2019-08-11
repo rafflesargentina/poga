@@ -22,14 +22,9 @@ class Departamento extends Model
      *
      * @var string
      */
-    protected $table = 'departamento';
+    protected $table = 'departamentos';
 
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
+    public $incrementing = false;
 
     /**
      * Get the ciudades for the departamento.
