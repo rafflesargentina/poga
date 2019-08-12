@@ -18,6 +18,14 @@ class EventoRepository extends EloquentRepository
      */
     public $tag = ['Evento'];
 
+    public function findReservas($idInmueblePadre)
+    {
+        return $this->whereHas('idInmueble', function($query) use($idInmueblePadre ) {
+            // Pueden ser Inmuebles o Unidades
+            return $query->where('id_tabla_hija', $idInmueblePadre);
+        })->where('enum_estado', 'ACTIVO')->where('enum_tipo_evento', 'RESERVA')->get();
+    }
+
     public function findVisitas($idInmueblePadre)
     {
         return $this->whereHas('idInmueble', function($query) use($idInmueblePadre ) {
