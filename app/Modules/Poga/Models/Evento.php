@@ -63,4 +63,12 @@ class Evento extends Model
     {
         return $this->belongsTo(User::class, 'id_usuario_creador');
     }
+
+    /**
+     * Get the invitados for the evento.
+     */
+    public function invitados()
+    {
+        return $this->hasMany(Invitado::class, 'id_evento');
+    }
 }
