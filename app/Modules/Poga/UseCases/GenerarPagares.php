@@ -41,8 +41,7 @@ class GenerarPagares implements ShouldQueue
     }
 
     protected function generarRentas(){
-        $rentas = $this->rRenta->where('enum_estado', 'ACTIVO')->get();
-        
+        $rentas = $this->rRenta->where('enum_estado', 'ACTIVO')->get();   
         
 
         foreach($rentas as $renta) {
@@ -50,8 +49,6 @@ class GenerarPagares implements ShouldQueue
             $now = $now = Carbon::now()->startOfDay();              
             $fechaInicioRenta = Carbon::createFromFormat('Y-m-d', $renta->fecha_inicio);  
             $fechaCreacionPagare = Carbon::create($now->year, $now->month, $fechaInicioRenta->day, 0, 0, 0);
-
-
             
             if($now->eq($fechaCreacionPagare)){
 
@@ -75,18 +72,15 @@ class GenerarPagares implements ShouldQueue
         }
     }
 
-    protected function generarComisionRenta(){
-        $rentas = $this->rRenta->where('enum_estado', 'ACTIVO')->get(); 
+    protected function generarComisionRenta(Renta $rentas){
+       // $rentas = $this->rRenta->where('enum_estado', 'ACTIVO')->get(); 
         
 
         foreach($rentas as $renta) {
 
             $now = $now = Carbon::now()->startOfDay();              
-            $fechaInicioRenta = Carbon::createFromFormat('Y-m-d', $renta->fecha_inicio);  
-            
-            if($now->eq($fechaInicioRenta)){ //Que pasa si se genera una renta con fecha_inicio anterior a la fecha actual?
-
                 $comision = $renta->monto * $renta->prim_comision_administrador / 100;
+                //Si está pasado el proporcional de los dias del mes
 
                 $inmueble = Inmueble::find($renta->id_inmueble); 
                 $pagare = $inmueble->pagares()->create([
@@ -101,10 +95,7 @@ class GenerarPagares implements ShouldQueue
                     'id_tabla_hija' => $renta->id,
                 ]);
 
-               
-            }
-
-
         }
+
     }
 }

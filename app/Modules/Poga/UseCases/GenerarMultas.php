@@ -55,36 +55,54 @@ class GenerarMultas implements ShouldQueue
 
             foreach($pagares as $pagare) {  
                           
-                $multaRenta = $renta->multas()->firstOrCreate([ //diferencia entre updateOrCrete?
+                $multaRenta = $renta->multas()->firstOrCreate([ 
                     'id_pagare' => $pagare->id, 
                     'mes' => $now->month, 
                     'anno' => $now->year,
-                ]/*,[
-                    'id_pagare' => $pagare->id, 
-                    'mes' => $now->month, 
-                    'anno' => $now->year,
-                ]*/); 
+                ]); 
 
                 $montoTotal = $pagare->monto + $renta->monto_multa_dia;
 
+                //where fecha mayor a principio de mes menor a endofmonth
+
+                $inicioMes = Carbon::now()->startOfMonth();  
+                $finMes = Carbon::now()->endOfMonth();   
+
+               
+                
+                $pagareActual = $inmueble->pagares()
+                ->where('fecha_pagare','>',$inicioMes)
+                ->where('fecha_pagare','<',$finMes)
+                ->where('enum_clasificacion_pagare','=','MULTA_RENTA');                
                 
 
-                $inmueble->pagares()->updateOrCreate([
-                    'id_persona_adeudora' => $renta->id_inquilino,
-                    'id_moneda'=> $renta->id_moneda,
-                    'fecha_pagare'=> $now->toDateString(),
-                    'enum_estado'=>'PENDIENTE',
-                    'enum_clasificacion_pagare'=>'MULTA_RENTA',
-                    'id_tabla'=> $multaRenta->id ,
-                ]/*,[
-                    'id_persona_adeudora' => $renta->id_inquilino,
-                    'id_moneda'=> $renta->id_moneda,
-                    'fecha_pagare'=> $now->toDateString(),
-                    'enum_estado'=>'PENDIENTE',
-                    'enum_clasificacion_pagare'=>'MULTA_RENTA',
-                    'id_tabla'=> $multaRenta->id ,
-                    'monto' => $montoTotal, 
-                ]*/);
+                if($pagareActual == null){
+
+                    $fechaCreacionPagare = Carbon::create($now->year, $now->month, $fechaInicioRenta->day, 0, 0, 0);
+            
+                    Pagare::create([
+                        'fecha_pagare' => $fechaCreacionPagare,
+                        'id_persona_adeudora' => $renta->id_inquilino,
+                        'id_moneda'=> $renta->id_moneda,
+                        'enum_estado'=>'PENDIENTE',
+                        'enum_clasificacion_pagare'=>'MULTA_RENTA',
+                        'id_tabla'=> $multaRenta->id ,
+                        'monto' => $montoTotal, 
+                    ]);
+                }
+                else{
+                    
+                    $pagareActual->update([
+                        'id_persona_adeudora' => $renta->id_inquilino,
+                        'id_moneda'=> $renta->id_moneda,
+                        'enum_estado'=>'PENDIENTE',
+                        'enum_clasificacion_pagare'=>'MULTA_RENTA',
+                        'id_tabla'=> $multaRenta->id ,
+                        'monto' => $montoTotal, 
+                    ]);
+                }
+
+                
                 
             }
         }
