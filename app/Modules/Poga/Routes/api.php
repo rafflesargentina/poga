@@ -30,6 +30,8 @@ Route::get('solicitudes/inmueble/sinAgendar', Solicitudes\SinAgendarInmuebleCont
 //Route::get('solicitudes/proveedor/sinAgendar', Solicitudes\SinAgendarProveedorController::class);
 Route::get('solicitudes/proveedoresDadoServicio', Solicitudes\ProveedorDadoServicioController::class);
 
+Route::post('finanzas/cambiarEstadoPagare', Finanzas\CambiarEstadoPagareController::class);
+
 Route::post('login', 'Auth\LoginController@login');
 Route::post('seleccionar-rol', Roles\SeleccionarRolController::class);
 
