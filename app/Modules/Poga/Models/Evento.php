@@ -17,6 +17,7 @@ class Evento extends Model
         'enum_tipo_evento',
         'id_espacio',
         'id_inmueble',
+        'id_inmueble_padre',
         'fecha_fin',
         'fecha_inicio',
         'hora_fin',
@@ -54,6 +55,14 @@ class Evento extends Model
     public function idInmueble()
     {
         return $this->belongsTo(Inmueble::class, 'id_inmueble');
+    }
+
+    /**
+     * Get the inmueble padre that owns the evento.
+     */
+    public function idInmueblePadre()
+    {
+        return $this->belongsTo(InmueblePadre::class, 'id_inmueble_padre');
     }
 
     /**

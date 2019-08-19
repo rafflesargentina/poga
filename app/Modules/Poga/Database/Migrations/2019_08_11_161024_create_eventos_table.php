@@ -17,6 +17,8 @@ class CreateEventosTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('id_inmueble')->nullable();
             $table->foreign('id_inmueble')->references('id')->on('inmuebles');
+            $table->unsignedInteger('id_inmueble_padre');
+            $table->foreign('id_inmueble_padre')->references('id')->on('inmuebles_padre');
             $table->unsignedInteger('id_espacio')->nullable();
             $table->foreign('id_espacio')->references('id')->on('espacios');
             $table->string('nombre');
