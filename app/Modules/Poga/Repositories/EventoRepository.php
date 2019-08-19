@@ -28,9 +28,7 @@ class EventoRepository extends EloquentRepository
 
     public function findVisitas($idInmueblePadre)
     {
-        return $this->whereHas('idInmueble', function($query) use($idInmueblePadre ) {
-            // Pueden ser Inmuebles o Unidades
-            return $query->where('id_tabla_hija', $idInmueblePadre);
-        })->where('enum_estado', 'ACTIVO')->where('enum_tipo_evento', 'VISITA')->get();
+        return $this->where('id_inmueble_padre', $idInmueblePadre)
+            ->where('enum_estado', 'ACTIVO')->where('enum_tipo_evento', 'VISITA')->get();
     }
 }
