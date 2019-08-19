@@ -20,7 +20,7 @@ class CreateInvitadosTable extends Migration
             $table->string('nombre');
             $table->string('apellidos')->nullable();
             $table->string('ci');
-            $table->string('observacion');
+            $table->string('observacion')->nullable();
             $table->timestamps();
         });
     }
