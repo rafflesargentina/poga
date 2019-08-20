@@ -4,6 +4,8 @@ namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 
+use Raffles\Modules\Poga\Repositories\PagareRepository;
+
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
@@ -19,24 +21,36 @@ class CambiarEstadoPagareController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
+
+
+      /**
+     * The InmuebleRepository object.
+     *
+     * @var InmuebleRepository $inmueble
+     */
+    protected $repository;
+
+    public function __construct(PagareRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
+
     public function __invoke(Request $request)
     {
-        $url = $this->getBaseUrl()."finanzas/tiposPagares";
-        $client = $this->getHttpClient();
-        $token = $request->header('Authorization');
-
-        $response = $client->request(
-            'GET', $url, [
-            'headers' => [
-                'x-li-format' => 'json',
-                'Authorization' => $token,
-            ],
-            'query' => $request->all()
+       
+        $this->validate(
+            $request, [
+            'idPagare' => 'required',
+            'estado' => 'required|in:PAGADO,PENDIENTE',
             ]
         );
 
-        $data = json_decode($response->getBody()->getContents(), true);
+        $data = $request->all();
 
-        return $this->validSuccessJsonResponse($data['ok'] ? 'Success' : 'Failed', $data['response']);
+        $pagare = $this->repository->actualizarEstado($data);
+        
+        return $this->validSuccessJsonResponse('Success', $pagare);
+
     }
 }
