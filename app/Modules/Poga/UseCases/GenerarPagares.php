@@ -45,8 +45,16 @@ class GenerarPagares implements ShouldQueue
         
 
         foreach($rentas as $renta) {
+            $this->generarPagoRenta($renta);
+            $this->generarPagoConserje($renta);
+            $this->generarPagoAdministrador($renta);
+        }
+    }
 
-            $now = $now = Carbon::now()->startOfDay();              
+   
+
+    public function generarPagoRenta(Renta $renta ){
+        $now = $now = Carbon::now()->startOfDay();              
             $fechaInicioRenta = Carbon::createFromFormat('Y-m-d', $renta->fecha_inicio);  
             $fechaCreacionPagare = Carbon::create($now->year, $now->month, $fechaInicioRenta->day, 0, 0, 0);
             
@@ -65,29 +73,60 @@ class GenerarPagares implements ShouldQueue
                 ]);              
 
             }
-
-
-        }
     }
 
     protected function generarComisionRenta(Renta $renta){       // $rentas = $this->rRenta->where('enum_estado', 'ACTIVO')->get(); 
    
-            $now = $now = Carbon::now()->startOfDay();              
-            $comision = $renta->monto * $renta->prim_comision_administrador / 100;
-            //Si está pasado el proporcional de los dias del mes
+        $now = $now = Carbon::now()->startOfDay();              
+        $comision = $renta->monto * $renta->prim_comision_administrador / 100;
+        //Si está pasado el proporcional de los dias del mes
 
-            $inmueble = Inmueble::find($renta->id_inmueble); 
-            $pagare = $inmueble->pagares()->create([
-                "id_administrador_referente" => $renta->idInmueble->idAdministradorReferente()->first()->id,
-                'id_persona_acreedora' => $renta->idInmueble->idAdministradorReferente()->first()->id,
-                'id_persona_adeudora' => $renta->idInmueble->idPropietarioReferente()->first()->id,
-                'monto' => $comision, 
-                'id_moneda' => $renta->id_moneda,
-                'fecha_pagare' => $fechaCreacionPagare,                      
-                'enum_estado' => 'PENDIENTE',
-                'enum_clasificacion_pagare' => 'COMISION_RENTA_ADMIN',
-                'id_tabla_hija' => $renta->id,
-            ]);       
+        $inmueble = Inmueble::find($renta->id_inmueble); 
+        $pagare = $inmueble->pagares()->create([
+            'id_persona_acreedora' => $renta->idInmueble->idAdministradorReferente()->first()->id,
+            'id_persona_adeudora' => $renta->idInmueble->idPropietarioReferente()->first()->id,
+            'monto' => $comision, 
+            'id_moneda' => $renta->id_moneda,
+            'fecha_pagare' => $fechaCreacionPagare,                      
+            'enum_estado' => 'PENDIENTE',
+            'enum_clasificacion_pagare' => 'COMISION_RENTA_ADMIN',
+            'id_tabla_hija' => $renta->id,
+        ]);       
 
+    }
+
+    public function generarPagoConserje(Renta $renta){
+
+        $now = $now = Carbon::now()->startOfDay();              
+        $fechaInicioRenta = Carbon::createFromFormat('Y-m-d', $renta->fecha_inicio);  
+        $fechaCreacionPagare = Carbon::create($now->year, $now->month, $fechaInicioRenta->day, 0, 0, 0);
+
+        $pagare = $inmueble->pagares()->create([
+            'id_persona_acreedora' => $renta->idInmueble->idAdministradorReferente()->first()->id,
+            'monto' => $comision, 
+            'id_moneda' => $renta->id_moneda,
+            'fecha_pagare' => $fechaCreacionPagare,                      
+            'enum_estado' => 'PENDIENTE',
+            'enum_clasificacion_pagare' => 'SALARIO_CONSERJE',
+            'id_tabla_hija' => $renta->id,
+        ]);     
+
+    }
+
+    public function generarPagoAdministrador(){
+
+        $now = $now = Carbon::now()->startOfDay();              
+        $fechaInicioRenta = Carbon::createFromFormat('Y-m-d', $renta->fecha_inicio);  
+        $fechaCreacionPagare = Carbon::create($now->year, $now->month, $fechaInicioRenta->day, 0, 0, 0);
+
+        $pagare = $inmueble->pagares()->create([
+            'id_persona_acreedora' => $renta->idInmueble->idAdministradorReferente()->first()->id,
+            'monto' => $comision, 
+            'id_moneda' => $renta->id_moneda,
+            'fecha_pagare' => $fechaCreacionPagare,                      
+            'enum_estado' => 'PENDIENTE',
+            'enum_clasificacion_pagare' => 'SALARIO_ADMINISTRADOR',
+            'id_tabla_hija' => $renta->id,
+        ]);
     }
 }
