@@ -48,6 +48,7 @@ class RegistroUsuarioInvitado
         $this->actualizarPersona($rPersona, $user);
         $this->adjuntarRoles($user);
         $this->crearCiudadesCobertura($user->idPersona);
+        $this->blanquearCodigoValidacion($user);
 
         $user->notify(new UsuarioRegistrado($user));
 
@@ -57,6 +58,8 @@ class RegistroUsuarioInvitado
     /**
      * @param PersonaRepository $repository The PersonaRepository object.
      * @param User              $user       The User model.
+     *
+     * @return Persona
      */
     protected function actualizarPersona(PersonaRepository $repository, User $user)
     {
@@ -67,6 +70,8 @@ class RegistroUsuarioInvitado
 
     /**
      * @param UserRepository $repository The UserRepository object.
+     *
+     * @return User
      */
     protected function actualizarUsuario(UserRepository $repository)
     {
@@ -81,21 +86,38 @@ class RegistroUsuarioInvitado
     }
 
     /**
-     * User $user The User model.
+     * @param User $user The User model.
+     *
+     * @return User
      */
     protected function adjuntarRoles(User $user)
     {
         $role = $this->data['role_id'];
         $user->roles()->attach($role);
+
+        return $user;
     }
 
     /**
-     * Persona $persona The Persona model.
+     * @param Persona $persona The Persona model.
      */
     protected function crearCiudadesCobertura(Persona $persona)
     {
         foreach ($this->data['id_persona']['ciudades_cobertura'] as $ciudadId) {
             $persona->ciudades_cobertura()->create(['enum_estado' => 'ACTIVO', 'id_ciudad' => $ciudadId, 'role_id' => $this->data['role_id']]);
         }
+    }
+
+    /**
+     * @param User $user The User model.
+     *
+     * @return User
+     */
+    protected function blanquearCodigoValidacion(User $user)
+    {
+        $user->codigo_validacion = null;
+        $user->save();
+
+        return $user;
     }
 }
