@@ -4,7 +4,7 @@ namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 
-use Raffles\Modules\Poga\Repositories\PagareRepository;
+use Raffles\Modules\Poga\Repositories\ExpensaRepository;
 
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
@@ -24,9 +24,9 @@ class CambiarEstadoPagareController extends Controller
 
 
       /**
-     * The InmuebleRepository object.
+     * The PagareRepository object.
      *
-     * @var InmuebleRepository $inmueble
+     * @var PagareRepository $pagare
      */
     protected $repository;
 
@@ -41,8 +41,13 @@ class CambiarEstadoPagareController extends Controller
        
         $this->validate(
             $request, [
-            'idPagare' => 'required',
-            'estado' => 'required|in:PAGADO,PENDIENTE',
+            'enumClasificacionPagare' => 'required',
+            'idMoneda' => 'required',
+            'monto' => 'required',
+            'fechaPagare' => 'required',
+            'idCreedor' => 'required',
+            'enumEstado' => 'required',
+            'descripccion' => 'required',
             ]
         );
 
