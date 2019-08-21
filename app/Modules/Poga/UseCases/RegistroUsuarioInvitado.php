@@ -46,7 +46,6 @@ class RegistroUsuarioInvitado
     {
         $user = $this->actualizarUsuario($rUser);
         $this->actualizarPersona($rPersona, $user);
-        $this->adjuntarRoles($user);
         $this->crearCiudadesCobertura($user->idPersona);
         $this->blanquearCodigoValidacion($user);
 
@@ -86,25 +85,12 @@ class RegistroUsuarioInvitado
     }
 
     /**
-     * @param User $user The User model.
-     *
-     * @return User
-     */
-    protected function adjuntarRoles(User $user)
-    {
-        $role = $this->data['role_id'];
-        $user->roles()->attach($role);
-
-        return $user;
-    }
-
-    /**
      * @param Persona $persona The Persona model.
      */
     protected function crearCiudadesCobertura(Persona $persona)
     {
         foreach ($this->data['id_persona']['ciudades_cobertura'] as $ciudadId) {
-            $persona->ciudades_cobertura()->create(['enum_estado' => 'ACTIVO', 'id_ciudad' => $ciudadId, 'role_id' => $this->data['role_id']]);
+            $persona->ciudades_cobertura()->create(['enum_estado' => 'ACTIVO', 'id_ciudad' => $ciudadId, 'role_id' => $persona->user->role_id]);
         }
     }
 

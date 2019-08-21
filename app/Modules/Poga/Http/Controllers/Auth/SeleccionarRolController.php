@@ -28,10 +28,12 @@ class SeleccionarRolController extends Controller
         ]);
 
         $user = $request->user('api');
-        $user->loadMissing('roles');
 
         $role = $user->roles->where('slug', $request->rol)->first();
         $permissions = $role->permissions->pluck('slug') ?: [];
+
+        $user->update(['role_id' => $role->id]);
+        $user->loadMissing('roles');
 
         $data = [
             'permissions' => $permissions,

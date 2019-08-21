@@ -9,6 +9,7 @@ use Raffles\Modules\Poga\UseCases\RegistroUsuarioInvitado;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
 class GuestRegisterController extends Controller
@@ -53,13 +54,14 @@ class GuestRegisterController extends Controller
      */
     public function register(Request $request, $codigo_validacion)
     {
-        $this->validator($request->all())->validate();
+        $user = User::where('codigo_validacion', $codigo_validacion)->firstOrFail();
+        $user->loadMissing('idPersona.ciudades_cobertura', 'idRol', 'roles');
+
+        $this->validator($request->all(), $user)->validate();
 
         $data = $request->all();
-        $user = User::where('codigo_validacion', $codigo_validacion)->firstOrFail();
-        $user->loadMissing('idPersona.ciudades_cobertura', 'roles');
 
-        dispatch(new RegistroUsuarioInvitado($data, $user));
+        $this->dispatchNow(new RegistroUsuarioInvitado($data, $user));
 
         return $user;
 
@@ -71,7 +73,7 @@ class GuestRegisterController extends Controller
      * @param  array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data)
+    protected function validator(array $data, User $user)
     {
         return Validator::make(
             $data, [
@@ -84,9 +86,11 @@ class GuestRegisterController extends Controller
             'id_persona.nombre' => 'required',
             'id_persona.ci' => 'required',
             'password' => 'required|confirmed',
-            'plan' => 'required_if:role_id,1',
-            'role_id' => 'required',
+            'plan' => [
+                Rule::requiredIf(function() use($user) {
+                    return $user->role_id === '1';
+                })
             ]
-        );
+        ]);
     }
 }
