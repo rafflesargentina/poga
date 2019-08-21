@@ -26,4 +26,6 @@ class RentaRepository extends EloquentRepository
 
         return $items;
     }
+
+    
 }
