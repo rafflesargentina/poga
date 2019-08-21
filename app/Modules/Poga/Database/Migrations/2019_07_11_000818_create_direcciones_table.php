@@ -16,7 +16,7 @@ class CreateDireccionesTable extends Migration
         Schema::create('direcciones', function (Blueprint $table) {
             $table->increments('id');
             $table->string('calle_principal', 100);
-            $table->string('calle_secundaria', 100);
+            $table->string('calle_secundaria', 100)->nullable();
             $table->string('numeracion', 10)->nullable();
             $table->float('latitud', 17, 8);
             $table->float('longitud', 17, 8);
