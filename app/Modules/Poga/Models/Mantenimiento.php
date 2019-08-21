@@ -36,18 +36,11 @@ class Mantenimiento extends Model
         'id_inmueble',
         'id_moneda',
         'id_proveedor_servicio',
-        'id_inmueble_caracteristica_inmueble',
+        'id_caracteristica_inmueble',
         'monto',
         'repetir',
         'repetir_cada',
     ];
-
-    /**
-     * The "type" of the auto-incrementing ID.
-     *
-     * @var string
-     */
-    protected $keyType = 'string';
 
     /**
      * The table associated with the model.
@@ -62,20 +55,6 @@ class Mantenimiento extends Model
      * @var array
      */
     protected $with = ['idInmueble', 'idMoneda'];
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
 
     /**
      * Get the moneda servicio that owns the mantenimiento.
