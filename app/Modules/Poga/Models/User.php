@@ -4,6 +4,7 @@ namespace Raffles\Modules\Poga\Models;
 
 use Raffles\Modules\Poga\Models\Traits\UserTrait;;
 
+use Caffeinated\Shinobi\Models\Role;
 use Caffeinated\Shinobi\Traits\ShinobiTrait;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -19,12 +20,14 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
+        'bloqueado',
+        'codigo_validacion',
         'email',
         'first_name',
         'id_persona',
         'last_name',
         'password',
-        'bloqueado',
+        'role_id',
     ];
 
     /**
@@ -48,7 +51,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $with = 'idPersona';
+    protected $with = ['idPersona', 'idRol'];
 
     /**
      * Get the persona record associated with the user.
@@ -56,6 +59,14 @@ class User extends Authenticatable
     public function idPersona()
     {
         return $this->belongsTo(Persona::class, 'id_persona');
+    }
+
+    /**
+     * Get the rol record associated with the user.
+     */
+    public function idRol()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
     }
 
     /**

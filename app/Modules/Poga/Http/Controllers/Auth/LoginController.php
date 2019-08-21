@@ -65,6 +65,7 @@ class LoginController extends Controller
     {
         try {
             $user = $this->guard()->user();
+            $user->update(['role_id' => null]);
             $user->load('permissions', 'roles');
             $token = $user->createToken(env('APP_NAME'));
             $accessToken = $token->accessToken;
