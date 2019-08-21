@@ -1,13 +1,30 @@
 <?php
 
-namespace Raffles\Modules\Poga\Http\Controllers;
+namespace Raffles\Modules\Poga\Http\Controllers\Auth;
+
+use Raffles\Modules\Poga\Http\Controllers\Controller;
+use Raffles\Modules\Poga\Repositories\PaisRepository;
 
 use Illuminate\Http\Request;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
-class NacionalidadController extends Controller
+class PaisCoberturaController extends Controller
 {
     use FormatsValidJsonResponses;
+
+    /**
+     * Create a new PaisCoberturaController instance.
+     *
+     * @var PaisRepository $pais The PaisRepository object.
+     *
+     * @return void
+     */
+    public function __construct(PaisRepository $repository)
+    {
+        $this->middleware('auth:api', ['except' => 'index']);
+
+        $this->repository = $repository;
+    }
 
     /**
      * Display a listing of the resource.
@@ -16,30 +33,9 @@ class NacionalidadController extends Controller
      */
     public function index(Request $request)
     {
-        $url = $this->getBaseUrl()."acceso/login";
-        $client = $this->getHttpClient();
-        $response = $client->request(
-            'GET', $url, [
-            'query' => ['correo' => 'eladministrador@gmail.com', 'password' => 'admin123']
-            ]
-        );
-        $token = "Bearer ".json_decode($response->getBody()->getContents(), true)['response']['token'];
+        $items = $this->repository->findActivosConCobertura();
 
-        $url = $this->getBaseUrl()."acceso/nacionalidades";
-        $client = $this->getHttpClient();
-        $response = $client->request(
-            'GET', $url, [
-            'headers' => [
-                'x-li-format' => 'json',
-                'Authorization' => $token,
-            ],
-            'query' => $request->all()
-            ]
-        );
-
-        $data = json_decode($response->getBody()->getContents(), true);
-
-        return $this->validSuccessJsonResponse($data['ok'], $data['response']);
+        return $this->validSuccessJsonResponse('Success', $items);
     }
 
     /**

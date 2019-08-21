@@ -1,25 +1,24 @@
 <?php
 
-namespace Raffles\Modules\Poga\Http\Controllers\Roles;
+namespace Raffles\Modules\Poga\Http\Controllers;
 
-use Raffles\Modules\Poga\Http\Controllers\Controller;
-use Raffles\Modules\Poga\Repositories\RolRegistroRepository;
+use Raffles\Modules\Poga\Repositories\PaisRepository;
 
 use Illuminate\Http\Request;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
-class RolRegistroController extends Controller
+class PaisController extends Controller
 {
     use FormatsValidJsonResponses;
 
     /**
-     * Create a new RolRegistroController instance.
+     * Create a new PaisController instance.
      *
-     * @param RolRegistroRepository $repository The RolRegistroRepository object.
+     * @var PaisRepository $pais The PaisRepository object.
      *
      * @return void
      */
-    public function __construct(RolRegistroRepository $repository)
+    public function __construct(PaisRepository $repository)
     {
         $this->repository = $repository;
     }
@@ -31,25 +30,9 @@ class RolRegistroController extends Controller
      */
     public function index(Request $request)
     {
-        $this->validate(
-            $request, [
-            'rol' => 'required',
-            ]
-        );
-
-        $items = $this->repository->findWhere(['enum_rol' => $request->rol])->sortBy('enum_funcionalidad')->pluck('enum_funcionalidad');
+        $items = $this->repository->findActivos();
 
         return $this->validSuccessJsonResponse('Success', $items);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -75,17 +58,6 @@ class RolRegistroController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
@@ -103,7 +75,7 @@ class RolRegistroController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         //
     }

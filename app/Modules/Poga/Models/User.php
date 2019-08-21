@@ -19,8 +19,10 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'id_persona',
         'email',
+        'first_name',
+        'id_persona',
+        'last_name',
         'password',
         'bloqueado',
     ];
@@ -53,7 +55,7 @@ class User extends Authenticatable
      */
     public function idPersona()
     {
-        return $this->hasOne(Persona::class, 'id_usuario_creador');
+        return $this->belongsTo(Persona::class, 'id_persona');
     }
 
     /**

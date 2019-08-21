@@ -1,8 +1,9 @@
 <?php
 
-namespace Raffles\Modules\Poga\Http\Controllers\Roles;
+namespace Raffles\Modules\Poga\Http\Controllers\Auth;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
+use Raffles\Modules\Poga\Repositories\RoleRepository;
 
 use Illuminate\Http\Request;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
@@ -12,13 +13,24 @@ class RolController extends Controller
     use FormatsValidJsonResponses;
 
     /**
+     * The RoleRepository object.
+     *
+     * @var RoleRepository $repository
+     */
+    protected $repository;
+
+    /**
      * Create a new RolController instance.
+     *
+     * RoleRepository $repository The RoleRepository object.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(RoleRepository $repository)
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:api', ['except' => 'index']);
+
+        $this->repository = $repository;
     }
 
     /**
@@ -29,19 +41,10 @@ class RolController extends Controller
     public function index(Request $request)
     {
         $user = $request->user('api');
-        $roles = $user->roles;
+
+        $roles = $user ? $user->roles : $this->repository->findAll(); 
 
         return $this->validSuccessJsonResponse('Success', $roles);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -62,17 +65,6 @@ class RolController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
     {
         //
     }

@@ -29,7 +29,7 @@ class Persona extends Model
         'ci',
         'cuenta_bancaria',
         'direccion',
-        'email',
+        'mail',
         'enum_estado',
         'enum_tipo_persona',
         'enum_sexo',
@@ -90,5 +90,13 @@ class Persona extends Model
     public function servicios()
     {
         return $this->belongsToMany(Servicio::class, 'proveedor_servicio', 'id_proveedor', 'id_servicio');
+    }
+
+    /**
+     * Get the user record associated with the persona.
+     */
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id_persona');
     }
 }

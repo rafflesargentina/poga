@@ -17,4 +17,14 @@ class PaisRepository extends EloquentRepository
      * @var array
      */
     public $tag = ['Pais'];
+
+    public function findActivos()
+    {
+        return $this->orderBy('nombre', 'asc')->findWhere(['enum_estado' => 'ACTIVO']);
+    }
+
+    public function findActivosConCobertura()
+    {
+        return $this->orderBy('nombre', 'asc')->findWhere(['disponible_cobertura' => '1', 'enum_estado' => 'ACTIVO']);
+    }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Raffles\Modules\Poga\Http\Controllers\Roles;
+namespace Raffles\Modules\Poga\Http\Controllers\Auth;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 
@@ -11,6 +11,11 @@ class SeleccionarRolController extends Controller
 {
     use FormatsValidJsonResponses;
 
+    /**
+     * Create a new SeleccionarRolController instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->middleware('auth:api');
@@ -18,6 +23,10 @@ class SeleccionarRolController extends Controller
 
     public function __invoke(Request $request)
     {
+        $this->validate($request, [
+            'rol' => 'required',
+        ]);
+
         $user = $request->user('api');
         $user->loadMissing('roles');
 

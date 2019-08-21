@@ -2,13 +2,12 @@
 
 namespace Raffles\Modules\Poga\Http\Controllers\Auth;
 
-use Raffles\Models\User;
+use Raffles\Modules\Poga\Models\{ Persona, User };
 use Raffles\Modules\Poga\Http\Controllers\Controller;
+use Raffles\Modules\Poga\Notifications\UsuarioRegistrado;
 
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
@@ -41,7 +40,7 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+        $this->middleware('guest:api');
     }
 
     /**
@@ -54,38 +53,13 @@ class RegisterController extends Controller
     {
         $this->validator($request->all())->validate();
 
-        $url = $this->getBaseUrl()."acceso/registro";
-        $client = $this->getHttpClient();
-        $response = $client->request(
-            'POST', $url, ['query' => [
-            'apellido' => $request->last_name,
-            'ciudadesCobertura' => $request->coverage_cities,
-            'correo' => $request->email,
-            'direccion' => $request->address,
-            'fechaNacimiento' => $request->birthdate,
-            'idPais' => $request->country_id,
-            'nombre' =>  $request->first_name,
-            'numeroDocumento' => $request->document_number,
-            'paisCovertura' => $request->coverage_country,
-            'password' => $request->password,
-            'plan' => $request->plan,
-            'rolSeleccionado' => $request->role,
-            'sexo' => $request->sex,
-            'telefono' => $request->phone,
-            'tipoPersona' => $request->person_type_id,
-            ]]
-        );
+        $user = $this->create($request->all());
+        $user->loadMissing('roles');
 
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getBody()->getContents(), true);
+        $user->notify(new UsuarioRegistrado($user));
 
-            if (!$data['ok']) {
-                $message = $data['response']['debugMessage'];
-                return $this->validInternalServerErrorJsonResponse(new \Exception($message), $message);
-            }
+        return $user;
 
-             return $this->validSuccessJsonResponse($data['ok'], $data['response'], $this->redirectPath());
-        }
     }
 
     /**
@@ -98,16 +72,17 @@ class RegisterController extends Controller
     {
         return Validator::make(
             $data, [
-            'last_name' => 'required_if:person_type_id,FISICA',
-            'coverage_cities' => 'array',
+            'ciudadesCobertura' => 'array',
             'email' => 'required|email',
-            'birthdate' => 'nullable|date',
-            'country_id' => 'required',
-            'first_name' => 'required',
-            'document_number' => 'required',
+            'idPersona.apellido' => 'required_if:enum_tipo_persona,FISICA',
+            'idPersona.fecha_nacimiento' => 'nullable|date',
+            'idPersona.id_pais' => 'required',
+            'idPersona.id_pais_cobertura' => 'required',
+            'idPersona.nombre' => 'required',
+            'idPersona.ci' => 'required',
             'password' => 'required|confirmed',
-            'plan' => 'required_if:role,ADMINISTRADOR',
-            'role' => 'required',
+            'plan' => 'required_if:role_id,1',
+            'role_id' => 'required',
             ]
         );
     }
@@ -116,17 +91,29 @@ class RegisterController extends Controller
      * Create a new user instance after a valid registration.
      *
      * @param  array $data
-     * @return \Raffles\Models\User
+     * @return User
      */
     protected function create(array $data)
     {
-        return User::create(
+        $persona = Persona::create(array_merge(['enum_estado' => 'ACTIVO', 'mail' => $data['email']], $data['idPersona']));
+
+        $user = User::create(
             [
             'email' => $data['email'],
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
+            'first_name' => $data['idPersona']['nombre'],
+            'id_persona' => $persona->id,
+            'last_name' => $data['idPersona']['apellido'],
             'password' => $data['password'],
             ]
         );
+
+        foreach ($data['ciudadesCobertura'] as $ciudadId) {
+            $persona->ciudades_cobertura()->create(['enum_estado' => 'ACTIVO', 'id_ciudad' => $ciudadId, 'role_id' => $data['role_id']]);
+        }
+
+        $role = $data['role_id'];
+        $user->roles()->attach($role);
+
+        return $user;
     }
 }
