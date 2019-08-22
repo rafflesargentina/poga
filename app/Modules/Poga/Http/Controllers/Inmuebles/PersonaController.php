@@ -130,6 +130,7 @@ class PersonaController extends Controller
             'id_persona.apellido' => 'required_if:enum_tipo_persona,FISICA',
             'id_persona.mail' => [
                 'required_if:invitar,1',
+                Rule::unique('personas', 'mail')->ignore($model->id_persona)
             ],
             'id_persona.ci' => 'required_if:id_persona.enum_tipo_persona,FISICA',
             'id_persona.enum_tipo_persona' => 'required',
@@ -154,6 +155,12 @@ class PersonaController extends Controller
     public function destroy(Request $request, $id)
     {
         $model = $this->repository->findOrFail($id);
+        $model->loadMissing('idPersona.user');
+
+        if ($model->idPersona->user) {
+            $message = 'No es posibile borrar una persona con usuario registrado.';
+            return $this->validUnprocessableEntityJsonResponse(new MessageBag(), $message);
+        }
 
         $inmueblePersona = $this->dispatchNow(new BorrarInmueblePersona($model, $request->user('api')));
 
