@@ -7,6 +7,7 @@ use Raffles\Modules\Poga\Repositories\InmueblePersonaRepository;
 use Raffles\Modules\Poga\UseCases\{ ActualizarInmueblePersona, CrearInmueblePersona, BorrarInmueblePersona };
 
 use Illuminate\Http\Request;
+use Illuminate\Support\MessageBag;
 use Illuminate\Validation\Rule;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
@@ -48,6 +49,8 @@ class PersonaController extends Controller
 
         $items = $this->repository->findPersonasActivas($idInmueblePadre)
             ->map(function($item) {
+                $item->loadMissing('idPersona.user');
+
                 return [
                     'apellido' => $item->idPersona->apellido,
                     'ci' => $item->idPersona->ci,
@@ -58,6 +61,7 @@ class PersonaController extends Controller
                     'ruc' => $item->idPersona->ruc,
                     'telefono' => $item->idPersona->telefono,
                     'tipo_persona' => $item->idPersona->enum_tipo_persona,
+                    'id_persona' => $item->idPersona,
                 ];
             });
 
@@ -114,10 +118,18 @@ class PersonaController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $model = $this->repository->findOrFail($id);
+        $model->loadMissing('idPersona.user');
+
+        if ($model->idPersona->user) {
+            $message = 'No es posibile actualizar una persona con usuario registrado.';
+            return $this->validUnprocessableEntityJsonResponse(new MessageBag(), $message);
+        }
+        
         $this->validate($request, [
             'id_persona.apellido' => 'required_if:enum_tipo_persona,FISICA',
             'id_persona.mail' => [
-                'required',
+                'required_if:invitar,1',
             ],
             'id_persona.ci' => 'required_if:id_persona.enum_tipo_persona,FISICA',
             'id_persona.enum_tipo_persona' => 'required',
@@ -125,7 +137,6 @@ class PersonaController extends Controller
             'id_persona.ruc' => 'required_if:id_persona.enum_tipo_persona,JURIDICA',
         ]);
 
-        $model = $this->repository->findOrFail($id);
         $data = $request->all();
         $user = $request->user('api');
 
@@ -144,12 +155,8 @@ class PersonaController extends Controller
     {
         $model = $this->repository->findOrFail($id);
 
-        if ($request->idInmueblePadre) {
-            $persona = null;
-        } else {
-            $persona = $this->dispatchNow(new BorrarPersona($model, $request->user('api')));
-        }
+        $inmueblePersona = $this->dispatchNow(new BorrarInmueblePersona($model, $request->user('api')));
 
-        return $this->validSuccessJsonResponse('Success', $persona);
+        return $this->validSuccessJsonResponse('Success', $inmueblePersona);
     }
 }

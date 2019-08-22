@@ -2,8 +2,7 @@
 
 namespace Raffles\Modules\Poga\UseCases;
 
-use Raffles\Modules\Poga\Models\User;
-use Raffles\Modules\Poga\Models\Persona;
+use Raffles\Modules\Poga\Models\{ Persona, User };
 use Raffles\Modules\Poga\Notifications\PersonaCreada;
 use Raffles\Modules\Poga\Repositories\{ InmueblePersonaRepository, PersonaRepository, RoleRepository, UserRepository };
 
@@ -66,6 +65,7 @@ class CrearInmueblePersona
      */
     protected function adjuntarRoles(User $user, RoleRepository $repository)
     {
+\Log::info("ASDASD");
         $role = $repository->findBy('slug', strtolower($this->data['enum_rol']));
 
         $user->roles()->attach($role);
@@ -112,7 +112,9 @@ class CrearInmueblePersona
                 'last_name' => $persona->apellido,
             ])[1];
 
-            $user->notify(new PersonaCreada($persona));
+            $p = $user->idPersona;
+
+            $user->notify(new PersonaCreada($p));
 
             return $user;
         }
