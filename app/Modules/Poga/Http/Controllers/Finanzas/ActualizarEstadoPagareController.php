@@ -4,7 +4,7 @@ namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 
-use Raffles\Modules\Poga\Repositories\ExpensaRepository;
+use Raffles\Modules\Poga\UseCases\{ ActualizarEstadoPagare };
 
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
@@ -41,19 +41,14 @@ class CambiarEstadoPagareController extends Controller
        
         $this->validate(
             $request, [
-            'enumClasificacionPagare' => 'required',
-            'idMoneda' => 'required',
-            'monto' => 'required',
-            'fechaPagare' => 'required',
-            'idCreedor' => 'required',
-            'enumEstado' => 'required',
-            'descripccion' => 'required',
+            'idPagare' => 'required',
+            'enum_estado' => 'required',
             ]
         );
 
         $data = $request->all();
 
-        $pagare = $this->repository->actualizarEstado($data);
+        $pagare = $this->dispatchNow(new ActualizarEstadoPagare($data, $user));
         
         return $this->validSuccessJsonResponse('Success', $pagare);
 

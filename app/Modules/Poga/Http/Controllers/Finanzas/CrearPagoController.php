@@ -3,12 +3,12 @@
 namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
-use Raffles\Modules\Poga\Repositories\InmuebleRepository;
-
+use Raffles\Modules\Poga\Repositories\PagareRepository;
+use Raffles\Modules\Poga\UseCases\{ CrearPagare };
 use Illuminate\Http\Request;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
-class RentaController extends Controller
+class CrearPagoController extends Controller
 {
     use FormatsValidJsonResponses;
 
@@ -19,14 +19,7 @@ class RentaController extends Controller
      */
     protected $repository;
 
-    /**
-     * Create a new PagoController instance.
-     *
-     * @param InmuebleRepository $repository The InmueblePadreRepository object.
-     *
-     * @return void
-     */
-    public function __construct(InmuebleRepository $repository)
+    public function __construct(PagareRepository $repository)
     {
         $this->repository = $repository;
     }
@@ -44,13 +37,11 @@ class RentaController extends Controller
             ]
         );
 
-        $inmueble = $this->repository->where('id_tabla_hija', $request->idInmueblePadre)->first();
-
-        $items = $inmueble->rentas;
-
+        $items = $this->repository->fetch($request->idInmueblePadre);
         return $this->validSuccessJsonResponse('Success', $items);
     }
 
+  
     /**
      * Show the form for creating a new resource.
      *
@@ -68,8 +59,8 @@ class RentaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        //
+    {        
+       
     }
 
     /**
@@ -94,17 +85,13 @@ class RentaController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int                      $id
-     * @return \Illuminate\Http\Response
-     */
+   
     public function update(Request $request, $id)
     {
-       
-        
+        $pagare = $this->repository->find($id);
+        $pagare->update($request->all());       
+
+        return $this->validSuccessJsonResponse('Success',  $pagare);
     }
 
     /**
