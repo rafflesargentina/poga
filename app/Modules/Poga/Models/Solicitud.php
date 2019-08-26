@@ -49,7 +49,7 @@ class Solicitud extends Model
      *
      * @var array
      */
-    protected $with = ['idServicio', 'idUsuarioCreador'];
+    protected $with = ['idServicio', 'idUsuarioCreador','idInmueble'];
 
     /**
      * Get the servicio that owns the solicitud.
@@ -65,5 +65,13 @@ class Solicitud extends Model
     public function idUsuarioCreador()
     {
         return $this->belongsTo(User::class, 'id_usuario_creador');
+    }
+
+    /**
+     * Get the inmueble that owns the solicitud.
+     */
+    public function idInmueble()
+    {
+        return $this->belongsTo(Inmueble::class, 'id_inmueble');
     }
 }
