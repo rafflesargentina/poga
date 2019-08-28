@@ -13,7 +13,7 @@
 Route::get('proveedores', ProveedorController::class);
 Route::get('dashboard', DashboardController::class);
 Route::get('inmuebles/personaReferenteDadoRol', Inmuebles\PersonaReferenteDadoRolController::class);
-Route::get('inmuebles/monedas', Inmuebles\MonedaController::class);
+//Route::get('inmuebles/monedas', MonedaController::class);
 Route::get('inmuebles/tiposUnidades', Inmuebles\TipoUnidadController::class);
 Route::get('reservas/espaciosComunes', Reservas\EspacioComunController::class);
 //Route::get('finanzas/pagos', Finanzas\PagoController::class);
@@ -29,6 +29,10 @@ Route::get('solicitudes/serviciosDeProveedor', Solicitudes\ServicioProveedorCont
 Route::get('solicitudes/inmueble/sinAgendar', Solicitudes\SinAgendarInmuebleController::class);
 //Route::get('solicitudes/proveedor/sinAgendar', Solicitudes\SinAgendarProveedorController::class);
 Route::get('solicitudes/proveedoresDadoServicio', Solicitudes\ProveedorDadoServicioController::class);
+
+Route::get('mantenimientos/confirmarPago', Mantenimientos\ConfirmarPagoController::class);
+Route::get('mantenimientos/rechazarPago', Mantenimientos\RechazarPagoController::class);
+Route::get('mantenimientos/crearPago', Mantenimientos\CrearPagoController::class);
 
 Route::post('login', 'Auth\LoginController@login');
 Route::post('seleccionar-rol', Roles\SeleccionarRolController::class);

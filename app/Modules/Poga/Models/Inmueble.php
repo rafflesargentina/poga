@@ -174,4 +174,9 @@ class Inmueble extends Model
     {
         return $this->hasMany(Unidad::class, 'id_inmueble');
     }
+
+    public function pagares()
+    {
+        return $this->hasMany(Pagare::class, 'id_inmueble');
+    }
 }
