@@ -38,7 +38,8 @@ class MantenimientoController extends Controller
      */
     public function index(Request $request)
     {
-        $model = $this->repository->find('7');
+        $model = $this->repository->findOrFail($request->idInmueblePadre);
+
         $model->load('mantenimientos');
 
         $items = $model->mantenimientos->where('enum_estado', 'ACTIVO');
