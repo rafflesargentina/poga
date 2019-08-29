@@ -62,9 +62,9 @@ class CrearPagoSolicitud
         
         $inmueble = Inmueble::findOrFail($this->solicitud->id_inmueble);  
 
-        $idPropietario = $this->pagare->idInmueble->idPropietarioReferente()->first()->id;
-        $idAdministrador = $this->pagare->idInmueble->idAdministradorReferente()->first()->id;
-        $idInquilino = $this->pagare->idInmueble->idInquilinoReferente()->first()->id;
+        $idPropietario = $this->solicitud->idInmueble->idPropietarioReferente()->first()->id;
+        $idAdministrador = $this->solicitud->idInmueble->idAdministradorReferente()->first()->id;
+        $idInquilino = $this->solicitud->idInmueble->idInquilinoReferente()->first()->id;
 
         if(count($this->solicitud->idInmueble->propietarios()->get()) > 1){
             $isUnicoPropietario = false;
