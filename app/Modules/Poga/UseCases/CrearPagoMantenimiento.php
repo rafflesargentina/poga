@@ -54,17 +54,7 @@ class CrearPagoMantenimiento
     /**
      *  @param PagareRepository $rPagare The PagareRepository object.
      */
-    /*
-        //parametros data:      
-         id_moneda
-         monto
-         enum_estado
-         id_mantenimiento
-         id_deudor
-         clasificacion_pagare
-         enum_origen_fondos
-         clasificacion_pagare
-       */
+   
     protected function crearPago()
     {
         $isInmueble = true;
@@ -72,12 +62,15 @@ class CrearPagoMantenimiento
         
         $inmueble = Inmueble::findOrFail($this->mantenimiento->id_inmueble);  
 
+        $idPropietario = $inmueble->idPropietarioReferente()->first()->id;
+        $idAdministrador = $inmueble->idAdministradorReferente()->first()->id;
+        $idInquilino = $inmueble->idInquilinoReferente()->first()->id;
 
-        if(count($this->mantenimiento->idInmueble->propietarios()->get()) > 1){
+        if(count($inmueble->propietarios()->get()) > 1){
             $isUnicoPropietario = false;
         }
 
-        if($this->mantenimiento->idInmueble->enum_tabla_hija == "UNIDAD")
+        if($inmueble->enum_tabla_hija == "UNIDAD")
             $isInmueble = false;        
             
            
@@ -98,7 +91,7 @@ class CrearPagoMantenimiento
 
                         $this->crearPagareMantenimiento(
                             $this->mantenimiento->id_proveedor,
-                            $this->mantenimiento->idInmueble->idPropietarioReferente()->first()->id,
+                            $idPropietario,
                             "PENDIENTE"
                         );                   
                     
@@ -109,13 +102,13 @@ class CrearPagoMantenimiento
 
                             $this->crearPagareMantenimiento(
                                 $this->mantenimiento->id_proveedor,
-                                $this->mantenimiento->idInmueble->idAdministradorReferente()->first()->id,
+                                $idAdministrador,
                                 "PAGADO"
                             ); 
 
                             $this->crearPagareMantenimiento(
-                                $this->mantenimiento->idInmueble->idAdministradorReferente()->first()->id,
-                                $this->mantenimiento->idInmueble->idPropietarioReferente()->first()->id,
+                                $idAdministrador,
+                                $idPropietario,
                                 "PENDIENTE"
                             ); 
 
@@ -125,7 +118,7 @@ class CrearPagoMantenimiento
 
                             $this->crearPagareMantenimiento(
                                 $this->mantenimiento->id_proveedor,
-                                $this->mantenimiento->idInmueble->idPropietarioReferente()->first()->id,
+                                $idPropietario,
                                 "PAGADO"
                             ); 
 
@@ -159,7 +152,7 @@ class CrearPagoMantenimiento
 
                             $this->crearPagareMantenimiento(
                                 $this->mantenimiento->id_proveedor,
-                                $mantenimiento->idInmueble->idAdministradorReferente()->first()->id,
+                                $idAdministrador,
                                 "PAGADO"
                             );  
                         }             
@@ -168,7 +161,7 @@ class CrearPagoMantenimiento
 
                             $this->crearPagareMantenimiento(
                                 $this->mantenimiento->id_proveedor,
-                                $mantenimiento->idInmueble->idPropietarioReferente()->first()->id, //????? cual iria?
+                                $idPropietario, //????? cual iria?
                                 "PAGADO"
                             );                             
                             //Aca discminuir el fondo de reserva
@@ -176,7 +169,7 @@ class CrearPagoMantenimiento
                         else{
                             $this->crearPagareMantenimiento(
                                 $this->mantenimiento->id_proveedor,
-                                $mantenimiento->idInmueble->idPropietarioReferente()->first()->id,
+                                $idPropietario,
                                 "PAGADO"
                             );                             
                         }              
@@ -192,7 +185,7 @@ class CrearPagoMantenimiento
                     //base
                     $this->crearPagareMantenimiento(
                         $this->mantenimiento->id_proveedor,
-                        $this->mantenimiento->idInmueble->idPropietarioReferente()->first()->id,
+                        $idPropietario,
                         "PENDIENTE"
                     );                  
 
@@ -203,13 +196,13 @@ class CrearPagoMantenimiento
                         
                         $this->crearPagareMantenimiento(
                             $this->mantenimiento->id_proveedor,
-                            $mantenimiento->idInmueble->idAdministradorReferente()->first()->id,
+                            $idAdministrador,
                             "PAGADO"
                         );  
 
                         $this->crearPagareMantenimiento(
-                            $this->mantenimiento->idInmueble->idAdministradorReferente()->first()->id,
-                            $this->mantenimiento->idInmueble->idPropietarioReferente()->first()->id,
+                            $idAdministrador,
+                            $idPropietario,
                             "PENDIENTE"
                         );                 
 
@@ -218,7 +211,7 @@ class CrearPagoMantenimiento
                         
                         $this->crearPagareMantenimiento(
                             $this->mantenimiento->id_proveedor,
-                            $mantenimiento->idInmueble->idPropietarioReferente()->first()->id,
+                            $idPropietario,
                             "PAGADO"
                         ); 
 
@@ -247,7 +240,7 @@ class CrearPagoMantenimiento
     protected function crearPagareExpensa($acreedor){
 
         $pagare = $mantenimiento->idInmueble->pagares()->create([
-            'id_administrador_referente' => $this->solicitud->idInmueble->idAdministradorReferente()->first()->id,
+            'id_administrador_referente' => $idAdministrador,
             'id_persona_acreedora' => $acreedor,
             'monto' => $this->data['monto'], 
             'id_moneda' => $this->data['id_moneda'],
@@ -260,8 +253,8 @@ class CrearPagoMantenimiento
 
     protected function crearPagareMantenimiento($acreedor, $deudor, $estado){
 
-        $pagare = $this->mantenimiento->idInmueble->pagares()->create([
-            'id_administrador_referente' => 1,// $this->mantenimiento->idInmueble->idAdministradorReferente()->first()->id,
+        $pagare = $inmueble->pagares()->create([
+            'id_administrador_referente' =>  $idAdministrador,
             'id_persona_acreedora' => $acreedor,
             'id_persona_adeudora' =>  $deudor,
             'monto' => $this->data['monto'], 

@@ -56,13 +56,13 @@ class ConfirmarPagoMantenimiento
         $isUnicoPropietario = true;
         $isInmueble = true;
 
-        $idPropietario = $this->pagare->idInmueble->idPropietarioReferente()->first()->id;
-        $idAdministrador = $this->pagare->idInmueble->idAdministradorReferente()->first()->id;
-
+       
         
         $inmueble = Inmueble::findOrFail($this->pagare->id_inmueble);  
 
-        $propietarios =  $this->pagare->idInmueble->propietarios()->get();
+        $idPropietario = $inmueble->idPropietarioReferente()->first()->id;
+        $idAdministrador = $inmueble->idAdministradorReferente()->first()->id;
+        $propietarios =  $inmueble->propietarios()->get();
         
         
 
@@ -70,7 +70,7 @@ class ConfirmarPagoMantenimiento
             $isUnicoPropietario = false;
         }       
 
-        if($this->pagare->idInmueble->enum_tabla_hija == "UNIDAD")
+        if($inmueble->enum_tabla_hija == "UNIDAD")
             $isInmueble = false;
 
         
@@ -100,7 +100,7 @@ class ConfirmarPagoMantenimiento
 
                     
                     $pagare = $mantenimiento->idInmueble->pagares()->create([
-                        'id_administrador_referente' => $this->mantenimiento->idInmueble->idAdministradorReferente()->first()->id,
+                        'id_administrador_referente' => $idAdministrador,
                         'id_persona_acreedora' => $idAdministrador,
                         'id_persona_adeudora' =>  $idPropietario,
                         'monto' => $this->pagare->monto, 
@@ -127,7 +127,7 @@ class ConfirmarPagoMantenimiento
 
                     
                     $pagare = $mantenimiento->idInmueble->pagares()->create([
-                        'id_administrador_referente' => $this->mantenimiento->idInmueble->idAdministradorReferente()->first()->id,
+                        'id_administrador_referente' => $idAdministrador,
                         'id_persona_acreedora' => $idAdministrador,
                         'monto' =>$this->pagare->monto, 
                         'id_moneda' => $this->pagare->id_moneda,
@@ -161,7 +161,7 @@ class ConfirmarPagoMantenimiento
                         $this->actualizarEstadoDeudorPago("PAGADO",$idAdministrador);
 
                         $pagare = $mantenimiento->idInmueble->pagares()->create([
-                            'id_administrador_referente' => $this->mantenimiento->idInmueble->idAdministradorReferente()->first()->id,
+                            'id_administrador_referente' => $idAdministrador,
                             'id_persona_acreedora' => $idAdministrador,
                             'id_persona_adeudora' =>  $idPropietario,
                             'monto' => $this->pagare->monto, 
