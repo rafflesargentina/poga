@@ -87,7 +87,7 @@ class CrearPagoSolicitud
                     
                     case 'PENDIENTE': //unico dueño                  
 
-                        $this->crearPagareMantenimiento(
+                        $this->crearPagareSolicitud(
                             $this->solicitud->id_proveedor,
                             $this->data['id_adeudor'],
                             "PENDIENTE"
@@ -98,7 +98,7 @@ class CrearPagoSolicitud
 
                         if($this->data['id_deudor'] != $idPropietario){
                             
-                            $this->crearPagareMantenimiento(
+                            $this->crearPagareSolicitud(
                                 $this->solicitud->id_proveedor,
                                 $this->data['id_adeudor'],
                                 "PAGADO"
@@ -109,13 +109,13 @@ class CrearPagoSolicitud
                             if($this->data['enum_origen_fondos'] == "ADMINISTRADOR"){
 
                               
-                                $this->crearPagareMantenimiento(
+                                $this->crearPagareSolicitud(
                                     $this->solicitud->id_proveedor,
                                     $this->solicitud->idInmueble->idAdministradorReferente()->first()->id,
                                     "PAGADO"
                                 ); 
 
-                                $this->crearPagareMantenimiento(
+                                $this->crearPagareSolicitud(
                                     $this->solicitud->idInmueble->idAdministradorReferente()->first()->id,
                                     $this->solicitud->idInmueble->idPropietarioReferente()->first()->id,
                                     "PENDIENTE"
@@ -125,7 +125,7 @@ class CrearPagoSolicitud
 
                             if($this->data['enum_origen_fondos'] == "PROPIETARIO"){
 
-                                $this->crearPagareMantenimiento(
+                                $this->crearPagareSolicitud(
                                     $this->solicitud->id_proveedor,
                                     $this->solicitud->idInmueble->idPropietarioReferente()->first()->id,
                                     "PAGADO"
@@ -160,7 +160,7 @@ class CrearPagoSolicitud
                                 $this->crearPagareExpensa($this->solicitud->id_proveedor);                     
                             }                            
 
-                            $this->crearPagareMantenimiento(
+                            $this->crearPagareSolicitud(
                                 $this->solicitud->id_proveedor,
                                 $solicitud->idInmueble->idAdministradorReferente()->first()->id,
                                 "PAGADO"
@@ -169,7 +169,7 @@ class CrearPagoSolicitud
                         
                         else if($this->data['enum_origen_fondos'] == "RESERVAS"){
 
-                            $this->crearPagareMantenimiento(
+                            $this->crearPagareSolicitud(
                                 $this->solicitud->id_proveedor,
                                 $solicitud->idInmueble->idPropietarioReferente()->first()->id, //????? cual iria?
                                 "PAGADO"
@@ -177,7 +177,7 @@ class CrearPagoSolicitud
                             //Aca discminuir el fondo de reserva
                         }   
                         else{
-                            $this->crearPagareMantenimiento(
+                            $this->crearPagareSolicitud(
                                 $this->solicitud->id_proveedor,
                                 $solicitud->idInmueble->idPropietarioReferente()->first()->id,
                                 "PAGADO"
@@ -193,7 +193,7 @@ class CrearPagoSolicitud
                     
                 case 'PENDIENTE':
                     
-                    $this->crearPagareMantenimiento(
+                    $this->crearPagareSolicitud(
                         $this->solicitud->id_proveedor,
                         $this->data['id_deudor'],
                         "PENDIENTE"
@@ -203,7 +203,7 @@ class CrearPagoSolicitud
                 case 'PAGADO':        
                 
                     if($this->data['id_deudor'] == $idInquilino){
-                        $this->crearPagareMantenimiento(
+                        $this->crearPagareSolicitud(
                             $this->solicitud->id_proveedor,
                             $this->data['id_deudor'],
                             "PAGADO"
@@ -214,13 +214,13 @@ class CrearPagoSolicitud
                             
                         if($this->data['enum_origen_fondos'] == "ADMINISTRADOR"){
                             
-                            $this->crearPagareMantenimiento(
+                            $this->crearPagareSolicitud(
                                 $this->solicitud->id_proveedor,
                                 $solicitud->idInmueble->idAdministradorReferente()->first()->id,
                                 "PAGADO"
                             );  
 
-                            $this->crearPagareMantenimiento(
+                            $this->crearPagareSolicitud(
                                 $this->solicitud->idInmueble->idAdministradorReferente()->first()->id,
                                 $this->solicitud->idInmueble->idPropietarioReferente()->first()->id,
                                 "PENDIENTE"
@@ -229,7 +229,7 @@ class CrearPagoSolicitud
                         }
                         else if($this->data['enum_origen_fondos'] == "PROPIETARIO"){
                             
-                            $this->crearPagareMantenimiento(
+                            $this->crearPagareSolicitud(
                                 $this->solicitud->id_proveedor,
                                 $solicitud->idInmueble->idPropietarioReferente()->first()->id,
                                 "PAGADO"
@@ -273,7 +273,7 @@ class CrearPagoSolicitud
         ]);
     } 
 
-    protected function crearPagareMantenimiento($acreedor, $deudor, $estado){
+    protected function crearPagareSolicitud($acreedor, $deudor, $estado){
 
         $pagare = $this->solicitud->idInmueble->pagares()->create([
             'id_administrador_referente' => 1,// $this->solicitud->idInmueble->idAdministradorReferente()->first()->id,
@@ -283,7 +283,7 @@ class CrearPagoSolicitud
             'id_moneda' => $this->data['id_moneda'],
             'fecha_pagare' => Carbon::now(),                      
             'enum_estado' =>$estado,
-            'enum_clasificacion_pagare' => "MANTENIMIENTO",
+            'enum_clasificacion_pagare' => "SOLICITUD",
             'id_tabla' => $this->solicitud->id,            
             'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
         ]);
