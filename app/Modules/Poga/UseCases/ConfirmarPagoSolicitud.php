@@ -56,13 +56,14 @@ class ConfirmarPagoSolicitud
         $isUnicoPropietario = true;
         $isInmueble = true;
 
-        $idPropietario = $this->pagare->idInmueble->idPropietarioReferente()->first()->id;
-        $idAdministrador = $this->pagare->idInmueble->idAdministradorReferente()->first()->id;
-
+       
         
         $inmueble = Inmueble::findOrFail($this->pagare->id_inmueble);  
 
-        $propietarios =  $this->pagare->idInmueble->propietarios()->get();
+        $idPropietario = $inmueble->idPropietarioReferente()->first()->id;
+        $idAdministrador = $inmueble->idAdministradorReferente()->first()->id;
+
+        $propietarios =  $inmueble->propietarios()->get();
         
         
 
@@ -70,7 +71,7 @@ class ConfirmarPagoSolicitud
             $isUnicoPropietario = false;
         }       
 
-        if($this->pagare->idInmueble->enum_tabla_hija == "UNIDAD")
+        if($inmueble->enum_tabla_hija == "UNIDAD")
             $isInmueble = false;       
 
         if($isUnicoPropietario){            

@@ -62,15 +62,15 @@ class CrearPagoSolicitud
         
         $inmueble = Inmueble::findOrFail($this->solicitud->id_inmueble);  
 
-        $idPropietario = $this->solicitud->idInmueble->idPropietarioReferente()->first()->id;
-        $idAdministrador = $this->solicitud->idInmueble->idAdministradorReferente()->first()->id;
-        $idInquilino = $this->solicitud->idInmueble->idInquilinoReferente()->first()->id;
+        $idPropietario = $inmueble->idPropietarioReferente()->first()->id;
+        $idAdministrador = $inmueble->idAdministradorReferente()->first()->id;
+        $idInquilino = $inmueble->idInquilinoReferente()->first()->id;
 
-        if(count($this->solicitud->idInmueble->propietarios()->get()) > 1){
+        if(count($inmueble->propietarios()->get()) > 1){
             $isUnicoPropietario = false;
         }
 
-        if($this->solicitud->idInmueble->enum_tabla_hija == "UNIDAD")
+        if($inmueble->enum_tabla_hija == "UNIDAD")
             $isInmueble = false;        
             
            
@@ -260,7 +260,7 @@ class CrearPagoSolicitud
 
     protected function crearPagareExpensa($acreedor){
 
-        $pagare = $solicitud->idInmueble->pagares()->create([
+        $pagare = $inmueble->pagares()->create([
             'id_administrador_referente' => $idAdministrador,
             'id_persona_adeudora' => $this->data['id_deudor'],
             'id_persona_acreedora' => $acreedor,
@@ -275,7 +275,7 @@ class CrearPagoSolicitud
 
     protected function crearPagareSolicitud($acreedor, $deudor, $estado){
 
-        $pagare = $this->solicitud->idInmueble->pagares()->create([
+        $pagare = $inmueble->pagares()->create([
             'id_administrador_referente' =>  $idAdministrador,
             'id_persona_acreedora' => $acreedor,
             'id_persona_adeudora' =>  $deudor,
