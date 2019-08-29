@@ -30,6 +30,10 @@ Route::get('solicitudes/inmueble/sinAgendar', Solicitudes\SinAgendarInmuebleCont
 //Route::get('solicitudes/proveedor/sinAgendar', Solicitudes\SinAgendarProveedorController::class);
 Route::get('solicitudes/proveedoresDadoServicio', Solicitudes\ProveedorDadoServicioController::class);
 
+Route::get('solicitudes/confirmarPago', Solicitudes\ConfirmarPagoController::class);
+Route::get('solicitudes/rechazarPago', Solicitudes\RechazarPagoController::class);
+Route::get('solicitudes/crearPago', Solicitudes\CrearPagoController::class);
+
 Route::post('login', 'Auth\LoginController@login');
 Route::post('seleccionar-rol', Roles\SeleccionarRolController::class);
 
