@@ -111,13 +111,13 @@ class CrearPagoSolicitud
                               
                                 $this->crearPagareSolicitud(
                                     $this->solicitud->id_proveedor,
-                                    $this->solicitud->idInmueble->idAdministradorReferente()->first()->id,
+                                    $idAdministrador,
                                     "PAGADO"
                                 ); 
 
                                 $this->crearPagareSolicitud(
-                                    $this->solicitud->idInmueble->idAdministradorReferente()->first()->id,
-                                    $this->solicitud->idInmueble->idPropietarioReferente()->first()->id,
+                                    $idAdministrador,
+                                    $idPropietario,
                                     "PENDIENTE"
                                 ); 
 
@@ -127,7 +127,7 @@ class CrearPagoSolicitud
 
                                 $this->crearPagareSolicitud(
                                     $this->solicitud->id_proveedor,
-                                    $this->solicitud->idInmueble->idPropietarioReferente()->first()->id,
+                                    $idPropietario,
                                     "PAGADO"
                                 ); 
 
@@ -162,7 +162,7 @@ class CrearPagoSolicitud
 
                             $this->crearPagareSolicitud(
                                 $this->solicitud->id_proveedor,
-                                $solicitud->idInmueble->idAdministradorReferente()->first()->id,
+                                $idAdministrador,
                                 "PAGADO"
                             );  
                         }             
@@ -171,7 +171,7 @@ class CrearPagoSolicitud
 
                             $this->crearPagareSolicitud(
                                 $this->solicitud->id_proveedor,
-                                $solicitud->idInmueble->idPropietarioReferente()->first()->id, //????? cual iria?
+                                $idPropietario, //????? cual iria?
                                 "PAGADO"
                             );                             
                             //Aca discminuir el fondo de reserva
@@ -179,7 +179,7 @@ class CrearPagoSolicitud
                         else{
                             $this->crearPagareSolicitud(
                                 $this->solicitud->id_proveedor,
-                                $solicitud->idInmueble->idPropietarioReferente()->first()->id,
+                                $idPropietario,
                                 "PAGADO"
                             );                             
                         }              
@@ -216,13 +216,13 @@ class CrearPagoSolicitud
                             
                             $this->crearPagareSolicitud(
                                 $this->solicitud->id_proveedor,
-                                $solicitud->idInmueble->idAdministradorReferente()->first()->id,
+                                $idAdministrador,
                                 "PAGADO"
                             );  
 
                             $this->crearPagareSolicitud(
-                                $this->solicitud->idInmueble->idAdministradorReferente()->first()->id,
-                                $this->solicitud->idInmueble->idPropietarioReferente()->first()->id,
+                                $idAdministrador,
+                                $idPropietario,
                                 "PENDIENTE"
                             );                 
 
@@ -231,7 +231,7 @@ class CrearPagoSolicitud
                             
                             $this->crearPagareSolicitud(
                                 $this->solicitud->id_proveedor,
-                                $solicitud->idInmueble->idPropietarioReferente()->first()->id,
+                                $idPropietario,
                                 "PAGADO"
                             ); 
 
@@ -261,7 +261,7 @@ class CrearPagoSolicitud
     protected function crearPagareExpensa($acreedor){
 
         $pagare = $solicitud->idInmueble->pagares()->create([
-            'id_administrador_referente' => $this->solicitud->idInmueble->idAdministradorReferente()->first()->id,
+            'id_administrador_referente' => $idAdministrador,
             'id_persona_adeudora' => $this->data['id_deudor'],
             'id_persona_acreedora' => $acreedor,
             'monto' => $this->data['monto'], 
@@ -276,7 +276,7 @@ class CrearPagoSolicitud
     protected function crearPagareSolicitud($acreedor, $deudor, $estado){
 
         $pagare = $this->solicitud->idInmueble->pagares()->create([
-            'id_administrador_referente' => 1,// $this->solicitud->idInmueble->idAdministradorReferente()->first()->id,
+            'id_administrador_referente' =>  $idAdministrador,
             'id_persona_acreedora' => $acreedor,
             'id_persona_adeudora' =>  $deudor,
             'monto' => $this->data['monto'], 
