@@ -33,7 +33,7 @@ class CreatePagaresTable extends Migration
             $table->unsignedInteger('id_factura');
             $table->foreign('id_factura')->references('id')->on('facturas');
             $table->enum('enum_estado', ['PAGADO','PENDIENTE']);
-            $table->enum('enum_clasificacion_pagare', ['COMISION_RENTA_ADMIN','EXPENSA','RENTA','SALARIO_ADMINISTRADOR','SALARIO_CONSERJE','SOLICITUD']);
+            $table->enum('enum_clasificacion_pagare', ['COMISION_RENTA_ADMIN','EXPENSA','OTRO','RENTA','SALARIO_ADMINISTRADOR','SALARIO_CONSERJE','SOLICITUD']);
             $table->unsignedInteger('id_tabla')->nullable();
             $table->unsignedInteger('id_distribucion_expensa')->nullable();
             $table->foreign('id_distribucion_expensa')->references('id')->on('distribuciones_expensas');
