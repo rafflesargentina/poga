@@ -45,6 +45,7 @@ class ActualizarRenta
      */
     public function handle(RentaRepository $rRenta)
     {
+        
         $renta = $this->actualizarRenta($rRenta);
 
         $this->user->notify(new RentaActualizada($renta, $this->user));

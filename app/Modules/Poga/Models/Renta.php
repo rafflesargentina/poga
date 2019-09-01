@@ -69,4 +69,16 @@ class Renta extends Model
     {
         return $this->belongsTo(Moneda::class, 'id_moneda');
     }
+
+    /**
+     * Get the multas for the renta.
+     */
+    public function multas()
+    {
+        return $this->hasMany(MultaRenta::class, 'id_renta');
+    }
+
+    
+
+  
 }
