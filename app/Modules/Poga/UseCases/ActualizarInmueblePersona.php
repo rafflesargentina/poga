@@ -3,7 +3,7 @@
 namespace Raffles\Modules\Poga\UseCases;
 
 use Raffles\Modules\Poga\Models\{ InmueblePersona, Persona, User };
-use Raffles\Modules\Poga\Notifications\PersonaCreada;
+use Raffles\Modules\Poga\Notifications\InvitacionCreada;
 use Raffles\Modules\Poga\Repositories\{ InmueblePersonaRepository, PersonaRepository, RoleRepository, UserRepository };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -107,7 +107,7 @@ class ActualizarInmueblePersona
 
             $p = $user->idPersona;
 
-            $user->notify(new PersonaCreada($p));
+            $user->notify(new InvitacionCreada($p));
 
             return $user;
         }
