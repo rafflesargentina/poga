@@ -27,6 +27,15 @@ class Inmueble extends Model
     ];
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'solicitud_directa_inquilinos' => 'boolean',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -58,11 +67,36 @@ class Inmueble extends Model
     }
 
     /**
-     * The caracteristicas inmueble that belong to the inmueble.
+     * The caracteristicas that belong to the inmueble.
      */
-    public function caracteristicas_inmueble()
+    public function caracteristicas()
     {
-        return $this->belongsToMany(CaracteristicaInmueble::class, 'inmueble_caracteristica_inmueble', 'id_inmueble', 'id_caracteristica_inmueble');
+        return $this->belongsToMany(Caracteristica::class, 'caracteristica_inmueble', 'id_caracteristica', 'id_inmueble')
+            ->withPivot(['cantidad', 'enum_estado', 'id_caracteristica_tipo_inmueble']);
+    }
+
+    /**
+     * The tipos caracteristica that belong to the inmueble.
+     */
+    public function tipos_caracteristica()
+    {
+        return $this->belongsToMany(TipoInmueble::class, 'caracteristica_tipo_inmueble', 'id_caracteristica', 'id_tipo_inmueble');
+    }
+
+    /**
+     * Get the espacios comunes for the inmueble.
+     */
+    public function espacios_comunes()
+    {
+        return $this->hasMany(Espacio::class, 'id_inmueble');
+    }
+
+    /**
+     * Get the eventos for the inmueble.
+     */
+    public function eventos()
+    {
+        return $this->hasMany(Evento::class, 'id_inmueble');
     }
 
     /**
@@ -148,7 +182,7 @@ class Inmueble extends Model
     public function personas()
     {
         return $this->belongsToMany(Persona::class, 'inmueble_persona', 'id_inmueble', 'id_persona')
-            ->withPivot(['dia_cobro_mensual','enum_estado','enum_rol','fecha_fin_contrato','fecha_inicio_contrato','id_moneda_salario','id_persona', 'referente','salario']);
+            ->withPivot(['dia_cobro_mensual','enum_estado','enum_rol','fecha_fin_contrato','fecha_inicio_contrato','id_moneda_salario','referente','salario']);
     }
 
     /**
