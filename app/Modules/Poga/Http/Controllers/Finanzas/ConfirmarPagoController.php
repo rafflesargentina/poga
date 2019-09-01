@@ -1,0 +1,39 @@
+<?php
+
+namespace Raffles\Modules\Poga\Http\Controllers\Solicitudes;
+
+use Raffles\Modules\Poga\Http\Controllers\Controller;
+
+use GuzzleHttp\Client;
+use Illuminate\Http\Request;
+use Raffles\Modules\Poga\UseCases\{ ConfirmarPagoSolicitudes };
+use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
+
+class ConfirmarPagoController extends Controller
+{
+    use FormatsValidJsonResponses;
+
+    /**
+     * Get the account for the authenticated user.
+     *
+     * @param Request $request The request object.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function __invoke(Request $request)
+    {
+        
+        $user = $request->user('api');
+
+        $this->validate(
+            $request, [
+            'id_pagare' => 'required',
+            'enum_origen_fondos' => 'required'
+            ]
+        );
+
+        $retorno = $this->dispatch(new ConfirmarPagoSolicitudes($request, $user));
+
+        return $this->validSuccessJsonResponse('Success', $retorno);
+    }
+}

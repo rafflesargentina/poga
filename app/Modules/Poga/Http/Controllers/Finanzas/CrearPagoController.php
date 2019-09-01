@@ -31,14 +31,24 @@ class CrearPagoController extends Controller
      */
     public function index(Request $request)
     {
+        $user = $request->user('api');
+
         $this->validate(
             $request, [
-            'idInmueblePadre' => 'required',
+            'enum_estado' => 'required',
+            'id_moneda' => 'required',
+            'id_persona_adeudora' => 'required',
+            'id_persona_acreedora' => 'required',
+            'monto' => 'required',
+            'enum_origen_fondos' => 'required',
+            'descripcion' => 'required'
             ]
         );
 
-        $items = $this->repository->fetch($request->idInmueblePadre);
-        return $this->validSuccessJsonResponse('Success', $items);
+        $retorno = $this->dispatch(new CrearPagoSolicitud($request, $user));
+
+        return $this->validSuccessJsonResponse('Success', $retorno);
+
     }
 
   
