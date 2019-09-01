@@ -6,7 +6,7 @@ use Raffles\Modules\Poga\Models\{ Pagare };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
-class RechazarPagoSolicitud
+class RechazarPagoFinanzas
 {
     use DispatchesJobs;
 

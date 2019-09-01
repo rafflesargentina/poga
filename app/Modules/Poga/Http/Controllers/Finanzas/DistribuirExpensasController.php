@@ -6,10 +6,10 @@ use Raffles\Modules\Poga\Http\Controllers\Controller;
 
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Raffles\Modules\Poga\UseCases\{ RechazarPagoFinanzas };
+use Raffles\Modules\Poga\UseCases\{ DistribuirExpensas };
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
-class RechazarPagoController extends Controller
+class DistribuirExpensasController extends Controller
 {
     use FormatsValidJsonResponses;
 
@@ -22,18 +22,18 @@ class RechazarPagoController extends Controller
      */
     public function __invoke(Request $request)
     {
+        
         $user = $request->user('api');
 
         $this->validate(
             $request, [
             'id_pagare' => 'required',
+            'enum_origen_fondos' => 'required'
             ]
         );
 
-        $retorno = $this->dispatch(new RechazarPagoFinanzas($request, $user));
+        $retorno = $this->dispatch(new DistribuirExpensas($request, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);
-
-        
     }
 }

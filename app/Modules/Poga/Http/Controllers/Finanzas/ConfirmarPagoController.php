@@ -1,12 +1,12 @@
 <?php
 
-namespace Raffles\Modules\Poga\Http\Controllers\Solicitudes;
+namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Raffles\Modules\Poga\UseCases\{ ConfirmarPagoSolicitudes };
+use Raffles\Modules\Poga\UseCases\{ ConfirmarPagoFinanzas };
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
 class ConfirmarPagoController extends Controller
@@ -32,7 +32,7 @@ class ConfirmarPagoController extends Controller
             ]
         );
 
-        $retorno = $this->dispatch(new ConfirmarPagoSolicitudes($request, $user));
+        $retorno = $this->dispatch(new ConfirmarPagoFinanzas($request, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);
     }

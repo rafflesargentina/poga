@@ -7,7 +7,7 @@ use Raffles\Modules\Poga\Models\{ Pagare, Inmueble };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
-class ConfirmarPagoFinanza
+class ConfirmarPagoFinanzas
 {
     use DispatchesJobs;
 
