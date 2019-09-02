@@ -28,9 +28,13 @@ class PersonaReferenteDadoRolController extends Controller
             ]
         );
 
+       
+
         $url = $this->getBaseUrl()."inmuebles/personaReferenteDadoRol";
         $client = $this->getHttpClient();
         $token = $request->header('Authorization');
+
+       
 
         $response = $client->request(
             'GET', $url, [
@@ -41,6 +45,8 @@ class PersonaReferenteDadoRolController extends Controller
             'query' => $request->all()
             ]
         );
+
+       
 
         $data = json_decode($response->getBody()->getContents(), true);
 

@@ -21,6 +21,10 @@ Route::get('finanzas/posiblesDeudores', Finanzas\PosibleDeudorController::class)
 Route::get('finanzas/tiposPagares', Finanzas\TipoPagareController::class);
 Route::get('proveedores', ProveedorController::class);
 
+Route::get('finanzas/confirmarPago', Finanzas\ConfirmarPagoController::class);
+Route::get('finanzas/rechazarPago', Finanzas\RechazarPagoController::class);
+Route::get('finanzas/crearPago', Finanzas\CrearPagoController::class);
+
 Route::get('solicitudes/confirmarPago', Solicitudes\ConfirmarPagoController::class);
 Route::get('solicitudes/rechazarPago', Solicitudes\RechazarPagoController::class);
 Route::get('solicitudes/crearPago', Solicitudes\CrearPagoController::class);
@@ -34,6 +38,7 @@ Route::post('seleccionar-rol', Roles\SeleccionarRolController::class);
 
 Route::put('inmuebles/desvincular', Inmuebles\DesvincularController::class);
 
+Route::apiResource('monedas', MonedaController::class);
 Route::apiResource('ciudades-cobertura', CiudadCoberturaController::class);
 Route::apiResource('inmuebles', Inmuebles\InmuebleController::class);
 Route::apiResource('mantenimientos', Mantenimientos\MantenimientoController::class);
@@ -42,6 +47,7 @@ Route::apiResource('nominaciones', Nominaciones\NominacionController::class);
 Route::apiResource('paises-cobertura', PaisCoberturaController::class);
 Route::apiResource('reservas', Reservas\ReservaController::class);
 Route::apiResource('rentas', Finanzas\RentaController::class);
+Route::apiResource('pagares', Finanzas\PagareController::class);
 Route::apiResource('tipos-caracteristica', Inmuebles\TipoCaracteristicaController::class);
 Route::apiResource('visitas', Visitas\VisitaController::class);
 Route::apiResource('rentas', RentaController::class);

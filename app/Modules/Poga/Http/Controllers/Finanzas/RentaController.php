@@ -80,22 +80,7 @@ class RentaController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $url = $this->getBaseUrl()."inmuebles/detalles";
-        $client = $this->getHttpClient();
-        $token = $request->header('Authorization');
-        $response = $client->request(
-            'GET', $url, [
-            'headers' => [
-                'x-li-format' => 'json',
-                'Authorization' => $token,
-            ],
-            'query' => ['idPago' => $id]
-            ]
-        );
-
-        $data = json_decode($response->getBody()->getContents(), true);
-
-        return $this->validSuccessJsonResponse($data['ok'] ? 'Success' : 'Failed', $data['response']);
+       
     }
 
     /**
@@ -118,18 +103,8 @@ class RentaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $inmueble = $this->repository->find($id);
-        $inmueble->update($request->all());
-
-        $idPago = $request->idPago;
-
-        $inmueble->idPago->update(
-            [
-            'solicitud_directa_inquilinos' => $idPago['solicitudDirectaInquilinos']
-            ]
-        ); 
-
-        return $this->validSuccessJsonResponse('Success', $inmueble->refresh());
+       
+        
     }
 
     /**

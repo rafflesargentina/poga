@@ -26,7 +26,6 @@ class CreatePagaresTable extends Migration
             $table->foreign('id_moneda')->references('id')->on('monedas');
             $table->date('fecha_pagare');
             $table->date('fecha_vencimiento')->nullable();
-            $table->integer('multa_por_dia')->default(0)->nullable();
             $table->date('fecha_pago_a_confirmar')->nullable();
             $table->date('fecha_pago_confirmado')->nullable();
             $table->date('fecha_pago_real')->nullable();
@@ -34,7 +33,7 @@ class CreatePagaresTable extends Migration
             $table->unsignedInteger('id_factura')->nullable();
             $table->foreign('id_factura')->references('id')->on('facturas')->nullable();
             $table->enum('enum_estado', ['PAGADO','PENDIENTE']);
-            $table->enum('enum_clasificacion_pagare', ['COMISION_RENTA_ADMIN','EXPENSA','RENTA','SALARIO_ADMINISTRADOR','SALARIO_CONSERJE','SOLICITUD']);
+            $table->enum('enum_clasificacion_pagare', ['COMISION_RENTA_ADMIN','EXPENSA','MULTA_RENTA','RENTA','SALARIO_ADMINISTRADOR','SALARIO_CONSERJE','SOLICITUD']);
             $table->unsignedInteger('id_tabla')->nullable();
             $table->unsignedInteger('id_distribucion_expensa')->nullable();
             $table->foreign('id_distribucion_expensa')->references('id')->on('distribuciones_expensas');
