@@ -62,9 +62,9 @@ class CrearPagoMantenimiento
         
         $inmueble = Inmueble::findOrFail($this->mantenimiento->id_inmueble);  
 
-        $idPropietario = $inmueble->idPropietarioReferente()->first()->id;
-        $idAdministrador = $inmueble->idAdministradorReferente()->first()->id;    
-        $idInquilino = $inmueble->idInquilinoReferente()->first()->id;
+        $Propietario = $inmueble->idPropietarioReferente()->first();
+        $Administrador = $inmueble->idAdministradorReferente()->first();
+        $Inquilino = $inmueble->idInquilinoReferente()->first();    
 
         
         
@@ -90,7 +90,7 @@ class CrearPagoMantenimiento
 
                         $this->crearPagareMantenimiento(
                             $this->mantenimiento->id_proveedor_servicio,
-                            $idPropietario,
+                            $Propietario->id,
                             "PENDIENTE"
                         );                   
                     
@@ -101,13 +101,13 @@ class CrearPagoMantenimiento
 
                             $this->crearPagareMantenimiento(
                                 $this->mantenimiento->id_proveedor_servicio,
-                                $idAdministrador,
+                                $Administrador->id,
                                 "PAGADO"
                             ); 
 
                             $this->crearPagareMantenimiento(
-                                $idAdministrador,
-                                $idPropietario,
+                                $Administrador->id,
+                                $Propietario->id,
                                 "PENDIENTE"
                             ); 
 
@@ -117,7 +117,7 @@ class CrearPagoMantenimiento
 
                             $this->crearPagareMantenimiento(
                                 $this->mantenimiento->id_proveedor_servicio,
-                                $idPropietario,
+                                $Propietario->id,
                                 "PAGADO"
                             ); 
 
@@ -151,7 +151,7 @@ class CrearPagoMantenimiento
 
                             $this->crearPagareMantenimiento(
                                 $this->mantenimiento->id_proveedor_servicio,
-                                $idAdministrador,
+                                $Administrador->id,
                                 "PAGADO"
                             );  
                         }             
@@ -160,7 +160,7 @@ class CrearPagoMantenimiento
 
                             $this->crearPagareMantenimiento(
                                 $this->mantenimiento->id_proveedor_servicio,
-                                $idPropietario, 
+                                $Propietario->id, 
                                 "PAGADO"
                             );    
                             
@@ -169,7 +169,7 @@ class CrearPagoMantenimiento
                         else{
                             $this->crearPagareMantenimiento(
                                 $this->mantenimiento->id_proveedor_servicio,
-                                $idPropietario,
+                                $Propietario->id,
                                 "PAGADO"
                             );                             
                         }              
@@ -185,7 +185,7 @@ class CrearPagoMantenimiento
                     //base
                     $this->crearPagareMantenimiento(
                         $this->mantenimiento->id_proveedor_servicio,
-                        $idPropietario,
+                        $Propietario->id,
                         "PENDIENTE"
                     );                  
 
@@ -196,13 +196,13 @@ class CrearPagoMantenimiento
                         
                         $this->crearPagareMantenimiento(
                             $this->mantenimiento->id_proveedor_servicio,
-                            $idAdministrador,
+                            $Administrador->id,
                             "PAGADO"
                         );  
 
                         $this->crearPagareMantenimiento(
-                            $idAdministrador,
-                            $idPropietario,
+                            $Administrador->id,
+                            $Propietario->id,
                             "PENDIENTE"
                         );                 
 
@@ -211,7 +211,7 @@ class CrearPagoMantenimiento
                         
                         $this->crearPagareMantenimiento(
                             $this->mantenimiento->id_proveedor_servicio,
-                            $idPropietario,
+                            $Propietario->id,
                             "PAGADO"
                         ); 
 
