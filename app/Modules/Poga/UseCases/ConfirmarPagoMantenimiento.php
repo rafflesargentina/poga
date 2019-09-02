@@ -2,7 +2,7 @@
 
 namespace Raffles\Modules\Poga\UseCases;
 
-
+use Carbon\Carbon;
 use Raffles\Modules\Poga\Models\{ Pagare, Inmueble };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -119,21 +119,25 @@ class ConfirmarPagoMantenimiento
         }
         else{  //en condominio
 
+            
             if($isInmueble){
 
-                if($this->pagare->clasificacion_pagare == "EXPENSA"){
+              
 
+                if($this->pagare->enum_clasificacion_pagare == "EXPENSA"){
+
+                
                     $this->actualizarEstadoDeudorPago("PAGADO",$idAdministrador);
 
                     
-                    $pagare = $mantenimiento->idInmueble->pagares()->create([
+                    $pagare = $inmueble->pagares()->create([
                         'id_administrador_referente' => $idAdministrador,
                         'id_persona_acreedora' => $idAdministrador,
                         'monto' =>$this->pagare->monto, 
                         'id_moneda' => $this->pagare->id_moneda,
                         'fecha_pagare' => Carbon::now(),                      
                         'enum_estado' =>"PENDIENTE",
-                        'enum_clasificacion_pagare' => "EXPENSA",  
+                        'enum_clasificacion_pagare' => "EXPENSA"
                     ]);
                     
 
@@ -160,7 +164,7 @@ class ConfirmarPagoMantenimiento
 
                         $this->actualizarEstadoDeudorPago("PAGADO",$idAdministrador);
 
-                        $pagare = $mantenimiento->idInmueble->pagares()->create([
+                        $pagare = $inmueble->pagares()->create([
                             'id_administrador_referente' => $idAdministrador,
                             'id_persona_acreedora' => $idAdministrador,
                             'id_persona_adeudora' =>  $idPropietario,
