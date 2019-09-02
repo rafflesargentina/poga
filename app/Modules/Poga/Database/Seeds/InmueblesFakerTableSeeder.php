@@ -22,7 +22,6 @@ class InmueblesFakerTableSeeder extends Seeder
         $this->_duplexSinAdministrador();
         $this->_triplexSinAdministrador();
 
-        $this->edificioConMultiplesPropietarios();
     }
 
     

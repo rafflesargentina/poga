@@ -17,7 +17,7 @@ class CreatePagaresTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('id_inmueble');
             $table->foreign('id_inmueble')->references('id')->on('inmuebles');
-            $table->unsignedInteger('id_persona_acreedora');
+            $table->unsignedInteger('id_persona_acreedora')->nullable();
             $table->foreign('id_persona_acreedora')->references('id')->on('personas')->nullable();
             $table->unsignedInteger('id_persona_adeudora')->nullable();
             $table->foreign('id_persona_adeudora')->references('id')->on('personas')->nullable();
@@ -31,7 +31,7 @@ class CreatePagaresTable extends Migration
             $table->date('fecha_pago_confirmado')->nullable();
             $table->date('fecha_pago_real')->nullable();
             $table->boolean('pagado_fuera_sistema')->default(false);
-            $table->unsignedInteger('id_factura');
+            $table->unsignedInteger('id_factura')->nullable();
             $table->foreign('id_factura')->references('id')->on('facturas')->nullable();
             $table->enum('enum_estado', ['PAGADO','PENDIENTE']);
             $table->enum('enum_clasificacion_pagare', ['COMISION_RENTA_ADMIN','EXPENSA','RENTA','SALARIO_ADMINISTRADOR','SALARIO_CONSERJE','SOLICITUD']);

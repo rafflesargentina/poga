@@ -63,7 +63,8 @@ class CrearPagoSolicitud
         $inmueble = Inmueble::findOrFail($this->solicitud->id_inmueble); 
 
         
-        $Propietario = $inmueble->idPropietarioReferente()->first();     
+        $Propietario = $inmueble->idPropietarioReferente()->first();  
+       
         $Administrador = $inmueble->idAdministradorReferente()->first();
         $Inquilino = $inmueble->idInquilinoReferente()->first();
 
@@ -95,6 +96,8 @@ class CrearPagoSolicitud
                     break;
                     case 'PAGADO':  // unico dueño
 
+                  
+
                         if($this->data['id_deudor'] != $Propietario->id){
                             
                             $this->crearPagareSolicitud(
@@ -104,9 +107,9 @@ class CrearPagoSolicitud
                             ); 
                         }
                         
-                        else{
-                            if($this->data['enum_origen_fondos'] == "ADMINISTRADOR"){
-
+                        else{                           
+                            
+                            if($this->data['enum_origen_fondos'] == "ADMINISTRADOR"){                            
                               
                                 $this->crearPagareSolicitud(
                                     $this->solicitud->id_proveedor,
@@ -146,9 +149,7 @@ class CrearPagoSolicitud
                         if($this->data['clasificacion_pagare'] == "EXPENSA"){
                             $this->crearPagareExpensa($this->solicitud->id_proveedor);                           
                         }
-                        else{
-                           
-                        }                                                    
+                                                                          
                         
                     break;
                     case 'PAGADO':   //condmonio      
@@ -170,10 +171,10 @@ class CrearPagoSolicitud
 
                             $this->crearPagareSolicitud(
                                 $this->solicitud->id_proveedor,
-                                $Propietario->id, //????? cual iria?
+                                $Propietario->id, 
                                 "PAGADO"
                             );                             
-                            //Aca discminuir el fondo de reserva
+                            $this->descontarFondoReserva($this->data['monto']);
                         }   
                         else{
                             $this->crearPagareSolicitud(
@@ -255,6 +256,20 @@ class CrearPagoSolicitud
             //Proovedor es el acreedor
            
         
+    }
+
+    protected function descontarFondoReserva($cantidad){
+
+        $monto = $this->mantenimiento->idInmueble->idInmueblePadre()->first()->monto_fondo_reserva;
+        $monto -= $cantidad;
+
+        $inmueble_padre = InmueblePadre::findOrFail($this->mantenimiento->idInmueble->idInmueblePadre()->first()->id);
+        $inmueble_padre->monto_fondo_reserva = $monto;
+
+        
+        $inmueble_padre->save();
+
+
     }
 
     protected function crearPagareExpensa($acreedor){
