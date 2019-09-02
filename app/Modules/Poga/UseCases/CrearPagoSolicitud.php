@@ -60,12 +60,14 @@ class CrearPagoSolicitud
         $isInmueble = true;
         $isUnicoPropietario = true;      
         
-        $inmueble = Inmueble::findOrFail($this->solicitud->id_inmueble);  
+        $inmueble = Inmueble::findOrFail($this->solicitud->id_inmueble); 
 
         
-        $Propietario = $inmueble->idPropietarioReferente()->first();
+        $Propietario = $inmueble->idPropietarioReferente()->first();     
         $Administrador = $inmueble->idAdministradorReferente()->first();
         $Inquilino = $inmueble->idInquilinoReferente()->first();
+
+       
 
         if(count($inmueble->propietarios()->get()) > 1){
             $isUnicoPropietario = false;
@@ -78,8 +80,7 @@ class CrearPagoSolicitud
             
             if($isUnicoPropietario){
 
-                echo "OK";
-                exit();
+               
                 
                 switch($this->data['enum_estado']){
                     
@@ -258,8 +259,8 @@ class CrearPagoSolicitud
 
     protected function crearPagareExpensa($acreedor){
 
-        $pagare = $inmueble->pagares()->create([
-            'id_administrador_referente' => $Administrador->id,
+        $pagare = $this->solicitud->idInmueble->pagares()->create([
+            'id_administrador_referente' => $this->solicitud->idInmueble->idAdministradorReferente()->first()->id,
             'id_persona_adeudora' => $this->data['id_deudor'],
             'id_persona_acreedora' => $acreedor,
             'monto' => $this->data['monto'], 
@@ -273,8 +274,9 @@ class CrearPagoSolicitud
 
     protected function crearPagareSolicitud($acreedor, $deudor, $estado){
 
-        $pagare = $inmueble->pagares()->create([
-            'id_administrador_referente' =>  $Administrador->id,
+     
+        $pagare = $this->solicitud->idInmueble->pagares()->create([
+            'id_administrador_referente' =>   $this->solicitud->idInmueble->idAdministradorReferente()->first()->id,
             'id_persona_acreedora' => $acreedor,
             'id_persona_adeudora' =>  $deudor,
             'monto' => $this->data['monto'], 
