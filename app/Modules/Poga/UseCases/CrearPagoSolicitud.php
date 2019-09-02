@@ -64,8 +64,8 @@ class CrearPagoSolicitud
 
         
         $Propietario = $inmueble->idPropietarioReferente()->first();
-        $Administrador = $inmueble->idAdministradorReferente()->first()->id;
-        $Inquilino = $inmueble->idInquilinoReferente()->first()->id;
+        $Administrador = $inmueble->idAdministradorReferente()->first();
+        $Inquilino = $inmueble->idInquilinoReferente()->first();
 
         if(count($inmueble->propietarios()->get()) > 1){
             $isUnicoPropietario = false;
