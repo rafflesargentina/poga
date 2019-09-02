@@ -13,6 +13,7 @@
 Route::get('proveedores', ProveedorController::class);
 Route::get('dashboard', DashboardController::class);
 Route::get('inmuebles/personaReferenteDadoRol', Inmuebles\PersonaReferenteDadoRolController::class);
+//Route::get('inmuebles/monedas', MonedaController::class);
 Route::get('inmuebles/tiposUnidades', Inmuebles\TipoUnidadController::class);
 Route::get('reservas/espaciosComunes', Reservas\EspacioComunController::class);
 Route::get('finanzas/posiblesAcreedores', Finanzas\PosibleAcreedorController::class);
@@ -23,6 +24,10 @@ Route::get('proveedores', ProveedorController::class);
 Route::get('solicitudes/confirmarPago', Solicitudes\ConfirmarPagoController::class);
 Route::get('solicitudes/rechazarPago', Solicitudes\RechazarPagoController::class);
 Route::get('solicitudes/crearPago', Solicitudes\CrearPagoController::class);
+
+Route::get('mantenimientos/confirmarPago', Mantenimientos\ConfirmarPagoController::class);
+Route::get('mantenimientos/rechazarPago', Mantenimientos\RechazarPagoController::class);
+Route::get('mantenimientos/crearPago', Mantenimientos\CrearPagoController::class);
 
 Route::post('login', 'Auth\LoginController@login');
 Route::post('seleccionar-rol', Roles\SeleccionarRolController::class);

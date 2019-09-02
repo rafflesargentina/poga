@@ -17,6 +17,7 @@ Route::middleware('auth:api')->group(
 
         Route::get('account', 'AccountController');
         Route::put('account', 'UpdateAccountController');
+        
     }
 );
 
@@ -25,3 +26,5 @@ Route::post('/login', 'Auth\LoginController@login');
 Route::apiResource('document-types', 'DocumentTypeController');
 Route::apiResource('photos', 'PhotoController');
 Route::apiResource('users', 'UserController');
+
+
