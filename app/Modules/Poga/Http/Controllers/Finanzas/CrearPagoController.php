@@ -32,7 +32,8 @@ class CrearPagoController extends Controller
             'id_persona_acreedora' => 'required',
             'monto' => 'required',
             'enum_origen_fondos' => 'required',
-            'descripcion' => 'required'
+            'descripcion' => 'required',
+            'id_inmueble' => 'required'
             ]
         );
 

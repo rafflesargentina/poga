@@ -63,8 +63,7 @@ class CrearPagoSolicitud
         $inmueble = Inmueble::findOrFail($this->solicitud->id_inmueble); 
 
         
-        $Propietario = $inmueble->idPropietarioReferente()->first();  
-       
+        $Propietario = $inmueble->idPropietarioReferente()->first();         
         $Administrador = $inmueble->idAdministradorReferente()->first();
         $Inquilino = $inmueble->idInquilinoReferente()->first();
 
@@ -260,10 +259,10 @@ class CrearPagoSolicitud
 
     protected function descontarFondoReserva($cantidad){
 
-        $monto = $this->mantenimiento->idInmueble->idInmueblePadre()->first()->monto_fondo_reserva;
+        $monto = $this->solicitud->idInmueble->idInmueblePadre()->first()->monto_fondo_reserva;
         $monto -= $cantidad;
 
-        $inmueble_padre = InmueblePadre::findOrFail($this->mantenimiento->idInmueble->idInmueblePadre()->first()->id);
+        $inmueble_padre = InmueblePadre::findOrFail($this->solicitud->idInmueble->idInmueblePadre()->first()->id);
         $inmueble_padre->monto_fondo_reserva = $monto;
 
         
