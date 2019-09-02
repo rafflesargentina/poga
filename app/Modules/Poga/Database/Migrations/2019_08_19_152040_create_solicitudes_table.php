@@ -25,11 +25,10 @@ class CreateSolicitudesTable extends Migration
             $table->string('descripcion_concluir')->nullable();
             $table->unsignedInteger('id_servicio');
             $table->foreign('id_servicio')->references('id')->on('servicios');
-            $table->unsignedInteger('id_proveedor')->nullable();
-            $table->foreign('id_proveedor')->references('id')->on('proveedores');
+            $table->unsignedInteger('id_proveedor_servicio')->nullable();
+            $table->foreign('id_proveedor_servicio')->references('id')->on('proveedor_servicio');
             $table->unsignedInteger('id_usuario_asigna')->nullable();
             $table->foreign('id_usuario_asigna')->references('id')->on('users');
-            $table->enum('enum_estado', ['PENDIENTE','REALIZADO','RECHAZADO']);
             $table->datetime('fecha_fijada_respuesta')->nullable();
             $table->timestamps();
         });

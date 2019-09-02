@@ -31,7 +31,7 @@ class CreatePagaresTable extends Migration
             $table->date('fecha_pago_real')->nullable();
             $table->boolean('pagado_fuera_sistema')->default(false);
             $table->unsignedInteger('id_factura');
-            $table->foreign('id_factura')->references('id')->on('facturas');
+            $table->foreign('id_factura')->references('id')->on('facturas')->nullable();
             $table->enum('enum_estado', ['PAGADO','PENDIENTE']);
             $table->enum('enum_clasificacion_pagare', ['COMISION_RENTA_ADMIN','EXPENSA','RENTA','SALARIO_ADMINISTRADOR','SALARIO_CONSERJE','SOLICITUD']);
             $table->unsignedInteger('id_tabla')->nullable();
