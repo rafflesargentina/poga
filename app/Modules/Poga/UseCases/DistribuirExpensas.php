@@ -2,9 +2,11 @@
 
 namespace Raffles\Modules\Poga\UseCases;
 
-use Raffles\Modules\Poga\Models\{ Pagare };
+use Raffles\Modules\Poga\Models\{ Inmueble, Pagare, DistribucionExpensa };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Carbon\Carbon;
+
 
 class DistribuirExpensas
 {
@@ -16,7 +18,7 @@ class DistribuirExpensas
      * @var array $data
      * @var User  $user
      */
-    protected $data, $user, $pagare;
+    protected $data, $user;
 
     /**
      * Create a new job instance.
@@ -29,47 +31,70 @@ class DistribuirExpensas
     public function __construct($data,$user)
     {
         $this->data = $data;
-        $this->user = $user;
-
-        $pagare = Pagare::findOrFail($this->data['id_pagare']);
-        
-        $this->pagare = $pagare;        
+        $this->user = $user; 
     }
 
-    /**
-     * Execute the job.
-     *
-     * @param PagareRepository $rPagare The PagareRepository object.
-     *
-     * @return void
-     */
     public function handle()
-    {
-        $retorno = $this->rechazarPago();
+    {    
+       
 
-        return $retorno;
+        $distribucion = DistribucionExpensa::create([
+            "fecha_distribucion" => Carbon::now(),
+            "enum_estado" => "ACTIVO",
+            "enum_criterio" => $this->data['criterio_distribucion'],
+            "id_inmueble_padre" => $this->data['id_inmueble_padre']
+        ]);
+
+        foreach ($this->data['unidades'] as $unidadjson){
+
+            $unidad = json_decode($unidadjson, true);    
+
+        
+            $inmueble_unidad = Inmueble::findOrFail($unidad['id']);
+          
+            if($inmueble_unidad->rentas()->first()->expensas){
+                $deudor = $inmueble_unidad->idPropietarioReferente()->first()->id;
+            }
+            else{
+
+                if($inmueble_unidad->idInquilinoReferente()->first())
+                    $deudor = $inmueble_unidad->idInquilinoReferente()->first()->id;
+                else{
+                    $deudor = $inmueble_unidad->idPropietarioReferente()->first()->id;
+                }
+            }
+
+            $this->crearPagare(
+                $distribucion,
+                $inmueble_unidad,
+                $inmueble_unidad->idAdministradorReferente()->first()->id,
+                $deudor,
+                $unidad['monto']                   
+            );
+        } 
+
     }
 
-    public function rechazarPago(){
 
-        $isUnicoPropietario = true;
-        $isInmueble = true;        
+    protected function crearPagare($distribucion,$inmueble,$acreedor, $deudor, $monto){
 
-        $idPropietario = $this->pagare->idInmueble->idPropietarioReferente()->first()->id;
-        $idAdministrador = $this->pagare->idInmueble->idAdministradorReferente()->first()->id;       
-
-        if($this->user->id == $idAdministrador ){
-            $this->actualizarEstadoPago("PENDIENTE");
-        }       
-
-        return $this->pagare;
-
-    }   
-
-    public function actualizarEstadoPago($estado){
-        $this->pagare->enum_estado = $estado;
-        $this->pagare->save();
+        $pagare = $inmueble->pagares()->create([
+            'id_administrador_referente' =>  $inmueble->idAdministradorReferente()->first()->id,
+            'id_persona_acreedora' => $acreedor,
+            'id_persona_adeudora' =>  $deudor,
+            'monto' => $monto, 
+            'id_moneda' => $this->data['id_moneda'],
+            'fecha_pagare' => Carbon::now(),        
+            'fecha_vencimiento' => $this->data['fecha_vencimiento'],               
+            'enum_estado' =>"PENDIENTE",
+            'enum_clasificacion_pagare' => "DISTRIBUIDO_EXPENSA",
+            'id_tabla' => $distribucion->id,            
+            'pagado_con_fondos_de' => $this->data['enum_origen_fondos'],
+            'nro_comprobante' => $this->data['nro_comprobante']
+        ]);
     }
+
+    
 
 
 

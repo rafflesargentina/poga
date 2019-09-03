@@ -24,6 +24,7 @@ Route::get('proveedores', ProveedorController::class);
 Route::get('finanzas/confirmarPago', Finanzas\ConfirmarPagoController::class);
 Route::get('finanzas/rechazarPago', Finanzas\RechazarPagoController::class);
 Route::get('finanzas/crearPago', Finanzas\CrearPagoController::class);
+Route::get('finanzas/distribuirExpensas', Finanzas\DistribuirExpensasController::class);
 
 Route::get('solicitudes/confirmarPago', Solicitudes\ConfirmarPagoController::class);
 Route::get('solicitudes/rechazarPago', Solicitudes\RechazarPagoController::class);
