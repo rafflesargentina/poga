@@ -1,6 +1,6 @@
 <?php
 
-namespace Raffles\Modules\Poga\Http\Controllers\Solicitudes;
+namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 

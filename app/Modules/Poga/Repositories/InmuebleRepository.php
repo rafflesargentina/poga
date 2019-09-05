@@ -17,6 +17,4 @@ class InmuebleRepository extends EloquentRepository
      * @var array
      */
     public $tag = ['Inmueble'];
-
-    
 }
