@@ -202,6 +202,14 @@ class Inmueble extends Model
     }
 
     /**
+     * Get the pagares for the inmueble.
+     */
+    public function pagares()
+    {
+        return $this->hasMany(Pagare::class, 'id_inmueble');
+    }
+
+    /**
      * Get the unidades for the inmueble.
      */
     public function unidades()

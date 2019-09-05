@@ -9,21 +9,20 @@
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the 'api' middleware group. Enjoy building your API!
 |
-*/
+ */
 
 // Auth
 Route::get('usuario-invitado/{codigo_validacion}', 'Auth\UsuarioInvitadoController');
 
 Route::post('login', 'Auth\LoginController@login');
 Route::post('register', 'Auth\RegisterController@register');
-
-Route::put('registro-invitado/{codigo_validacion}', 'Auth\GuestRegisterController@register');
 Route::post('seleccionar-rol', Auth\SeleccionarRolController::class);
 
-Route::apiResource('ciudades-cobertura', Auth\CiudadCoberturaController::class);
-Route::apiResource('paises', PaisController::class, ['only' => ['index']]);
-Route::apiResource('paises-cobertura', Auth\PaisCoberturaController::class);
-Route::apiResource('roles', Auth\RolController::class);
+Route::put('registro-invitado/{codigo_validacion}', 'Auth\GuestRegisterController@register');
+
+Route::apiResource('ciudades-cobertura', Auth\CiudadCoberturaController::class, ['only' => ['index']]);
+Route::apiResource('paises-cobertura', Auth\PaisCoberturaController::class, ['only' => ['index']]);
+Route::apiResource('roles', Auth\RolController::class, ['only' => ['index']]);
 
 // Dashboard
 Route::get('dashboard', DashboardController::class);
@@ -36,14 +35,23 @@ Route::apiResource('reservas', Eventos\ReservaController::class);
 Route::apiResource('visitas', Eventos\VisitaController::class);
 
 // Finanzas
-Route::apiResource('monedas', Finanzas\MonedaController::class);
+Route::get('finanzas/tiposPagares', Finanzas\TipoPagareController::class);
+
+//Route::put('finanzas/actualizarEstadoPagare', Finanzas\ActualizarEstadoPagareController::class);
+Route::put('finanzas/cambiarEstadoPagare', Finanzas\CambiarEstadoPagareController::class);
+Route::put('finanzas/cargarFondoReserva', Finanzas\CargarFondoReservaController::class);
+Route::put('finanzas/confirmarPagoFinanzas', Finanzas\ConfirmarPagoController::class);
+//Route::post('finanzas/crearPago', Finanzas\CrearPagoController::class);
+
+Route::apiResource('monedas', Finanzas\MonedaController::class, ['only' => ['index']]);
 Route::apiResource('rentas', Finanzas\RentaController::class);
 
 // Inmuebles
 Route::put('inmuebles/desvincular', Inmuebles\DesvincularController::class);
-Route::apiResource('formatos', Inmuebles\FormatoController::class);
+
+Route::apiResource('formatos', Inmuebles\FormatoController::class, ['only' => ['index']]);
 Route::apiResource('inmuebles', Inmuebles\InmuebleController::class);
-Route::apiResource('medidas', Inmuebles\MedidaController::class, ['only' => 'index']);
+Route::apiResource('medidas', Inmuebles\MedidaController::class, ['only' => ['index']]);
 Route::apiResource('inmueble-personas', Inmuebles\PersonaController::class);
 Route::apiResource('tipos-caracteristica', Inmuebles\TipoCaracteristicaController::class);
 Route::apiResource('tipos-inmueble', Inmuebles\TipoInmuebleController::class);
@@ -54,6 +62,9 @@ Route::apiResource('mantenimientos', Mantenimientos\MantenimientoController::cla
 
 // Nominaciones
 Route::apiResource('nominaciones', Nominaciones\NominacionController::class);
+
+// Paises
+Route::apiResource('paises', PaisController::class, ['only' => ['index']]);
 
 // Personas
 Route::apiResource('personas', PersonaController::class);
