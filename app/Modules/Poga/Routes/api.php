@@ -47,7 +47,6 @@ Route::apiResource('nacionalidades', NacionalidadController::class);
 Route::apiResource('nominaciones', Nominaciones\NominacionController::class);
 Route::apiResource('paises-cobertura', PaisCoberturaController::class);
 Route::apiResource('reservas', Reservas\ReservaController::class);
-Route::apiResource('rentas', Finanzas\RentaController::class);
 Route::apiResource('pagares', Finanzas\PagareController::class);
 Route::apiResource('tipos-caracteristica', Inmuebles\TipoCaracteristicaController::class);
 Route::apiResource('visitas', Visitas\VisitaController::class);

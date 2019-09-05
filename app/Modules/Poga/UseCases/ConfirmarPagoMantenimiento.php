@@ -3,7 +3,7 @@
 namespace Raffles\Modules\Poga\UseCases;
 
 use Carbon\Carbon;
-use Raffles\Modules\Poga\Models\{ Pagare, Inmueble };
+use Raffles\Modules\Poga\Models\{ Pagare, Inmueble, InmueblePadre };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -70,7 +70,7 @@ class ConfirmarPagoMantenimiento
             $isUnicoPropietario = false;
         }       
 
-        if($inmueble->enum_tabla_hija == "UNIDAD")
+        if($inmueble->enum_tabla_hija == "UNIDADES")
             $isInmueble = false;
 
         
@@ -187,6 +187,18 @@ class ConfirmarPagoMantenimiento
 
     }
 
+    protected function descontarFondoReserva($cantidad){
+
+        $monto = $this->mantenimiento->idInmueble->idInmueblePadre()->first()->monto_fondo_reserva;
+        $monto -= $cantidad;
+
+        $inmueble_padre = InmueblePadre::findOrFail($this->mantenimiento->idInmueble->idInmueblePadre()->first()->id);
+        $inmueble_padre->monto_fondo_reserva = $monto;
+
+        
+        $inmueble_padre->save();
+
+    }
     
 
     public function actualizarEstadoPago($estado){

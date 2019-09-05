@@ -31,6 +31,8 @@ class ConfirmarPagoController extends Controller
             ]
         );
 
+        
+
         $retorno = $this->dispatch(new ConfirmarPagoMantenimiento($request, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);

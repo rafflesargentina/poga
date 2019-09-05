@@ -30,10 +30,10 @@ class CrearPagoController extends Controller
             'id_solicitud' => 'required',
             'enum_estado' => 'required',
             'id_moneda' => 'required',
-            'id_deudor' => 'required',
+            'id_persona_adeudora' => 'required',
             'monto' => 'required',
             'enum_origen_fondos' => 'required',
-            'clasificacion_pagare' => 'required'
+            'enum_clasificacion_pagare' => 'required'
             ]
         );
 

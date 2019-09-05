@@ -25,6 +25,7 @@ class CreateInmueblesPadreTable extends Migration
             $table->string('modalidad_propiedad', 20);
             $table->tinyInteger('comision_administrador')->nullable();
             $table->unsignedInteger('monto_fondo_reserva')->default(0);
+            $table->unsignedInteger('monto_fondo_expensas')->default(0);
             $table->timestamps();
         });
     }

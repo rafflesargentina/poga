@@ -3,10 +3,10 @@
 namespace Raffles\Modules\Poga\UseCases;
 
 
-use Raffles\Modules\Poga\Models\{ Pagare, Inmueble };
+use Raffles\Modules\Poga\Models\{ Pagare, Inmueble, InmueblePadre };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
-
+use Carbon\Carbon;
 class ConfirmarPagoFinanzas
 {
     use DispatchesJobs;
@@ -72,7 +72,7 @@ class ConfirmarPagoFinanzas
             $isUnicoPropietario = false;
         }       
 
-        if($inmueble->enum_tabla_hija == "UNIDAD")
+        if($inmueble->enum_tabla_hija == "UNIDADES")
             $isInmueble = false;       
 
         if($isUnicoPropietario){            
@@ -132,7 +132,7 @@ class ConfirmarPagoFinanzas
 
                 if($this->user->id == $idAdministrador){
 
-                    if($this->pagare->clasificacion_pagare == "EXPENSA"){
+                    if($this->pagare->enum_clasificacion_pagare == "EXPENSA"){
 
                         if($this->data['enum_origen_fondos'] == "ADMINISTRADOR"){
 
@@ -154,19 +154,12 @@ class ConfirmarPagoFinanzas
                         if($this->data['enum_origen_fondos'] == "RESERVA"){
 
 
-                            //!!!Verificar que haya reserva! y descontar!
+                            if($inmueble->idInmueblePadre()->first()->monto_fondo_reserva > $this->pagare->monto){
 
-                            $pagare = $inmueble->pagares()->create([
-                                'id_administrador_referente' => $idAdministrador,
-                                'id_persona_acreedora' => $idAdministrador,
-                                'id_persona_adeudora' =>  $idPropietario,
-                                'monto' => $this->pagare->monto, 
-                                'id_moneda' => $this->pagare->id_moneda,
-                                'fecha_pagare' => Carbon::now(),                      
-                                'enum_estado' =>"PENDIENTE",
-                                'enum_clasificacion_pagare' => "SOLICITUD",
-                                'pagado_con_fondos_de' => "FONDO_RESERVA" 
-                            ]);                          
+                                $this->descontarFondoReserva($this->pagare->monto);
+                                $this->actualizarEstadoPago("PAGADO");
+                                       
+                            }               
 
                         }
     
@@ -229,7 +222,18 @@ class ConfirmarPagoFinanzas
         }
     }
 
-    
+    protected function descontarFondoReserva($cantidad){
+
+        $monto =  $inmueble->idInmueblePadre()->first()->monto_fondo_reserva;
+        $monto -= $cantidad;
+
+        $inmueble_padre = InmueblePadre::findOrFail( $inmueble->idInmueblePadre()->first()->id);
+        $inmueble_padre->monto_fondo_reserva = $monto;
+
+        
+        $inmueble_padre->save();
+
+    }
 
     public function actualizarEstadoPago($estado){
         $this->pagare->update([

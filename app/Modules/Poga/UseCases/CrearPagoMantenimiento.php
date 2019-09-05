@@ -133,7 +133,7 @@ class CrearPagoMantenimiento
                     
                     case 'PENDIENTE': //en condmonio       
 
-                        if($this->data['clasificacion_pagare'] == "EXPENSA"){
+                        if($this->data['enum_clasificacion_pagare'] == "EXPENSA"){
                             $this->crearPagareExpensa($this->mantenimiento->id_proveedor_servicio);                           
                         }
                         else{
@@ -145,7 +145,7 @@ class CrearPagoMantenimiento
                         
                         if($this->data['enum_origen_fondos'] == "ADMINISTRADOR"){
 
-                            if($this->data['clasificacion_pagare'] == "EXPENSA"){            
+                            if($this->data['enum_clasificacion_pagare'] == "EXPENSA"){            
                                 $this->crearPagareExpensa($this->mantenimiento->id_proveedor_servicio);                     
                             }                            
 

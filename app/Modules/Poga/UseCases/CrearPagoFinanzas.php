@@ -142,8 +142,8 @@ class CrearPagoFinanzas
                     
                     case 'PENDIENTE': //en condmonio       
 
-                        if($this->data['clasificacion_pagare'] == "EXPENSA"){
-                            $this->crearPagareExpensa($this->solicitud->id_proveedor);                           
+                        if($this->data['enum_clasificacion_pagare'] == "EXPENSA"){
+                            $this->crearPagareExpensa($this->solicitud->id_proveedor_servicio);                           
                         }
                         else{
                            
@@ -154,8 +154,8 @@ class CrearPagoFinanzas
                         
                         if($this->data['enum_origen_fondos'] == "ADMINISTRADOR"){
 
-                            if($this->data['clasificacion_pagare'] == "EXPENSA"){            
-                                $this->crearPagareExpensa($this->solicitud->id_proveedor);                     
+                            if($this->data['enum_clasificacion_pagare'] == "EXPENSA"){            
+                                $this->crearPagareExpensa($this->solicitud->id_proveedor_servicio);                     
                             }                            
 
                             $this->crearPagare(
@@ -250,7 +250,7 @@ class CrearPagoFinanzas
             else{ //en condominio  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
                 $deudor = $this->data['id_persona_adeudora'];
-                if($this->data['clasificacion_pagare'] == "EXPENSA"){
+                if($this->data['enum_clasificacion_pagare'] == "EXPENSA"){
                     if($Inquilino->id){
                         
                         if($this->inmueble->rentas()->expensas){

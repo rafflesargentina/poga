@@ -32,7 +32,7 @@ class CrearPagoController extends Controller
             'id_moneda' => 'required',
             'monto' => 'required',
             'enum_origen_fondos' => 'required',
-            'clasificacion_pagare' => 'required'
+            'enum_clasificacion_pagare' => 'required'
             ]
         );
 
