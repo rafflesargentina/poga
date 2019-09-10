@@ -15,6 +15,7 @@ class AddExtraFieldsToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedInteger('id_persona')->nullable();
+            $table->unsignedInteger('role_id')->nullable();
             $table->foreign('id_persona')->references('id')->on('personas');
             $table->boolean('bloqueado')->default(0)->beforeColumn('created_at');
             $table->string('codigo_validacion')->afterColumn('password');
