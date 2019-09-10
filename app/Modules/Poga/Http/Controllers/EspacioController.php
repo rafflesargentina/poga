@@ -51,11 +51,7 @@ class EspacioController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $model = $this->repository->find($id);
-
-        if (!$model) {
-            abort(404);
-        }
+        $model = $this->repository->findOrFail($id);
 
         return $this->validSuccessJsonResponse('Success', $model);
     }
@@ -114,11 +110,7 @@ class EspacioController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $espacio = $this->repository->find($id);
-
-        if (!$espacio) {
-            abort(404);
-        }
+        $espacio = $this->repository->findOrFail($id);
 
         $data = $request->all();
         $user = $request->user('api');
