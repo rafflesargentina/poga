@@ -3,50 +3,22 @@
 namespace Raffles\Modules\Poga\Http\Controllers\Auth;
 
 use Raffles\Modules\Poga\Models\{ Persona, User };
-use Raffles\Modules\Poga\Http\Controllers\Controller;
+use Raffles\Http\Controllers\Auth\RegisterController as Controller;
 use Raffles\Modules\Poga\Notifications\UsuarioRegistrado;
 
-use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
 class RegisterController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
-
-    use FormatsValidJsonResponses, RegistersUsers;
-
-    /**
-     * Where to redirect users after registration.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/';
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('guest:api');
-    }
+    use FormatsValidJsonResponses;
 
     /**
      * Handle a registration request for the application.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function register(Request $request)
@@ -72,8 +44,9 @@ class RegisterController extends Controller
     {
         return Validator::make(
             $data, [
-            'ciudadesCobertura' => 'array',
-            'email' => 'required|email',
+            'ciudadesCobertura' => 'required|array|min:1',
+            'email' => 'required|email|unique:users,email',
+            'enum_tipo_persona' => 'required',
             'idPersona.apellido' => 'required_if:enum_tipo_persona,FISICA',
             'idPersona.fecha_nacimiento' => 'nullable|date',
             'idPersona.id_pais' => 'required',
