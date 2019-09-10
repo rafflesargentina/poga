@@ -3,9 +3,10 @@
 namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
-use Raffles\Modules\Poga\Repositories\PagareRepository;
-use Raffles\Modules\Poga\UseCases\{ CrearPagare };
+
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Raffles\Modules\Poga\UseCases\{ CrearPagoFinanzas };
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
 class CrearPagoController extends Controller
@@ -13,23 +14,13 @@ class CrearPagoController extends Controller
     use FormatsValidJsonResponses;
 
     /**
-     * The InmuebleRepository object.
+     * Get the account for the authenticated user.
      *
-     * @var InmuebleRepository $inmueble
-     */
-    protected $repository;
-
-    public function __construct(PagareRepository $repository)
-    {
-        $this->repository = $repository;
-    }
-
-    /**
-     * Display a listing of the resource.
+     * @param Request $request The request object.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function __invoke(Request $request)
     {
         $user = $request->user('api');
 
@@ -41,77 +32,15 @@ class CrearPagoController extends Controller
             'id_persona_acreedora' => 'required',
             'monto' => 'required',
             'enum_origen_fondos' => 'required',
-            'descripcion' => 'required'
+            'descripcion' => 'required',
+            'id_inmueble' => 'required'
             ]
         );
 
-        $retorno = $this->dispatch(new CrearPagoSolicitud($request, $user));
+        $retorno = $this->dispatch(new CrearPagoFinanzas($request, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);
 
-    }
-
-  
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {        
-       
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Request $request, $id)
-    {
-       
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-   
-    public function update(Request $request, $id)
-    {
-        $pagare = $this->repository->find($id);
-        $pagare->update($request->all());       
-
-        return $this->validSuccessJsonResponse('Success',  $pagare);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        
     }
 }

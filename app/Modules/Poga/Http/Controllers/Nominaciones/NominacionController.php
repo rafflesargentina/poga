@@ -2,8 +2,8 @@
 
 namespace Raffles\Modules\Poga\Http\Controllers\Nominaciones;
 
-use Raffles\Modules\Poga\Repositories\InmueblePadreRepository;
 use Raffles\Modules\Poga\Http\Controllers\Controller;
+use Raffles\Modules\Poga\Repositories\InmueblePadreRepository;
 use Raffles\Modules\Poga\UseCases\CrearNominacionParaInmueble;
 
 use Illuminate\Http\Request;
@@ -48,7 +48,7 @@ class NominacionController extends Controller
             ]
         );
 
-        $model = $this->repository->find($request->idInmueblePadre);
+        $model = $this->repository->findOrFail($request->idInmueblePadre);
 
         $model->loadMissing('idInmueble.nominaciones');
 
@@ -75,7 +75,7 @@ class NominacionController extends Controller
      */
     public function store(Request $request)
     {
-        $inmueblePadre = $this->repository->find($request->id_inmueble_padre);
+        $inmueblePadre = $this->repository->findOrFail($request->id_inmueble_padre);
 
         $this->validate($request, [
             'role_id' => [
@@ -110,32 +110,6 @@ class NominacionController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $url = $this->getBaseUrl()."nominaciones/detalles";
-        $client = $this->getHttpClient();
-        $token = $request->header('Authorization');
-        $response = $client->request(
-            'GET', $url, [
-            'headers' => [
-                'x-li-format' => 'json',
-                'Authorization' => $token,
-            ],
-            'query' => ['idNominacion' => $id]
-            ]
-        );
-
-        $data = json_decode($response->getBody()->getContents(), true);
-
-        return $this->validSuccessJsonResponse($data['ok'] ? 'Success' : 'Failed', $data['response']);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
         //
     }
 
@@ -160,21 +134,6 @@ class NominacionController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $url = $this->getBaseUrl()."nominaciones";
-        $client = $this->getHttpClient();
-        $token = $request->header('Authorization');
-        $response = $client->request(
-            'DELETE', $url, [
-            'headers' => [
-                'x-li-format' => 'json',
-                'Authorization' => $token,
-            ],
-            'query' => ['idNominacion' => $id]
-            ]
-        );
-
-        $data = json_decode($response->getBody()->getContents(), true);
-
-        return $this->validSuccessJsonResponse($data['ok'] ? 'Success' : 'Failed', $data['response']);
+        //
     }
 }

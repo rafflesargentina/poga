@@ -6,7 +6,7 @@ use Raffles\Modules\Poga\Models\{ Pagare };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
-class RechazarPagoFinanzas
+class RechazarPagoMantenimiento
 {
     use DispatchesJobs;
 
@@ -33,7 +33,10 @@ class RechazarPagoFinanzas
 
         $pagare = Pagare::findOrFail($this->data['id_pagare']);
         
-        $this->pagare = $pagare;        
+        $this->pagare = $pagare;
+
+
+        
     }
 
     /**
@@ -64,11 +67,15 @@ class RechazarPagoFinanzas
 
         return $this->pagare;
 
-    }   
+    }
+
+    
 
     public function actualizarEstadoPago($estado){
         $this->pagare->enum_estado = $estado;
         $this->pagare->save();
+        
+        
     }
 
 

@@ -61,11 +61,19 @@ class Pagare extends Model
     }
 
     /**
-     * Get the inquilino that owns the renta.
+     * Get the inquilino that owns the pagare.
      */
     public function idPersonaAcreedora()
     {
         return $this->belongsTo(Persona::class, 'id_persona_acreedora');
+    }
+
+    /**
+     * Get the inquilino that owns the pagare.
+     */
+    public function idPersonaAdeudora()
+    {
+        return $this->belongsTo(Persona::class, 'id_persona_adeudora');
     }
 
     /**

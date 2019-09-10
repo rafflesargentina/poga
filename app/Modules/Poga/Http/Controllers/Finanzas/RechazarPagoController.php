@@ -1,11 +1,11 @@
 <?php
 
-namespace Raffles\Modules\Poga\Http\Controllers\Solicitudes;
+namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
-use Raffles\Modules\Poga\UseCases\{ RechazarPagoSolicitud };
+use Raffles\Modules\Poga\UseCases\RechazarPagoFinanzas;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
 class RechazarPagoController extends Controller
@@ -29,7 +29,7 @@ class RechazarPagoController extends Controller
 
 	$data = $request->all();
         $user = $request->user('api');
-        $retorno = $this->dispatch(new RechazarPagoSolicitud($data, $user));
+        $retorno = $this->dispatch(new RechazarPagoFinanzas($data, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);
 

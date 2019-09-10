@@ -35,16 +35,27 @@ Route::apiResource('reservas', Eventos\ReservaController::class);
 Route::apiResource('visitas', Eventos\VisitaController::class);
 
 // Finanzas
-Route::get('finanzas/tiposPagares', Finanzas\TipoPagareController::class);
+Route::post('finanzas/crearPago', Finanzas\CrearPagoController::class);
 
-//Route::put('finanzas/actualizarEstadoPagare', Finanzas\ActualizarEstadoPagareController::class);
-Route::put('finanzas/cambiarEstadoPagare', Finanzas\CambiarEstadoPagareController::class);
+Route::put('finanzas/actualizarEstadoPagare', Finanzas\ActualizarEstadoPagareController::class);
 Route::put('finanzas/cargarFondoReserva', Finanzas\CargarFondoReservaController::class);
-Route::put('finanzas/confirmarPagoFinanzas', Finanzas\ConfirmarPagoController::class);
-//Route::post('finanzas/crearPago', Finanzas\CrearPagoController::class);
+Route::put('finanzas/confirmarPago', Finanzas\ConfirmarPagoController::class);
+Route::put('finanzas/rechazarPago', Finanzas\RechazarPagoController::class);
+Route::put('finanzas/distribuirExpensas', Finanzas\DistribuirExpensasController::class);
 
 Route::apiResource('monedas', Finanzas\MonedaController::class, ['only' => ['index']]);
+Route::apiResource('pagares', Finanzas\PagareController::class);
 Route::apiResource('rentas', Finanzas\RentaController::class);
+
+// Mantenimientos
+Route::post('mantenimientos/crearPago', Mantenimientos\CrearPagoController::class);
+Route::put('mantenimientos/confirmarPago', Mantenimientos\ConfirmarPagoController::class);
+Route::put('mantenimientos/rechazarPago', Mantenimientos\RechazarPagoController::class);
+
+// Solicitudes
+Route::post('solicitudes/crearPago', Solicitudes\CrearPagoController::class);
+Route::put('solicitudes/confirmarPago', Solicitudes\ConfirmarPagoController::class);
+Route::put('solicitudes/rechazarPago', Solicitudes\RechazarPagoController::class);
 
 // Inmuebles
 Route::put('inmuebles/desvincular', Inmuebles\DesvincularController::class);

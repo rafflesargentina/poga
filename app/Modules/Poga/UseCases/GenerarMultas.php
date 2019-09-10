@@ -47,10 +47,8 @@ class GenerarMultas implements ShouldQueue
 
             $fechaLimite = Carbon::now()->startOfMonth()->addDays($renta->dia_mes_pago + $renta->dias_multa-1);
             $fechaInicioRenta = Carbon::createFromFormat('Y-m-d', $renta->fecha_inicio); 
-            $inmueble = Inmueble::find($renta->id_inmueble);       
+            $inmueble = Inmueble::find($renta->id_inmueble);   
 
-
-          
             //Obtencion de pagaré vencidos
             $pagares = $inmueble->pagares()
             ->where('enum_clasificacion_pagare', 'RENTA')
@@ -58,16 +56,13 @@ class GenerarMultas implements ShouldQueue
 
             $now = Carbon::now();    
 
-            foreach($pagares as $pagare) {  
-                          
+            foreach($pagares as $pagare) {                            
               
                 $multaRenta = $renta->multas()->firstOrCreate([ 
                     'id_pagare' => $pagare->id, 
                     'mes' => $now->month, 
                     'anno' => $now->year,
-                ]); 
-
-               
+                ]);                
                
                 $inicioMes = Carbon::now()->startOfMonth();  
                 $finMes = Carbon::now()->endOfMonth();                 
@@ -75,8 +70,7 @@ class GenerarMultas implements ShouldQueue
                 $pagareActual = $inmueble->pagares()
                 ->where('fecha_pagare','>',$inicioMes)
                 ->where('fecha_pagare','<',$finMes)
-                ->where('enum_clasificacion_pagare','=','MULTA_RENTA')->first();           
-               
+                ->where('enum_clasificacion_pagare','=','MULTA_RENTA')->first();        
                 
                 
                 if(count($pagareActual)==0){

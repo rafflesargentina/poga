@@ -38,13 +38,6 @@ class Solicitud extends Model
     ];
 
     /**
-     * The "type" of the auto-incrementing ID.
-     *
-     * @var string
-     */
-    protected $keyType = 'string';
-
-    /**
      * The table associated with the model.
      *
      * @var string
@@ -56,22 +49,7 @@ class Solicitud extends Model
      *
      * @var array
      */
-    protected $with = ['idServicio', 'idUsuarioCreador'];
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
-
+    protected $with = ['idServicio', 'idUsuarioCreador','idInmueble'];
 
     /**
      * Get the servicio that owns the solicitud.
@@ -87,5 +65,13 @@ class Solicitud extends Model
     public function idUsuarioCreador()
     {
         return $this->belongsTo(User::class, 'id_usuario_creador');
+    }
+
+    /**
+     * Get the inmueble that owns the solicitud.
+     */
+    public function idInmueble()
+    {
+        return $this->belongsTo(Inmueble::class, 'id_inmueble');
     }
 }

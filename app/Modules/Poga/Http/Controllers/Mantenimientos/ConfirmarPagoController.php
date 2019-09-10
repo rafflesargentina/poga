@@ -1,12 +1,12 @@
 <?php
 
-namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
+namespace Raffles\Modules\Poga\Http\Controllers\Mantenimientos;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Raffles\Modules\Poga\UseCases\{ ConfirmarPagoFinanzas };
+use Raffles\Modules\Poga\UseCases\{ ConfirmarPagoMantenimiento };
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
 class ConfirmarPagoController extends Controller
@@ -28,11 +28,12 @@ class ConfirmarPagoController extends Controller
         $this->validate(
             $request, [
             'id_pagare' => 'required',
-            'enum_origen_fondos' => 'required'
             ]
         );
 
-        $retorno = $this->dispatchNow(new ConfirmarPagoFinanzas($request, $user));
+        
+
+        $retorno = $this->dispatch(new ConfirmarPagoMantenimiento($request, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);
     }

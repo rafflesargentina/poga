@@ -6,10 +6,10 @@ use Raffles\Modules\Poga\Http\Controllers\Controller;
 
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Raffles\Modules\Poga\UseCases\{ ConfirmarPagoFinanzas };
+use Raffles\Modules\Poga\UseCases\{ DistribuirExpensas };
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
-class ConfirmarPagoController extends Controller
+class DistribuirExpensasController extends Controller
 {
     use FormatsValidJsonResponses;
 
@@ -23,16 +23,26 @@ class ConfirmarPagoController extends Controller
     public function __invoke(Request $request)
     {
         
+
         $user = $request->user('api');
+
+       
 
         $this->validate(
             $request, [
-            'id_pagare' => 'required',
-            'enum_origen_fondos' => 'required'
+            'criterio_distribucion' => 'required',
+            'nro_comprobante' => 'required',
+            'fecha_vencimiento' => 'required',
+            'unidades' => 'required',
+            'enum_estado' => 'required',
+            'id_inmueble_padre' => 'required',
             ]
         );
 
-        $retorno = $this->dispatchNow(new ConfirmarPagoFinanzas($request, $user));
+       
+       
+
+        $retorno = $this->dispatchNow(new DistribuirExpensas($request, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);
     }

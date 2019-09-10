@@ -2,9 +2,10 @@
 
 namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 
+use Raffles\Modules\Poga\Http\Controllers\Controller;
 use Raffles\Modules\Poga\Repositories\RentaRepository;
-use Raffles\Modules\Poga\UseCases\{ BorrarRenta, CrearRenta, ActualizarRenta };
-use Raffles\Modules\Poga\UseCases\GenerarMultas;
+use Raffles\Modules\Poga\UseCases\{ ActualizarRenta, BorrarRenta, CrearRenta };
+
 use Illuminate\Http\Request;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
@@ -32,8 +33,7 @@ class RentaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-    { 
-        
+    {
         $this->validate(
             $request, [
             'idInmueblePadre' => 'required',
@@ -53,11 +53,7 @@ class RentaController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $model = $this->repository->find($id);
-
-        if (!$model) {
-            abort(404);
-        }
+        $model = $this->repository->findOrFail($id);
 
         return $this->validSuccessJsonResponse('Success', $model);
     }
@@ -119,8 +115,6 @@ class RentaController extends Controller
             ]
         );
 
-        
-
         $data = $request->all();
         $user = $request->user('api');
         $renta = $this->dispatch(new ActualizarRenta($id, $data, $user));
@@ -137,11 +131,7 @@ class RentaController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $renta = $this->repository->find($id);
-
-        if (!$renta) {
-            abort(404);
-        }
+        $renta = $this->repository->findOrFail($id);
 
         $data = $request->all();
         $user = $request->user('api');

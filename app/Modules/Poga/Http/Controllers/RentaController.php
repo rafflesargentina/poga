@@ -33,6 +33,7 @@ class RentaController extends Controller
      */
     public function index(Request $request)
     { 
+
         
         $this->validate(
             $request, [
