@@ -17,4 +17,9 @@ class PersonaRepository extends EloquentRepository
      * @var array
      */
     public $tag = ['Persona'];
+
+    public function findPersonasActivas($whereConditions = [])
+    {
+        return $this->findWhere(array_merge($whereConditions, ['enum_estado' => 'ACTIVO']));
+    }
 }
