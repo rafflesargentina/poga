@@ -1,7 +1,8 @@
 <?php
 
-namespace Raffles\Modules\Poga\Http\Controllers;
+namespace Raffles\Modules\Poga\Http\Controllers\Inmuebles;
 
+use Raffles\Modules\Poga\Http\Controllers\Controller;
 use Raffles\Modules\Poga\Repositories\FormatoRepository;
 
 use Illuminate\Http\Request;
@@ -27,6 +28,8 @@ class FormatoController extends Controller
      */
     public function __construct(FormatoRepository $repository)
     {
+        $this->middleware('auth:api');
+
         $this->repository = $repository;
     }
 

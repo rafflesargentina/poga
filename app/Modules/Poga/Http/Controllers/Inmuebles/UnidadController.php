@@ -4,7 +4,7 @@ namespace Raffles\Modules\Poga\Http\Controllers\Inmuebles;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 use Raffles\Modules\Poga\Repositories\UnidadRepository;
-use Raffles\Modules\Poga\UseCases\{ BorrarUnidad, CrearUnidad };
+use Raffles\Modules\Poga\UseCases\{ ActualizarUnidad, BorrarUnidad, CrearUnidad };
 
 use Illuminate\Http\Request;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
@@ -22,6 +22,8 @@ class UnidadController extends Controller
      */
     public function __construct(UnidadRepository $repository)
     {
+        $this->middleware('auth:api');
+
         $this->repository = $repository;
     }
 
@@ -38,7 +40,7 @@ class UnidadController extends Controller
             ]
         );
 
-        $items = $this->repository->whereHas('idInmueble', function($query) { return $query->where('enum_estado', 'ACTIVO'); })->where('id_inmueble_padre', $request->idInmueblePadre)->get();
+        $items = $this->repository->whereHas('idInmueble', function($query) { return $query->where('inmuebles.enum_estado', 'ACTIVO'); })->where('id_inmueble_padre', $request->idInmueblePadre)->get();
 
         return $this->validSuccessJsonResponse('Success', $items);
     }
@@ -55,7 +57,7 @@ class UnidadController extends Controller
             $request, [
             'administrador' => 'required',
             'idInmueble.solicitud_directa_inquilinos' => 'required',
-            'idPropietarioReferente' => 'required_if:modalidad_propiedad,UNICO_PROPIETARIO',
+            'idPropietarioReferente' => 'required',
             'unidad.area_estacionamiento' => 'required',
             'unidad.area' => 'required',
             'unidad.id_formato_inmueble' => 'required',
@@ -83,21 +85,9 @@ class UnidadController extends Controller
     {
         $model = $this->repository->findOrFail($id);
 
-        $model->load('idInmueble.formatos');
+        $model->loadMissing('idInmueble.caracteristicas', 'idInmueble.formatos');
 
         return $this->validSuccessJsonResponse('Success', $model);
-    }
-
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
     }
 
     /**
@@ -109,37 +99,23 @@ class UnidadController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate(
-            $request, [
-            'area' => 'required|numeric',
-            'area_estacionamiento' => 'numeric',
-            'id_medida' => 'required',
-            'numero' => 'required',
-            'piso' => 'required|numeric',
-            'id_inmueble' => [
-                'solicitud_directa_inquilinos' => 'boolean',
-            ]
-            ]
-        );
+        $this->validate($request, [
+            'idInmueble.solicitud_directa_inquilinos' => 'required',
+            'idPropietarioReferente' => 'required',
+            'unidad.area_estacionamiento' => 'required',
+            'unidad.area' => 'required',
+            'unidad.id_formato_inmueble' => 'required',
+            'unidad.numero' => 'required',
+            'unidad.piso' => 'required',
+        ]);
 
-        $model = $this->repository->find($id);
-        $model->update(
-            [
-            'area' => $request->area,
-            'area_estacionamiento' => $request->area_estacionamiento,
-            'id_medida' => $request->id_medida,
-            'numero' => $request->numero,
-            'piso' => $request->piso
-            ]
-        );
+        $data = $request->all();
+        $user = $request->user('api');
+        $model = $this->repository->findOrFail($id);
 
-        $model->idInmueble->update(
-            [
-            'solicitud_directa_inquilinos' => $request->id_inmueble->solicitud_directa_inquilinos
-            ]
-        );
+        $unidad = dispatch(new ActualizarUnidad($model, $data, $user));
 
-        return $this->validSuccessJsonResponse('Success', $model->refresh());
+        return $this->validSuccessJsonResponse('Success', $unidad);
     }
 
     /**
@@ -151,14 +127,10 @@ class UnidadController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $unidad = $this->repository->find($id);
+        $model = $this->repository->findOrFail($id);
 
-        if (!$unidad) {
-            abort(404);
-        }
+        $unidad = $this->dispatch(new BorrarUnidad($model, $request->user('api')));
 
-        $unidad = $this->dispatch(new BorrarUnidad($unidad, $request->user('api')));
-
-        return $this->validSuccessJsonResponse('Success');
+        return $this->validSuccessJsonResponse('Success', $unidad);
     }
 }
