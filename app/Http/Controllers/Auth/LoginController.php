@@ -43,6 +43,26 @@ class LoginController extends Controller
     }
 
     /**
+     * Attempt to log the user into the application.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return bool
+     */
+    protected function attemptLogin(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return false;
+        }
+
+        if (\Hash::check($request->password, $user->password)) {
+            $this->guard()->setUser($user);
+            return true;
+        }
+    }
+
+    /**
      * Send the response after the user was authenticated.
      *
      * @param  \Illuminate\Http\Request $request
