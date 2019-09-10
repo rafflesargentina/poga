@@ -4,7 +4,7 @@ namespace Raffles\Modules\Poga\Http\Controllers\Inmuebles;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 use Raffles\Modules\Poga\Repositories\InmueblePadreRepository;
-use Raffles\Modules\Poga\UseCases\{ BorrarInmueble, CrearInmueble };
+use Raffles\Modules\Poga\UseCases\{ ActualizarInmueble, BorrarInmueble, CrearInmueble };
 
 use Caffeinated\Shinobi\Models\Role;
 use Illuminate\Http\Request;
@@ -54,60 +54,12 @@ class InmuebleController extends Controller
 
         switch($request->tipoListado) {
         case 'DisponiblesAdministrar':
-            $items = $this->repository->with(['unidades' => function($query) { return $query->doesntHave('idInmueble.idAdministradorReferente'); }])
-                ->doesntHave('idInmueble.idAdministradorReferente')
-                ->orDoesntHave('unidades.idInmueble.idAdministradorReferente')
-                ->whereHas('idInmueble', function($query) { return $query->where('enum_tabla_hija', 'INMUEBLES_PADRE'); })
-                ->get();
+            $map = $this->repository->findDisponiblesAdministrar();
 
-            $map = $items->map(
-                function ($item) {
-                        $inmueble = $item->idInmueble;
-
-                        return [
-                        'cant_unidades' => $item->unidades->count(),
-                        'direccion' => $inmueble->direccion,
-                        'divisible_en_unidades' => $item->divisible_en_unidades,
-                        'id' => $item->id,
-                        'id_usuario_creador' => $inmueble->id_usuario_creador,
-                        'inmueble_completo' => $inmueble->idAdministradorReferente ? false : true,
-                        'nombre' => $item->nombre,
-                        'nombre_y_apellidos_administrador_referente' => $inmueble->nombre_y_apellidos_administrador_referente,
-                        'nombre_y_apellidos_inquilino_referente' => $inmueble->nombre_y_apellidos_inquilino_referente,
-                        'nombre_y_apellidos_propietario_referente' => $inmueble->nombre_y_apellidos_propietario_referente,
-                        'persona_id_administrador_referente' => $inmueble->persona_id_administrador_referente,
-                        'persona_id_inquilino_referente' => $inmueble->persona_id_inquilino_referente,
-                        'tipo' => $inmueble->tipo,
-                        ];
-                }
-            );
             break;
 
         case 'MisInmuebles':
-            $user->idPersona->inmuebles->loadMissing('unidades');
-
-            $items = $user->idPersona->inmuebles->where('enum_estado', 'ACTIVO')->where('enum_tabla_hija', 'INMUEBLES_PADRE');
-
-            $map = $items->map(
-                function ($item) {
-                        return [
-                        'cant_unidades' => $item->unidades->count(),
-                        'direccion' => $item->direccion,
-                        'divisible_en_unidades' => $item->idInmueblePadre->divisible_en_unidades,
-                        'id' => $item->idInmueblePadre->id,
-                        'id_usuario_creador' => $item->id_usuario_creador,
-                        'inmueble_completo' => $item->idAdministradorReferente ? false : true,
-                        'nombre' => $item->idInmueblePadre->nombre,
-                        'nombre_y_apellidos_administrador_referente' => $item->nombre_y_apellidos_administrador_referente,
-                        'nombre_y_apellidos_inquilino_referente' => $item->nombre_y_apellidos_inquilino_referente,
-                        'nombre_y_apellidos_propietario_referente' => $item->nombre_y_apellidos_propietario_referente,
-                        'persona_id_administrador_referente' => $item->persona_id_administrador_referente,
-                        'persona_id_inquilino_referente' => $item->persona_id_inquilino_referente,
-                        'persona_id_propietario_referente' => $item->persona_id_propietario_referente,
-                        'tipo' => $item->tipo,
-                        ];
-                }
-            );
+            $map = $this->repository->findMisInmuebles($user);
                 
             break;
 
@@ -147,43 +99,12 @@ class InmuebleController extends Controller
             break;
 
         case 'TodosInmuebles':
-            $items = $this->repository->with('unidades')->get();
+            $map = $this->repository->findTodos();
 
-            $map = $items->map(
-                function ($item) {
-                        $inmueble = $item->idInmueble;
-
-                        return [
-                        'cant_unidades' => $item->unidades->count(),
-                        'direccion' => $inmueble->direccion,
-                        'divisible_en_unidades' => $item->divisible_en_unidades,
-                        'id' => $item->id,
-                        'id_usuario_creador' => $inmueble->id_usuario_creador,
-                        'inmueble_completo' => $inmueble->idAdministradorReferente ? false : true,
-                        'nombre' => $item->nombre,
-                        'nombre_y_apellidos_administrador_referente' => $inmueble->nombre_y_apellidos_administrador_referente,
-                        'nombre_y_apellidos_inquilino_referente' => $inmueble->nombre_y_apellidos_inquilino_referente,
-                        'nombre_y_apellidos_propietario_referente' => $inmueble->nombre_y_apellidos_propietario_referente,
-                        'persona_id_administrador_referente' => $inmueble->persona_id_administrador_referente,
-                        'persona_id_inquilino_referente' => $inmueble->persona_id_inquilino_referente,
-                        'tipo' => $inmueble->tipo,
-                        ];
-                }
-            );
             break;
         }
 
         return $this->validSuccessJsonResponse('Success', $map);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -199,7 +120,6 @@ class InmuebleController extends Controller
             'administrador' => 'required',
             'formatos' => 'required|array',
             'idDireccion.calle_principal' => 'required',
-            'idDireccion.calle_secundaria' => 'required',
             'idDireccion.numeracion' => 'required',
             'idInmueble.id_tipo_inmueble' => 'required',
             'idInmueble.solicitud_directa_inquilinos' => 'required',
@@ -226,26 +146,11 @@ class InmuebleController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $model = $this->repository->find($id);
+        $model = $this->repository->findOrFail($id);
 
-        if (!$model) {
-            abort(404);
-        }
-
-        $model->loadMissing('idInmueble.formatos');
+        $model->loadMissing('idInmueble.caracteristicas', 'idInmueble.formatos');
 
         return $this->validSuccessJsonResponse('Success', $model);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
     }
 
     /**
@@ -257,18 +162,28 @@ class InmuebleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $inmueble = $this->repository->find($id);
-        $inmueble->update($request->all());
-
-        $idInmueble = $request->idInmueble;
-
-        $inmueble->idInmueble->update(
-            [
-            'solicitud_directa_inquilinos' => $idInmueble['solicitudDirectaInquilinos']
+        $this->validate(
+            $request, [
+            'formatos' => 'required|array',
+            'idDireccion.calle_principal' => 'required',
+            'idDireccion.calle_secundaria' => 'required',
+            'idDireccion.numeracion' => 'required',
+            'idInmueble.solicitud_directa_inquilinos' => 'required',
+            'idInmueblePadre.nombre' => 'required',
+            'idInmueblePadre.cant_pisos' => 'required',
+            'idInmueblePadre.comision_administrador' => 'required',
+            'idInmueblePadre.modalidad_propiedad' => 'required_if:idInmueble.id_tipo_inmueble,1',
+            'idPropietarioReferente' => 'required_if:modalidad_propiedad,UNICO_PROPIETARIO',
             ]
-        ); 
+        );
 
-        return $this->validSuccessJsonResponse('Success', $inmueble->refresh());
+        $data = $request->all();
+        $user = $request->user('api');
+        $model = $this->repository->findOrFail($id);
+
+        $inmueblePadre = $this->dispatch(new ActualizarInmueble($model, $data, $user));
+
+        return $this->validSuccessJsonResponse('Success', $inmueblePadre);
     }
 
     /**
@@ -279,11 +194,7 @@ class InmuebleController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $inmueblePadre = $this->repository->find($id);
-
-        if (!$inmueblePadre) {
-            abort(404);
-        }
+        $inmueblePadre = $this->repository->findOrFail($id);
 
         $inmueble = $this->dispatch(new BorrarInmueble($inmueblePadre->idInmueble, $request->user('api')));
 

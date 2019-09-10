@@ -21,5 +21,5 @@ class GrupoCaracteristica extends Model
      *
      * @var string
      */
-    protected $table = 'grupo_caracteristicas';
+    protected $table = 'grupos_caracteristica';
 }

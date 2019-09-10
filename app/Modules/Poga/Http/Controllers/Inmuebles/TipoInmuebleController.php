@@ -1,9 +1,9 @@
 <?php
 
-namespace Raffles\Modules\Poga\Http\Controllers;
+namespace Raffles\Modules\Poga\Http\Controllers\Inmuebles;
 
-use Raffles\Modules\Poga\Repositories\TipoInmuebleRepository;
 use Raffles\Modules\Poga\Http\Controllers\Controller;
+use Raffles\Modules\Poga\Repositories\TipoInmuebleRepository;
 
 use Illuminate\Http\Request;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
@@ -43,16 +43,6 @@ class TipoInmuebleController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
@@ -70,17 +60,6 @@ class TipoInmuebleController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
     {
         //
     }
