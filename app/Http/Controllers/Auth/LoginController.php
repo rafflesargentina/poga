@@ -39,18 +39,20 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api')->only('logout');
-        $this->middleware('guest')->except('logout');
     }
 
     /**
      * Attempt to log the user into the application.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param Request $request
+     *
      * @return bool
      */
     protected function attemptLogin(Request $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $model = config('auth.providers.users.model');
+        $model = new $model;
+        $user = $model->where('email', $request->email)->first();
 
         if (!$user) {
             return false;
@@ -65,59 +67,54 @@ class LoginController extends Controller
     /**
      * Send the response after the user was authenticated.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     protected function sendLoginResponse(Request $request)
     {
-        if ($request->wantsJson()) {
-            try {
-                $user = $this->guard()->user();
-                $user->load('roles');
-                $token = $user->createToken(env('APP_NAME'));
-                $accessToken = $token->accessToken;
-            } catch (\Exception $e) {
-                return $this->validInternalServerErrorJsonResponse($e, $e->getMessage());
-            }
-
-            $data = [
-                'token' => $accessToken,
-                'remember' => $request->remember,
-                'user' => $user
-            ];
-
-            return $this->authenticated($request, $user)
-                    ?:  $this->validSuccessJsonResponse('Success', $data, $this->redirectPath());
+        try {
+            $user = $this->guard()->user();
+            $user->load('roles');
+            $token = $user->createToken(env('APP_NAME'));
+            $accessToken = $token->accessToken;
+        } catch (\Exception $e) {
+            return $this->validInternalServerErrorJsonResponse($e, $e->getMessage());
         }
 
-        $request->session()->regenerate();
-
-        $this->clearLoginAttempts($request);
+        $data = [
+            'token' => $accessToken,
+            'remember' => $request->remember,
+            'user' => $user
+        ];
 
         return $this->authenticated($request, $user)
-                ?: redirect()->intended($this->redirectPath());
+            ?: $this->validSuccessJsonResponse('Success', $data, $this->redirectPath());
     }
 
     /**
      * Log the user out of the application.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function logout(Request $request)
     {
-        if ($request->wantsJson()) {
-            $user = $this->guard()->user();
-            $user->token()->revoke();
-            $request->session()->invalidate();
-            event(new Logout($user));
-            return $this->loggedOut($request) ?: $this->validSuccessJsonResponse('Success', [], $this->redirectPath());
-        }
+        $user = $this->guard()->user();
+        $user->token()->revoke();
+        event(new Logout($user));
+        return $this->loggedOut($request)
+        ?: $this->validSuccessJsonResponse('Success', [], $this->redirectPath());
+    }
 
-        $this->guard()->logout();
-
-        $request->session()->invalidate();
-
-        return $this->loggedOut($request) ?: redirect('/');
+    /**
+     * Get the guard to be used during authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\StatefulGuard
+     */
+    protected function guard()
+    {
+        return \Auth::guard('api');
     }
 }
