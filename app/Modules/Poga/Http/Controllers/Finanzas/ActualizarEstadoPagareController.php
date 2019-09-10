@@ -3,7 +3,7 @@
 namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
-
+use Raffles\Modules\Poga\Repositories\PagareRepository;
 use Raffles\Modules\Poga\UseCases\ActualizarEstadoPagare;
 
 use Illuminate\Http\Request;
@@ -20,15 +20,20 @@ class ActualizarEstadoPagareController extends Controller
      */
     protected $repository;
 
+    /**
+     * Create a new ActualizarEstadoPagareController instance.
+     *
+     * @param PagareRepository $repository The PagareRepository object.
+     *
+     * @return void
+     */
     public function __construct(PagareRepository $repository)
     {
         $this->repository = $repository;
     }
 
-
     public function __invoke(Request $request)
     {
-       
         $this->validate(
             $request, [
             'idPagare' => 'required',
@@ -37,7 +42,7 @@ class ActualizarEstadoPagareController extends Controller
         );
 
         $data = $request->all();
-
+        $user = $request->user('api');
         $pagare = $this->dispatchNow(new ActualizarEstadoPagare($data, $user));
         
         return $this->validSuccessJsonResponse('Success', $pagare);

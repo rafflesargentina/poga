@@ -4,7 +4,8 @@ namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 use Raffles\Modules\Poga\Repositories\RentaRepository;
-use Raffles\Modules\Poga\UseCases\{ ActualizarRenta, BorrarRenta, CrearRenta };
+use Raffles\Modules\Poga\UseCases\{ BorrarRenta, CrearRenta, ActualizarRenta };
+use Raffles\Modules\Poga\UseCases\GenerarMultas;
 
 use Illuminate\Http\Request;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
@@ -33,7 +34,7 @@ class RentaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-    {
+    { 
         $this->validate(
             $request, [
             'idInmueblePadre' => 'required',
@@ -66,7 +67,6 @@ class RentaController extends Controller
      */
     public function store(Request $request)
     {      
-
         $this->validate(
             $request, [
                 'comision_administrador'  => 'required|numeric',
@@ -84,7 +84,6 @@ class RentaController extends Controller
                 'monto_multa_dia' => 'required_if:multa,1|numeric',
                 'multa'=> 'required|boolean',
                 'prim_comision_administrador'  => 'required|numeric',
-                
             ]
         );
 
@@ -117,7 +116,7 @@ class RentaController extends Controller
 
         $data = $request->all();
         $user = $request->user('api');
-        $renta = $this->dispatch(new ActualizarRenta($id, $data, $user));
+        $renta = $this->dispatchNow(new ActualizarRenta($id, $data, $user));
 
         return $this->validSuccessJsonResponse('Success', $renta);
     }
@@ -125,8 +124,8 @@ class RentaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Request $request
-     * @param  int $id
+     * @param  Request $request
+     * @param  int     $id
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, $id)
@@ -135,7 +134,7 @@ class RentaController extends Controller
 
         $data = $request->all();
         $user = $request->user('api');
-        $renta = $this->dispatch(new BorrarRenta($renta, $user));
+        $renta = $this->dispatchNow(new BorrarRenta($renta, $user));
 
         return $this->validSuccessJsonResponse('Success');
     }

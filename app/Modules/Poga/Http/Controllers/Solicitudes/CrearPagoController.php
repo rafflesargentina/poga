@@ -4,9 +4,8 @@ namespace Raffles\Modules\Poga\Http\Controllers\Solicitudes;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Raffles\Modules\Poga\UseCases\{ CrearPagoSolicitud };
+use Raffles\Modules\Poga\UseCases\CrearPagoSolicitud;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
 class CrearPagoController extends Controller
@@ -14,7 +13,17 @@ class CrearPagoController extends Controller
     use FormatsValidJsonResponses;
 
     /**
-     * Get the account for the authenticated user.
+     * Create a new CrearPagoController instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
+    /**
+     * Handle the incoming request.
      *
      * @param Request $request The request object.
      *
@@ -22,9 +31,6 @@ class CrearPagoController extends Controller
      */
     public function __invoke(Request $request)
     {
-        
-        $user = $request->user('api');
-
         $this->validate(
             $request, [
             'id_solicitud' => 'required',
@@ -37,7 +43,9 @@ class CrearPagoController extends Controller
             ]
         );
 
-        $retorno = $this->dispatch(new CrearPagoSolicitud($request, $user));
+        $data = $request->all();
+        $user = $request->user('api');
+        $retorno = $this->dispatch(new CrearPagoSolicitud($data, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);
     }

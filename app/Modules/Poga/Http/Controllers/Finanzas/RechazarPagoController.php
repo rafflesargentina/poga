@@ -13,12 +13,23 @@ class RechazarPagoController extends Controller
     use FormatsValidJsonResponses;
 
     /**
-     * Get the account for the authenticated user.
+     * Create a new CrearPagoController instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
+    /**
+     * Handle the incoming request.
      *
      * @param Request $request The request object.
      *
      * @return \Illuminate\Http\JsonResponse
-     */
+     */    
+
     public function __invoke(Request $request)
     {
         $this->validate(
@@ -27,12 +38,10 @@ class RechazarPagoController extends Controller
             ]
         );
 
-	$data = $request->all();
+        $data = $request->all();
         $user = $request->user('api');
         $retorno = $this->dispatch(new RechazarPagoFinanzas($data, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);
-
-        
     }
 }

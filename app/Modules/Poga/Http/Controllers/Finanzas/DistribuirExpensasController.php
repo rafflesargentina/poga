@@ -4,9 +4,8 @@ namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Raffles\Modules\Poga\UseCases\{ DistribuirExpensas };
+use Raffles\Modules\Poga\UseCases\DistribuirExpensas;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
 class DistribuirExpensasController extends Controller
@@ -14,20 +13,24 @@ class DistribuirExpensasController extends Controller
     use FormatsValidJsonResponses;
 
     /**
-     * Get the account for the authenticated user.
+     * Create a new RechazarPagoController instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
+    /**
+     * Handle the incoming request.
      *
      * @param Request $request The request object.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return void
      */
     public function __invoke(Request $request)
     {
-        
-
-        $user = $request->user('api');
-
-       
-
         $this->validate(
             $request, [
             'criterio_distribucion' => 'required',
@@ -39,10 +42,9 @@ class DistribuirExpensasController extends Controller
             ]
         );
 
-       
-       
-
-        $retorno = $this->dispatchNow(new DistribuirExpensas($request, $user));
+        $data = $request->all();
+        $user = $request->user('api');
+        $retorno = $this->dispatchNow(new DistribuirExpensas($data, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);
     }

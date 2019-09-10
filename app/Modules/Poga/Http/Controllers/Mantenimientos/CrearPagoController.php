@@ -4,9 +4,8 @@ namespace Raffles\Modules\Poga\Http\Controllers\Mantenimientos;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Raffles\Modules\Poga\UseCases\{ CrearPagoMantenimiento };
+use Raffles\Modules\Poga\UseCases\CrearPagoMantenimiento;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
 class CrearPagoController extends Controller
@@ -14,7 +13,17 @@ class CrearPagoController extends Controller
     use FormatsValidJsonResponses;
 
     /**
-     * Get the account for the authenticated user.
+     * Create a new CrearPagoController instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
+    /**
+     * Handle the incoming request.
      *
      * @param Request $request The request object.
      *
@@ -22,9 +31,6 @@ class CrearPagoController extends Controller
      */
     public function __invoke(Request $request)
     {
-        
-        $user = $request->user('api');
-
         $this->validate(
             $request, [
             'id_mantenimiento' => 'required',
@@ -36,7 +42,9 @@ class CrearPagoController extends Controller
             ]
         );
 
-        $retorno = $this->dispatch(new CrearPagoMantenimiento($request, $user));
+        $data = $request->all();
+        $user = $request->user('api');
+        $retorno = $this->dispatch(new CrearPagoMantenimiento($data, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);
     }

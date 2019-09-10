@@ -4,9 +4,8 @@ namespace Raffles\Modules\Poga\Http\Controllers\Solicitudes;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Raffles\Modules\Poga\UseCases\{ RechazarPagoSolicitud };
+use Raffles\Modules\Poga\UseCases\RechazarPagoSolicitud;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
 class RechazarPagoController extends Controller
@@ -14,7 +13,17 @@ class RechazarPagoController extends Controller
     use FormatsValidJsonResponses;
 
     /**
-     * Get the account for the authenticated user.
+     * Create a new RechazarPagoController instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
+    /**
+     * Handle the incoming request.
      *
      * @param Request $request The request object.
      *
@@ -22,18 +31,16 @@ class RechazarPagoController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $user = $request->user('api');
-
         $this->validate(
             $request, [
             'id_pagare' => 'required',
             ]
         );
 
-        $retorno = $this->dispatch(new RechazarPagoSolicitud($request, $user));
+        $data = $request->all();
+        $user = $request->user('api');
+        $retorno = $this->dispatch(new RechazarPagoSolicitud($data, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);
-
-        
     }
 }

@@ -21,6 +21,8 @@ class MonedaController extends Controller
      */
     public function __construct(MonedaRepository $repository)
     {
+        $this->middleware('auth:api');
+
         $this->repository = $repository;
     }
 

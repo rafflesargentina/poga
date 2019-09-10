@@ -4,9 +4,8 @@ namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Raffles\Modules\Poga\UseCases\{ ConfirmarPagoFinanzas };
+use Raffles\Modules\Poga\UseCases\ConfirmarPagoFinanzas;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
 class ConfirmarPagoController extends Controller
@@ -14,7 +13,17 @@ class ConfirmarPagoController extends Controller
     use FormatsValidJsonResponses;
 
     /**
-     * Get the account for the authenticated user.
+     * Create a new CrearPagoController instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
+    /**
+     * Handle the incoming request.
      *
      * @param Request $request The request object.
      *
@@ -22,9 +31,6 @@ class ConfirmarPagoController extends Controller
      */
     public function __invoke(Request $request)
     {
-        
-        $user = $request->user('api');
-
         $this->validate(
             $request, [
             'id_pagare' => 'required',
@@ -32,7 +38,9 @@ class ConfirmarPagoController extends Controller
             ]
         );
 
-        $retorno = $this->dispatchNow(new ConfirmarPagoFinanzas($request, $user));
+        $data = $request->all();
+        $user = $request->user('api');
+        $retorno = $this->dispatchNow(new ConfirmarPagoFinanzas($data, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);
     }
