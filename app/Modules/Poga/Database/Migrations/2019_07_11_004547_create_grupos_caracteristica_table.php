@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateGrupoCaracteristicasTable extends Migration
+class CreateGruposCaracteristicaTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateGrupoCaracteristicasTable extends Migration
      */
     public function up()
     {
-        Schema::create('grupo_caracteristicas', function (Blueprint $table) {
+        Schema::create('grupos_caracteristica', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nombre', 100);
             $table->enum('enum_estado', ['ACTIVO','INACTIVO']);
@@ -28,6 +28,6 @@ class CreateGrupoCaracteristicasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('grupo_caracteristicas');
+        Schema::dropIfExists('grupos_caracteristica');
     }
 }
