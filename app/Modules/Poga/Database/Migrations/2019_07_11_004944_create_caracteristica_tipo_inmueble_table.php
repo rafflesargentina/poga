@@ -21,11 +21,10 @@ class CreateCaracteristicaTipoInmuebleTable extends Migration
             $table->foreign('id_caracteristica')->references('id')->on('caracteristicas');
             $table->enum('enum_estado', ['ACTIVO','INACTIVO']);
             $table->unsignedInteger('id_grupo_caracteristica')->nullable();
-            $table->foreign('id_grupo_caracteristica')->references('id')->on('grupo_caracteristicas');
+            $table->foreign('id_grupo_caracteristica')->references('id')->on('grupos_caracteristica');
             $table->unsignedInteger('id_tipo_caracteristica');
             $table->foreign('id_tipo_caracteristica')->references('id')->on('tipos_caracteristica');
-            $table->enum('enum_tipo_campo', ['bool','number']);
-            $table->boolean('espacio_comun')->default(false);
+            $table->enum('enum_tipo_campo', ['boolean','number']);
         });
     }
 

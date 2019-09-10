@@ -23,7 +23,7 @@ class CreateNominacionesTable extends Migration
             $table->foreign('id_inmueble')->references('id')->on('inmuebles');
             $table->unsignedInteger('role_id');
             $table->datetime('fecha_hora');
-            $table->enum('enum_estado', ['ACTIVO','INACTIVO']);
+            $table->enum('enum_estado', ['ACEPTADO','EN_CURSO','FINALIZADO','INACTIVO']);
             $table->unsignedInteger('usu_alta');
             $table->unsignedInteger('usu_mod')->nullable();
             $table->unsignedInteger('usu_elim')->nullable();
