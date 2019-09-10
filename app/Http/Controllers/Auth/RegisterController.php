@@ -2,13 +2,11 @@
 
 namespace Raffles\Http\Controllers\Auth;
 
-use Raffles\Models\User;
 use Raffles\Http\Controllers\Controller;
 
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
@@ -47,8 +45,9 @@ class RegisterController extends Controller
     /**
      * Handle a registration request for the application.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function register(Request $request)
     {
@@ -56,34 +55,28 @@ class RegisterController extends Controller
 
         event(new Registered($user = $this->create($request->all())));
 
-        if ($request->wantsJson()) {
-            try {
-                $token = $user->createToken(env('APP_NAME'));
-                $accessToken = $token->accessToken;
-            } catch (\Exception $e) {
-                return $this->validInternalServerErrorJsonResponse($e, $e->getMessage());
-            }
-
-            $data = [
-                'token' => $accessToken,
-                'user' => $user
-            ];
-
-            return $this->registered($request, $user)
-                        ?: $this->validSuccessJsonResponse('Success', $data, $this->redirectPath());
+        try {
+            $token = $user->createToken(env('APP_NAME'));
+            $accessToken = $token->accessToken;
+        } catch (\Exception $e) {
+            return $this->validInternalServerErrorJsonResponse($e, $e->getMessage());
         }
 
-        $this->guard()->login($user);
+        $data = [
+            'token' => $accessToken,
+            'user' => $user
+        ];
 
         return $this->registered($request, $user)
-                        ?: redirect($this->redirectPath());
+           ?: $this->validSuccessJsonResponse('Success', $data, $this->redirectPath());
     }
 
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array $data
-     * @return \Illuminate\Contracts\Validation\Validator
+     * @param array $data
+     *
+     * @return Validator
      */
     protected function validator(array $data)
     {
@@ -100,12 +93,16 @@ class RegisterController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array $data
-     * @return \Raffles\Models\User
+     * @param array $data
+     *
+     * @return mixed
      */
     protected function create(array $data)
     {
-        return User::create(
+        $model = config('auth.providers.users.model');
+        $model = new $model;
+
+        return $model->create(
             [
             'email' => $data['email'],
             'first_name' => $data['first_name'],
