@@ -49,16 +49,16 @@ class CrearUnidad
 
         $unidad = $this->crearUnidad($rUnidad, $inmueble);
 
-        if ($this->data['administrador'] === 'yo') {
+        if ($this->data['administrador'] === 'yo' || $this->data['idAdministradorReferente'] === $this->user->id_persona) {
             $inmueble->idAdministradorReferente()->create(array_merge($this->data['idPersona'],
                 [
-                    'id_persona' => $this->user->idPersona->id,
+                    'id_persona' => $this->user->id_persona,
                 ]
             ));
         }
 
-        $this->nominarAdministrador($rPersona, $unidad);
-        $this->nominarPropietario($rPersona, $unidad);
+        $this->nominarOAsignarAdministrador($rPersona, $unidad);
+        $this->nominarOAsignarPropietario($rPersona, $unidad);
 
         $this->user->notify(new UnidadCreada($unidad, $this->user));
 
@@ -101,15 +101,18 @@ class CrearUnidad
      * @param PersonaRepository $repository The PersonaRepository object.
      * @param Unidad            $unidad     The Unidad model.
      */
-    protected function nominarAdministrador(PersonaRepository $repository, Unidad $unidad)
+    protected function nominarOAsignarAdministrador(PersonaRepository $repository, Unidad $unidad)
     {
         $id = $this->data['idAdministradorReferente'];
 
         if ($id) {
+            $persona = $repository->find($id);
 
-            $persona = $repository->find($id)->first();
-
-            $this->dispatch(new NominarAdministradorReferenteParaUnidad($persona, $unidad));
+            if ($id !== $this->user->idPersona->id) {
+                $this->dispatch(new NominarAdministradorReferenteParaUnidad($persona, $unidad));
+            } else {
+                $this->dispatch(new RelacionarAdministradorReferente($this->data['idPersona'], $persona, $unidad->idInmueble));
+            }
         }
     }
 
@@ -117,15 +120,18 @@ class CrearUnidad
      * @param PersonaRepository $repository The PersonaRepository object.
      * @param Unidad            $unidad     The Unidad model.
      */
-    protected function nominarPropietario(PersonaRepository $repository, Unidad $unidad)
+    protected function nominarOAsignarPropietario(PersonaRepository $repository, Unidad $unidad)
     {
         $id = $this->data['idPropietarioReferente'];
 
         if ($id) {
+            $persona = $repository->find($id);
 
-            $persona = $repository->find($id)->first();
-
-            $this->dispatch(new NominarPropietarioReferenteParaUnidad($persona, $unidad));
+            if ($id !== $this->user->idPersona->id) {
+                $this->dispatch(new NominarPropietarioReferenteParaUnidad($persona, $unidad, $this->user));
+            } else {
+                $this->dispatch(new RelacionarPropietarioReferente($persona, $unidad->idInmueble));
+            }
         }
     }
 }

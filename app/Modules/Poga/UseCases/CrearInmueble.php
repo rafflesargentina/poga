@@ -51,14 +51,16 @@ class CrearInmueble
         $this->adjuntarFormatos($inmueble);
         $inmueblePadre = $this->crearInmueblePadre($rInmueblePadre, $direccion, $inmueble);
 
-        if ($this->data['administrador'] === 'yo' || $this->data['idAdministradorReferente'] === $this->user->id) {
-            $inmueble->idAdministradorReferente()->create(array_merge([$this->data['idPersona'],
-                'id_persona' => $this->user->idPersona->id,
-            ]));
+        if ($this->data['administrador'] === 'yo' || $this->data['idAdministradorReferente'] === $this->user->id_persona) {
+            $inmueble->idAdministradorReferente()->create(array_merge($this->data['idPersona'],
+                [
+                    'id_persona' => $this->user->id_persona,
+                ]
+            ));
         }
 
-        $this->nominarAdministrador($rPersona, $inmueble);
-        $this->nominarPropietario($rPersona, $inmueble);
+        $this->nominarOAsignarAdministrador($rPersona, $inmueble);
+        $this->nominarOAsignarPropietario($rPersona, $inmueble);
 
         $this->user->notify(new InmuebleCreado($inmueble, $this->user));
 
@@ -72,13 +74,7 @@ class CrearInmueble
     {
         $formatos = $this->data['formatos'];
         if ($formatos) {
-            $inmueble->formatos()->attach(
-                array_map(
-                    function ($item) {
-                        return $item['id'];
-                    }, $formatos
-                )
-            );
+            $inmueble->formatos()->attach($formatos);
         }
     }
 
@@ -95,7 +91,11 @@ class CrearInmueble
      */
     protected function crearInmueble(InmuebleRepository $repository)
     {
-        return $repository->create($this->data['idInmueble'])[1];
+        return $repository->create(array_merge($this->data['idInmueble'],
+            [
+                'id_usuario_creador' => $this->user->id
+            ]
+        ))[1];
     }
 
     /**
@@ -123,15 +123,18 @@ class CrearInmueble
      * @param PersonaRepository $repository The PersonaRepository object.
      * @param Inmueble          $inmueble   The Inmueble model.
      */
-    protected function nominarAdministrador(PersonaRepository $repository, Inmueble $inmueble)
+    protected function nominarOAsignarAdministrador(PersonaRepository $repository, Inmueble $inmueble)
     {
         $id = $this->data['idAdministradorReferente'];
 
         if ($id) {
-
             $persona = $repository->find($id)->first();
 
-            $this->dispatch(new NominarAdministradorReferenteParaInmueble($persona, $inmueble));
+            if ($id !== $this->user->id) {
+                $this->dispatch(new NominarAdministradorReferenteParaInmueble($persona, $inmueble));
+            } else {
+                $this->dispatch(new RelacionarAdministradorReferente($persona, $inmueble, $this->data['idPersona']));
+            }
         }
     }
 
@@ -139,15 +142,18 @@ class CrearInmueble
      * @param PersonaRepository $repository The PersonaRepository object.
      * @param Inmueble          $inmueble   The Inmueble model.
      */
-    protected function nominarPropietario(PersonaRepository $repository, Inmueble $inmueble)
+    protected function nominarOAsignarPropietario(PersonaRepository $repository, Inmueble $inmueble)
     {
         $id = $this->data['idPropietarioReferente'];
 
         if ($id) {
+            $persona = $repository->find($id)->first();
 
-            $persona = $repository->find($id)->first();;
-
-            $this->dispatch(new NominarPropietarioReferenteParaInmueble($persona, $inmueble));
+            if ($id !== $this->user->id) {
+                $this->dispatch(new NominarPropietarioReferenteParaInmueble($persona, $inmueble));
+            } else {
+                $this->dispatch(new RelacionarPropietarioReferente($persona, $inmueble));
+            }
         }
     }
 }

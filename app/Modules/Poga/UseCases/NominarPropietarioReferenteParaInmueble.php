@@ -47,16 +47,20 @@ class NominarPropietarioReferenteParaInmueble
             'enum_estado' => 'EN_CURSO',
             'id_inmueble' => $this->inmueble->id,
             'id_persona_nominada' => $this->persona->id,
-            'id_usuario_principal' => $this->inmueble->id_usuario_creador,
+            'id_usuario_principal' => $this->user->id,
             'referente' => '1',
             'role_id' => '4',
-            'usu_alta' => $this->persona->id
+            'usu_alta' => $this->user->id,
         ];
 
         $nominacion = $repository->create($data)[1];
 
         $personaNominada = $nominacion->idPersonaNominada;
-        $personaNominada->idUsuarioCreador->notify(new PersonaNominadaParaInmueble($personaNominada, $nominacion));
+        $user = $personaNominada->user;
+
+        if ($user) {
+            $user->notify(new PersonaNominadaParaInmueble($personaNominada, $nominacion));
+        }
 
         return $nominacion;
     }
