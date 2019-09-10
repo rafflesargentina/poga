@@ -48,6 +48,14 @@ class InmueblePadre extends Model
     }
 
     /**
+     * Get the eventos for the inmueble padre.
+     */
+    public function eventos()
+    {
+        return $this->hasMany(Evento::class, 'id_inmueble_padre');
+    }
+
+    /**
      * Get the unidades for the inmueble padre.
      */
     public function unidades()
