@@ -2,7 +2,7 @@
 
 namespace Raffles\Modules\Poga\Database\Seeds;
 
-use Raffles\Modules\Poga\Models\User;
+use Raffles\Modules\Poga\Models\{ Persona, User };
 
 use Illuminate\Database\Seeder;
 
@@ -15,12 +15,12 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        $u = User::create(['email' => 'patronelli87@gmail.com', 'password' => 'abcd1234']);
-        $u->idPersona()->create(['nombre' => 'Mario', 'apellido' => 'Patronelli', 'mail' => 'mario@raffles.com.ar']);
+        $persona = Persona::create(['nombre' => 'Mario', 'apellido' => 'Patronelli', 'mail' => 'mario@raffles.com.ar']);
+        $u = User::create(['email' => 'patronelli87@gmail.com', 'password' => 'abcd1234', 'id_persona' => $persona->id]);
         $u->roles()->attach([1,2,3,4,5]);
 
-        $u = User::create(['email' => 'josue.aveiro@mavaite.com', 'password' => 'abcd1234']);
-        $u->idPersona()->create(['nombre' => 'Josue', 'apellido' => 'Aveiro', 'mail' => 'josue.aveiro@mavaite.com']);
+        $persona = Persona::create(['nombre' => 'Josue', 'apellido' => 'Aveiro', 'mail' => 'josue.aveiro@mavaite.com']);
+        $u = User::create(['email' => 'josue.aveiro@mavaite.com', 'password' => 'abcd1234', 'id_persona' => $persona->id]);
         $u->roles()->attach([1,2,3,4,5]);
     }
 }
