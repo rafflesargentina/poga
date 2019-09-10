@@ -39,7 +39,8 @@ class TipoInmueble extends Model
      */
     public function caracteristicas()
     {
-        return $this->belongsToMany(Caracteristica::class, 'caracteristica_tipo_inmueble', 'id_caracteristica', 'id_tipo_inmueble');
+        return $this->belongsToMany(Caracteristica::class, 'caracteristica_tipo_inmueble', 'id_caracteristica', 'id_tipo_inmueble')
+            ->withPivot(['enum_estado','id_caracteristica','id_grupo_caracteristica','id_tipo_caracteristica','enum_tipo_campo']);
     }
 
     /**
