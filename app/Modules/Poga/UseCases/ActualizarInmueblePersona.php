@@ -13,27 +13,26 @@ class ActualizarInmueblePersona
     use DispatchesJobs;
 
     /**
-     * The InmueblePersona model.
+     * The InmueblePersona and User model.
      *
-     * @var InmueblePersona $inmueblePersona
+     * @var InmueblePersona
+     * @var User
      */
-    protected $inmueblePersona;
+    protected $inmueblePersona, $user;
 
     /**
-     * The form data and the InmueblePersona and User models.
+     * The form data.
      *
-     * @var array $data
-     * @var InmueblePersona $inmueblePersona
-     * @var User            $user
+     * @var array
      */
-    protected $data, $user;
+    protected $data;
 
     /**
      * Create a new job instance.
      *
      * @param InmueblePersona $inmueblePersona The InmueblePersona model.
-     * @param array           $data The form data.
-     * @param User            $user The User model.
+     * @param array           $data            The form data.
+     * @param User            $user            The User model.
      *
      * @return void
      */
@@ -67,6 +66,8 @@ class ActualizarInmueblePersona
     }
 
     /**
+     * Adjuntar roles.
+     *
      * @param RoleRepository $rRol The RolRepository object.
      * @param User           $user The User model.
      *
@@ -84,30 +85,38 @@ class ActualizarInmueblePersona
     }
 
     /**
+     * Actualizar Persona.
+     *
      * @param PersonaRepository $repository The PersonaRepository object.
+     *
+     * @return Persona
      */
     protected function actualizarPersona(PersonaRepository $repository)
     {
-        return $repository->update($this->inmueblePersona->idPersona, $this->data['id_persona'])[1];
+        return $repository->update($this->inmueblePersona->id_persona, $this->data['id_persona'])[1];
     }
 
     /**
+     * Crear Usuario.
+     *
      * @param UserRepository $repository The UserRepository object.
+     *
+     * @return User|void
      */
     protected function crearUsuario(Persona $persona, UserRepository $repository)
     {
         if ($this->data['invitar'] && !$persona->user) {
-            $user = $repository->create([
+            $user = $repository->create(
+                [
                 'codigo_validacion' => str_random(),
                 'email' => $this->data['id_persona']['mail'],
                 'first_name' => $persona->nombre,
                 'id_persona' => $persona->id,
                 'last_name' => $persona->apellido,
-            ])[1];
+                ]
+            )[1];
 
-            $p = $user->idPersona;
-
-            $user->notify(new InvitacionCreada($p));
+            $user->notify(new InvitacionCreada($user->idPersona));
 
             return $user;
         }

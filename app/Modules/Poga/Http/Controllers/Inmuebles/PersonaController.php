@@ -16,9 +16,9 @@ class PersonaController extends Controller
     use FormatsValidJsonResponses;
 
     /**
-     * The PersonaRepository and InmueblePersonaRepository objects.
+     * The InmueblePersonaRepository object.
      *
-     * @var InmueblePersonaRepository $repository
+     * @var InmueblePersonaRepository
      */
     protected $repository;
 
@@ -31,39 +31,27 @@ class PersonaController extends Controller
      */
     public function __construct(InmueblePersonaRepository $repository)
     {
+        $this->middleware('auth:api');
+
         $this->repository = $repository;
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
-        $this->validate($request, [
+        $request->validate(
+            [
             'idInmueblePadre' => 'required',
-        ]);
+            ]
+        );
 
-        $idInmueblePadre = $request->idInmueblePadre;
-
-        $items = $this->repository->findPersonasActivas($idInmueblePadre)
-            ->map(function($item) {
-                $item->loadMissing('idPersona.user');
-
-                return [
-                    'apellido' => $item->idPersona->apellido,
-                    'ci' => $item->idPersona->ci,
-                    'id' => $item->id,
-                    'nombre' => $item->idPersona->nombre,
-                    'nombre_completo_y_apellidos' => $item->idPersona->nombre_completo_y_apellidos,
-                    'rol' => $item->enum_rol,
-                    'ruc' => $item->idPersona->ruc,
-                    'telefono' => $item->idPersona->telefono,
-                    'tipo_persona' => $item->idPersona->enum_tipo_persona,
-                    'id_persona' => $item->idPersona,
-                ];
-            });
+        $items = $this->repository->findPersonas();
 
         return $this->validSuccessJsonResponse('Success', $items);
     }
@@ -71,25 +59,44 @@ class PersonaController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $request->validate(
+            [
             'enum_rol' => 'required',
             'id_inmueble' => 'required',
             'id_persona.apellido' => 'required_if:id_persona.enum_tipo_persona,FISICA',
             'id_persona.ci' => 'required_if:enum_tipo_persona,FISICA',
             'id_persona.enum_tipo_persona' => 'required',
-            'id_persona.mail' => 'required|unique:personas,mail',
+            'id_persona.mail' => [
+            'required_if:invitar,1',
+                function ($attribute, $value, $fail) use ($request) {
+                    $count = $this->repository
+                        ->whereHas(
+                            'idPersona', function ($query) use ($value) {
+                                $query->where('mail', $value);
+                            }
+                        )
+                        ->where('personas.enum_estado', 'ACTIVO')
+                        ->where('enum_rol', $request->enum_rol)
+                    ->count();
+                    if ($count > 0) {
+                        $fail('Ya existe una persona activa registrada con ese email para el rol seleccionado.');
+                    }
+                },
+            ],
             'id_persona.nombre' => 'required',
             'id_persona.ruc' => 'required_if:id_persona.enum_tipo_persona,JURIDICA',
-        ]);
+            'invitar' => 'required',
+            ]
+        );
 
         $data = $request->all();
         $user = $request->user('api');
-
         $inmueblePersona = $this->dispatchNow(new CrearInmueblePersona($data, $user));
 
         return $this->validSuccessJsonResponse('Success', $inmueblePersona);
@@ -98,8 +105,10 @@ class PersonaController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(Request $request, $id)
     {
@@ -112,9 +121,10 @@ class PersonaController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int                      $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
@@ -126,31 +136,49 @@ class PersonaController extends Controller
             return $this->validUnprocessableEntityJsonResponse(new MessageBag(), $message);
         }
         
-        $this->validate($request, [
+        $request->validate(
+            [
+            'enum_rol' => 'required',
             'id_persona.apellido' => 'required_if:enum_tipo_persona,FISICA',
             'id_persona.mail' => [
-                'required_if:invitar,1',
-                Rule::unique('personas', 'mail')->ignore($model->id_persona)
+            'required_if:invitar,1',
+                function ($attribute, $value, $fail) use ($request) {
+                    $count = $this->repository
+                        ->whereHas(
+                            'idPersona', function ($query) use ($value) {
+                                $query->where('mail', $value);
+                            }
+                        )
+                        ->where('personas.enum_estado', 'ACTIVO')
+                        ->where('enum_rol', $request->enum_rol)
+                        ->count();
+                    if ($count > 0) {
+                        $fail('Ya existe una persona activa registrada con ese email para el rol seleccionado.');
+                    }
+                },
             ],
             'id_persona.ci' => 'required_if:id_persona.enum_tipo_persona,FISICA',
             'id_persona.enum_tipo_persona' => 'required',
             'id_persona.nombre' => 'required',
             'id_persona.ruc' => 'required_if:id_persona.enum_tipo_persona,JURIDICA',
-        ]);
+            'invitar' => 'required',
+            ]
+        );
 
         $data = $request->all();
         $user = $request->user('api');
+        $inmueblePersona = $this->dispatchNow(new ActualizarInmueblePersona($model, $data, $user));
 
-        $persona = $this->dispatchNow(new ActualizarInmueblePersona($model, $data, $user));
-
-        return $this->validSuccessJsonResponse('Success', $persona);
+        return $this->validSuccessJsonResponse('Success', $inmueblePersona);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Request $request, $id)
     {
@@ -162,7 +190,8 @@ class PersonaController extends Controller
             return $this->validUnprocessableEntityJsonResponse(new MessageBag(), $message);
         }
 
-        $inmueblePersona = $this->dispatchNow(new BorrarInmueblePersona($model, $request->user('api')));
+        $user = $request->user('api');
+        $inmueblePersona = $this->dispatchNow(new BorrarInmueblePersona($model, $user));
 
         return $this->validSuccessJsonResponse('Success', $inmueblePersona);
     }

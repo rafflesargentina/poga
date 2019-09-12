@@ -14,8 +14,8 @@ class BorrarInmueblePersona
     /**
      * The InmueblePersona and User models.
      *
-     * @var InmueblePersona  $inmueblePersona
-     * @var User             $user
+     * @var InmueblePersona
+     * @var User
      */
     protected $inmueblePersona, $user;
 
@@ -38,7 +38,7 @@ class BorrarInmueblePersona
      *
      * @param InmueblePersonaRepository $repository The InmueblePersonaRepository object.
      *
-     * @return Persona
+     * @return InmueblePersona
      */
     public function handle(InmueblePersonaRepository $repository)
     {

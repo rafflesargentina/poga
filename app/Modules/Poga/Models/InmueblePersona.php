@@ -2,10 +2,30 @@
 
 namespace Raffles\Modules\Poga\Models;
 
+use Raffles\Modules\Poga\Filters\InmueblePersonaFilters;
+use Raffles\Modules\Poga\Sorters\InmueblePersonaSorters;
+
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use RafflesArgentina\FilterableSortable\FilterableSortableTrait;
 
 class InmueblePersona extends Pivot
 {
+    use FilterableSortableTrait;
+
+    /**
+     * The associated query filters.
+     *
+     * @var InmueblePersonaFilters
+     */
+    protected $filters = InmueblePersonaFilters::class;
+
+    /**
+     * The associated query sorters.
+     *
+     * @var InmueblePersonaSorters
+     */
+    protected $sorters = InmueblePersonaSorters::class;
+
     /**
      * The table associated with the pivot.
      *

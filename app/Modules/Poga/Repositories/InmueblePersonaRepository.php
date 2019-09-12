@@ -18,10 +18,18 @@ class InmueblePersonaRepository extends EloquentRepository
      */
     public $tag = ['InmueblePersona'];
 
-    public function findPersonasActivas($idInmueblePadre)
+    /**
+     * findPersonas.
+     *
+     * @return array
+     */
+    public function findPersonas()
     {
-        return $this->whereHas('idInmueble', function($query) use($idInmueblePadre ) {
-            return $query->where('inmuebles.enum_estado', 'ACTIVO')->where('enum_tabla_hija', 'INMUEBLES_PADRE')->where('id_tabla_hija', $idInmueblePadre);
-        })->where('enum_estado', 'ACTIVO')->get();
+        return $this->filter()->sort()->get()
+            ->map(
+                function ($item) {
+                    return $item->idPersona;
+                }
+            );
     }
 }
