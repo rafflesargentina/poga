@@ -2,7 +2,7 @@
 
 namespace Raffles\Modules\Poga\UseCases;
 
-use Raffles\Modules\Poga\Models\User;
+use Raffles\Modules\Poga\Models\{ Renta, User };
 use Raffles\Modules\Poga\Repositories\RentaRepository;
 use Raffles\Modules\Poga\Notifications\RentaActualizada;
 
@@ -13,26 +13,32 @@ class ActualizarRenta
     use DispatchesJobs;
     
     /**
-     * The form data, the Renta model id, and the User model.
+     * The Renta model.
      *
-     * @var int   
+     * @var Renta
+     */
+    protected $renta;
+
+    /**
+     * The form data and User model.
+     *
      * @var array
      * @var User
      */
-    protected $id, $data, $user;
+    protected $data, $user;
 
     /**
      * Create a new job instance.
      *
-     * @param int   $id   The Renta model id.
-     * @param array $data The form data.
-     * @param User  $user The User model.
+     * @param Renta $renta The Renta model.
+     * @param array $data  The form data.
+     * @param User  $user  The User model.
      *
      * @return void
      */
-    public function __construct($id, $data, $user)
+    public function __construct($renta, $data, $user)
     {
-        $this->id = $id;
+        $this->renta = $renta;
         $this->data = $data;
         $this->user = $user;
     }
@@ -62,6 +68,6 @@ class ActualizarRenta
      */
     protected function actualizarRenta(RentaRepository $repository)
     {
-        return $repository->update($this->id, $this->data)[1];
+        return $repository->update($this->renta, $this->data)[1];
     }
 }
