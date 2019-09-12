@@ -333,9 +333,7 @@ class CrearPagoFinanzas
         $monto -= $cantidad;
 
         $inmueble_padre = InmueblePadre::findOrFail($this->inmueble->idInmueblePadre()->first()->id);
-        $inmueble_padre->monto_fondo_reserva = $monto;
-
-        
+        $inmueble_padre->monto_fondo_reserva = $monto;        
         $inmueble_padre->save();
 
 
@@ -352,6 +350,7 @@ class CrearPagoFinanzas
             'fecha_pagare' => Carbon::now(),                  
             'enum_estado' => $this->data['enum_estado'],
             'enum_clasificacion_pagare' => "EXPENSA",
+            'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
         ]);
     } 
 

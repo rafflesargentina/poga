@@ -63,7 +63,7 @@ class ConfirmarPagoFinanzas
 
         $idPropietario = $inmueble->idPropietarioReferente()->first()->id;
         $idAdministrador = $inmueble->idAdministradorReferente()->first()->id;
-
+        $idInquilino = $inmueble->idInquilinoReferente()->first()->id;
         $propietarios =  $inmueble->propietarios()->get();
         
         
@@ -237,14 +237,16 @@ class ConfirmarPagoFinanzas
 
     public function actualizarEstadoPago($estado){
         $this->pagare->update([
-            'enum_estado' => $estado
+            'enum_estado' => $estado,
+            'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
         ]);
     }
 
     public function actualizarEstadoDeudorPago($estado,$id_persona){
         $this->pagare->update([
             'id_persona_adeudora' =>  $id_persona,
-            'enum_estado' => $estado
+            'enum_estado' => $estado,
+            'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
         ]);
     }
 

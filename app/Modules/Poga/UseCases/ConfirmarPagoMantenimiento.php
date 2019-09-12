@@ -203,14 +203,16 @@ class ConfirmarPagoMantenimiento
 
     public function actualizarEstadoPago($estado){
         $this->pagare->update([
-            'enum_estado' => $estado
+            'enum_estado' => $estado,
+            'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
         ]);
     }
 
     public function actualizarEstadoDeudorPago($estado,$idAdministrador){
         $this->pagare->update([
             'id_persona_adeudora' =>  $idAdministrador,
-            'enum_estado' => $estado
+            'enum_estado' => $estado,
+            'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
         ]);
     }
 

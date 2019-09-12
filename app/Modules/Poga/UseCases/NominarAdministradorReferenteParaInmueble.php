@@ -45,7 +45,7 @@ class NominarAdministradorReferenteParaInmueble
      *
      * @return void
      */
-    public function handle(NominacionRepository $repository, UserRepository $rUser;)
+    public function handle(NominacionRepository $repository, UserRepository $rUser)
     {
         $data = [
             'enum_estado' => 'EN_CURSO',

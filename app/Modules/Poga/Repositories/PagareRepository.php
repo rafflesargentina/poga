@@ -39,6 +39,8 @@ class PagareRepository extends EloquentRepository
      
     }
 
+    
+
 
     
 }

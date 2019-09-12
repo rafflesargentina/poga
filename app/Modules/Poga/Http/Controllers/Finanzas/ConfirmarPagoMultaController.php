@@ -1,19 +1,19 @@
 <?php
 
-namespace Raffles\Modules\Poga\Http\Controllers\Mantenimientos;
+namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
-use Raffles\Modules\Poga\UseCases\ConfirmarPagoMantenimiento;
+use Raffles\Modules\Poga\UseCases\ConfirmarPagoMulta;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
-class ConfirmarPagoController extends Controller
+class ConfirmarPagoMultaController extends Controller
 {
     use FormatsValidJsonResponses;
 
     /**
-     * Create a new ConfirmarPagoController instance.
+     * Create a new CrearPagoController instance.
      *
      * @return void
      */
@@ -34,13 +34,12 @@ class ConfirmarPagoController extends Controller
         $this->validate(
             $request, [
             'id_pagare' => 'required',
-            'enum_origen_fondos' => 'required'
             ]
         );
 
         $data = $request->all();
         $user = $request->user('api');
-        $retorno = $this->dispatch(new ConfirmarPagoMantenimiento($data, $user));
+        $retorno = $this->dispatchNow(new ConfirmarPagoMulta($data, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);
     }

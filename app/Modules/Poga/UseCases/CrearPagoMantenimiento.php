@@ -262,7 +262,7 @@ class CrearPagoMantenimiento
             'enum_estado' => 'PENDIENTE',
             'enum_clasificacion_pagare' => "EXPENSA",
             'id_tabla' => $this->mantenimiento->id,
-           
+            'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
         ]);
     } 
 

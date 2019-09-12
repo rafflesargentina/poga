@@ -263,6 +263,7 @@ class CrearPagoSolicitud
             'enum_estado' => 'PENDIENTE',
             'enum_clasificacion_pagare' => "EXPENSA",
             'id_tabla' => $this->solicitud->id,
+            'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
         ]);
     } 
 

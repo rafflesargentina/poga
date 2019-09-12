@@ -40,6 +40,8 @@ Route::post('finanzas/crearPago', Finanzas\CrearPagoController::class);
 Route::put('finanzas/actualizarEstadoPagare', Finanzas\ActualizarEstadoPagareController::class);
 Route::put('finanzas/cargarFondoReserva', Finanzas\CargarFondoReservaController::class);
 Route::put('finanzas/confirmarPago', Finanzas\ConfirmarPagoController::class);
+Route::put('finanzas/confirmarPagoRenta', Finanzas\ConfirmarPagoRentaController::class);
+Route::put('finanzas/confirmarPagoMulta', Finanzas\ConfirmarPagoMultaController::class);
 Route::put('finanzas/rechazarPago', Finanzas\RechazarPagoController::class);
 Route::put('finanzas/distribuirExpensas', Finanzas\DistribuirExpensasController::class);
 
