@@ -18,14 +18,15 @@ class RentaRepository extends EloquentRepository
      */
     public $tag = ['Renta'];
 
-    public function fetchRentas($id_inmueble_padre){
-
-        $items = $this->whereHas('idInmueble', function($query) use ($id_inmueble_padre) { return $query->where('id_tabla_hija', $id_inmueble_padre)->where('enum_tabla_hija', 'INMUEBLES_PADRE'); })
-            ->where('enum_estado', '!=', 'INACTIVO')
-            ->get();
+    /**
+     * findRentas.
+     *
+     * @return array
+     */
+    public function findRentas()
+    {
+        $items = $this->filter()->sort()->get()->toArray();
 
         return $items;
     }
-
-    
 }

@@ -13,18 +13,17 @@ class BorrarRenta
     use Dispatchable;
 
     /**
-     * The Unidad and User models.
+     * The Renta and User models.
      *
-     * @var Renta $unidad
-     * @var User     $user
+     * @var Renta
      */
     protected $renta, $user;
 
     /**
      * Create a new job instance.
      *
-     * @param Renta $unidad The Unidad model.
-     * @param User     $user     The User model.
+     * @param Renta $renta The Renta model.
+     * @param User  $user  The User model.
      *
      * @return void
      */
@@ -45,7 +44,7 @@ class BorrarRenta
     {
         $repository->update($this->renta->id, ['enum_estado' => 'INACTIVO'])[1];
 
-        $this->user->notify(new RentaBorrada($this->renta, $this->user));
+        $this->user->notify(new RentaBorrada($this->renta));
 
         return $this->renta;
     }

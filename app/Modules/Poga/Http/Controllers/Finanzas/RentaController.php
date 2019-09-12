@@ -5,7 +5,6 @@ namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 use Raffles\Modules\Poga\Repositories\RentaRepository;
 use Raffles\Modules\Poga\UseCases\{ BorrarRenta, CrearRenta, ActualizarRenta };
-use Raffles\Modules\Poga\UseCases\GenerarMultas;
 
 use Illuminate\Http\Request;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
@@ -15,7 +14,7 @@ class RentaController extends Controller
     use FormatsValidJsonResponses;
 
     /**
-     * Create a new UnidadController instance.
+     * Create a new RentaController instance.
      *
      * @param RentaRepository $repository
      *
@@ -31,26 +30,30 @@ class RentaController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     { 
-        $this->validate(
-            $request, [
+        $request->validate(
+            [
             'idInmueblePadre' => 'required',
             ]
         );
 
-        $items = $this->repository->fetchRentas($request->idInmueblePadre);
+        $items = $this->repository->findRentas();
+
         return $this->validSuccessJsonResponse('Success', $items);
     }
-
 
     /**
      * Display the specified resource.
      *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(Request $request, $id)
     {
@@ -62,34 +65,35 @@ class RentaController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {      
-        $this->validate(
-            $request, [
-                'comision_administrador'  => 'required|numeric',
-                'dia_mes_pago' => 'required|numeric|max:28',
-                'dias_multa' => 'required_if:multa,1',                
-                'expensas' => 'boolean',
-                'fecha_fin'  => 'required|date',
-                'fecha_inicio' => 'required|date',
-                'garantia'  => 'required|numeric',
-                'id_inmueble' => 'required|numeric',
-                'id_inquilino' => 'required|numeric',
-                'id_moneda' => 'required|numeric',
-                'monto' => 'numeric',
-                'monto_descontado_garantia_finalizacion_contrato'=> 'numeric',
-                'monto_multa_dia' => 'required_if:multa,1|numeric',
-                'multa'=> 'required|boolean',
-                'prim_comision_administrador'  => 'required|numeric',
+        $request->validate(
+            [
+            'comision_administrador' => 'required|numeric',
+            'dia_mes_pago' => 'required|numeric|max:28',
+            'dias_multa' => 'required_if:multa,1',                
+            'expensas' => 'boolean',
+            'fecha_fin'  => 'required|date',
+            'fecha_inicio' => 'required|date',
+            'garantia'  => 'required|numeric',
+            'id_inmueble' => 'required|numeric',
+            'id_inquilino' => 'required|numeric',
+            'id_moneda' => 'required|numeric',
+            'monto' => 'numeric',
+            'monto_descontado_garantia_finalizacion_contrato' => 'numeric',
+            'monto_multa_dia' => 'required_if:multa,1|numeric',
+            'multa'=> 'required|boolean',
+            'prim_comision_administrador' => 'required|numeric',
             ]
         );
 
         $data = $request->all();
         $user = $request->user('api');
-        $renta = $this->dispatch(new CrearRenta($data, $user));
+        $renta = $this->dispatchNow(new CrearRenta($data, $user));
 
         return $this->validSuccessJsonResponse('Success', $renta);
     }
@@ -97,20 +101,20 @@ class RentaController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int                      $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
-        $this->validate(
-            $request, [
-                'comision_administrador'  => 'required|numeric',
-                'dias_multa' => 'required_if:multa,1',
-                'monto_multa_dia' => 'required_if:multa,1|numeric',
-                'multa'=> 'required|boolean',
-                'prim_comision_administrador'  => 'required|numeric',
-
+        $request->validate(
+            [
+            'comision_administrador' => 'required|numeric',
+            'dias_multa' => 'required_if:multa,1',
+            'monto_multa_dia' => 'required_if:multa,1|numeric',
+            'multa'=> 'required|boolean',
+            'prim_comision_administrador' => 'required|numeric',
             ]
         );
 
@@ -124,18 +128,19 @@ class RentaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Request $request
-     * @param  int     $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Request $request, $id)
     {
-        $renta = $this->repository->findOrFail($id);
+        $model = $this->repository->findOrFail($id);
 
         $data = $request->all();
         $user = $request->user('api');
-        $renta = $this->dispatchNow(new BorrarRenta($renta, $user));
+        $renta = $this->dispatchNow(new BorrarRenta($model, $user));
 
-        return $this->validSuccessJsonResponse('Success');
+        return $this->validSuccessJsonResponse('Success', $renta);
     }
 }

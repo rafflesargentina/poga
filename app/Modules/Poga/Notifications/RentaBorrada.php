@@ -2,7 +2,7 @@
 
 namespace Raffles\Modules\Poga\Notifications;
 
-use Raffles\Modules\Poga\Models\{ Renta, User };
+use Raffles\Modules\Poga\Models\Renta;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
@@ -14,31 +14,29 @@ class RentaBorrada extends Notification
     use Queueable;
 
     /**
-     * The Inmueble and User models.
+     * The Renta model.
      *
-     * @var Renta $renta
-     * @var User     $user
+     * @var Renta
      */
-    protected $renta, $user;
+    protected $renta;
 
     /**
      * Create a new notification instance.
      *
-     * @param Renta  $renta The Renta model.
-     * @param User      $user     The User model.
+     * @param Renta $renta The Renta model.
      *
      * @return void
      */
-    public function __construct(Renta $renta, User $user)
+    public function __construct(Renta $renta)
     {
         $this->renta = $renta;
-        $this->user = $user;
     }
 
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
+     *
      * @return array
      */
     public function via($notifiable)
@@ -49,24 +47,26 @@ class RentaBorrada extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
+     *
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
-        $inmueble = $this->renta->idInnmueble;
+        $inmueble = $this->renta->idInmueble;
 
         return (new MailMessage)
-                    ->subject('Borraste un contrato de Renta')
-                    ->greeting('Hola '.$this->user->idPersona->nombre)
-                    ->line('Borraste el contrato de renta para el inmueble: "'.$inmueble->idInmueblePadre->nombre.'"')
-                    ->action('Ir a "Rentas"', url('/inmuebles/'.$inmueble->id_inmueble_padre.'/rentas'));
+            ->subject('Borraste un contrato de Renta')
+            ->greeting('Hola '.$notifiable->idPersona->nombre)
+            ->line('Borraste el contrato de renta para el inmueble: "'.$inmueble->idInmueblePadre->nombre.'"')
+            ->action('Ir a "Rentas"', url('/inmuebles/'.$inmueble->id_inmueble_padre.'/rentas'));
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
+     *
      * @return array
      */
     public function toArray($notifiable)

@@ -2,6 +2,7 @@
 
 namespace Raffles\Modules\Poga\UseCases;
 
+use Raffles\Modules\Poga\Models\User;
 use Raffles\Modules\Poga\Repositories\{ RentaRepository, UnidadRepository };
 use Raffles\Modules\Poga\Notifications\RentaCreada;
 
@@ -14,8 +15,8 @@ class CrearRenta
     /**
      * The form data and the User model.
      *
-     * @var array $data
-     * @var User  $user
+     * @var array
+     * @var User
      */
     protected $data, $user;
 
@@ -27,7 +28,7 @@ class CrearRenta
      *
      * @return void
      */
-    public function __construct($data,$user)
+    public function __construct($data, User $user)
     {
         $this->data = $data;
         $this->user = $user;
@@ -44,27 +45,34 @@ class CrearRenta
     {
         $renta = $this->crearRenta($rRenta, $rUnidad);
 
-        $this->user->notify(new RentaCreada($renta, $this->user));
+        $this->user->notify(new RentaCreada($renta));
 
         return $renta;
     }
 
     /**
+     * Crear Renta.
+     *
      * @param RentaRepository $repository The RentaRepository object.
+     *
+     * @return Renta
      */
     protected function crearRenta(RentaRepository $repository, UnidadRepository $rUnidad)
     {
-        $idUnidad = $this->data['id_unidad'];
-        if ($idUnidad) {
-            $unidad = $rUnidad->find($idUnidad)->first();
+        if (array_key_exists('id_unidad', $this->data)) {
+            $idUnidad = $this->data['id_unidad'];
+            $unidad = $rUnidad->findOrFail($idUnidad);
             $this->data['id_inmueble'] = $unidad->id_inmueble;
         }
 
-        return $repository->create(array_merge($this->data,
-            [
-                //Agregando campos que no se piden en el formulario
+        return $repository->create(
+            array_merge(
+                $this->data,
+                [
+                // Agrega campos que no se piden en el formulario.
                 'enum_estado' => 'PENDIENTE',
-            ]
-        ))[1];
+                ]
+            )
+        )[1];
     }
 }

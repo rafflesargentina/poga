@@ -2,10 +2,39 @@
 
 namespace Raffles\Modules\Poga\Models;
 
+use Raffles\Modules\Poga\Filters\RentaFilters;
+use Raffles\Modules\Poga\Sorters\RentaSorters;
+
 use Illuminate\Database\Eloquent\Model;
+use RafflesArgentina\FilterableSortable\FilterableSortableTrait;
 
 class Renta extends Model
 {
+    use FilterableSortableTrait;
+
+    /**
+     * The associated query filters.
+     *
+     * @var RentaFilters
+     */
+    protected $filters = RentaFilters::class;
+
+    /**
+     * The associated query sorters.
+     *
+     * @var RentaSorters
+     */
+    protected $sorters = RentaSorters::class;
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'fecha_fin', 'fecha_fin', 'fecha_finalizacion_contrato',
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -30,7 +59,6 @@ class Renta extends Model
         'prim_comision_admin',
     ];
 
-   
     /**
      * The table associated with the model.
      *
@@ -47,7 +75,7 @@ class Renta extends Model
 
   
     /**
-     * Get the inmueble that owns the inmueble.
+     * Get the inmueble that owns the renta.
      */
     public function idInmueble()
     {
@@ -63,7 +91,7 @@ class Renta extends Model
     }
 
     /**
-     * Get the inquilino that owns the renta.
+     * Get the moneda that owns the renta.
      */
     public function idMoneda()
     {
@@ -77,8 +105,4 @@ class Renta extends Model
     {
         return $this->hasMany(MultaRenta::class, 'id_renta');
     }
-
-    
-
-  
 }
