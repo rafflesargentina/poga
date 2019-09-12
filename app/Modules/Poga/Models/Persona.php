@@ -2,13 +2,30 @@
 
 namespace Raffles\Modules\Poga\Models;
 
+use Raffles\Modules\Poga\Filters\PersonaFilters;
+use Raffles\Modules\Poga\Sorters\PersonaSorters;
 use Raffles\Modules\Poga\Models\Traits\PersonaTrait;
 
 use Illuminate\Database\Eloquent\Model;
+use RafflesArgentina\FilterableSortable\FilterableSortableTrait;
 
 class Persona extends Model
 {
-    use PersonaTrait;
+    use FilterableSortableTrait, PersonaTrait;
+
+    /**
+     * The associated query filters.
+     *
+     * @var PersonaFilters
+     */
+    protected $filters = PersonaFilters::class;
+
+    /**
+     * The associated query sorters.
+     *
+     * @var PersonaSorters
+     */
+    protected $sorters = PersonaSorters::class;
 
     /**
      * The accessors to append to the model's array form.
