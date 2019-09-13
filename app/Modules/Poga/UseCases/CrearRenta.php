@@ -59,10 +59,15 @@ class CrearRenta
      */
     protected function crearRenta(RentaRepository $repository, UnidadRepository $rUnidad)
     {
+        // id_unidad existe en el array?    
         if (array_key_exists('id_unidad', $this->data)) {
             $idUnidad = $this->data['id_unidad'];
-            $unidad = $rUnidad->findOrFail($idUnidad);
-            $this->data['id_inmueble'] = $unidad->id_inmueble;
+
+            // id_unidad no está vacío?
+            if ($idUnidad) {
+                $unidad = $rUnidad->findOrFail($idUnidad);
+                $this->data['id_inmueble'] = $unidad->id_inmueble;
+            }
         }
 
         return $repository->create(

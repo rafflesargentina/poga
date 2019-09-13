@@ -1,6 +1,6 @@
 <?php
 
-namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
+namespace Raffles\Modules\Poga\Http\Controllers\Rentas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 use Raffles\Modules\Poga\Repositories\RentaRepository;
@@ -118,9 +118,11 @@ class RentaController extends Controller
             ]
         );
 
-        $data = $request->all();
-        $user = $request->user('api');
-        $renta = $this->dispatchNow(new ActualizarRenta($id, $data, $user));
+	$model = $this->repository->findOrFail($id);
+        $data = array_only($request->all(), ['comision_administrador', 'dias_multa', 'monto_multa_dia', 'multa', 'prim_comision_administrador']);
+	$user = $request->user('api');
+
+        $renta = $this->dispatchNow(new ActualizarRenta($model, $data, $user));
 
         return $this->validSuccessJsonResponse('Success', $renta);
     }
