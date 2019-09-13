@@ -12,6 +12,10 @@ class Renta extends Model
 {
     use FilterableSortableTrait;
 
+    protected $casts = [
+        'multa' => 'boolean',
+    ];
+
     /**
      * The associated query filters.
      *
