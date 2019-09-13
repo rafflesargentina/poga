@@ -103,6 +103,14 @@ class Renta extends Model
     }
 
     /**
+     * Get the unidad that owns the renta.
+     */
+    public function idUnidad()
+    {
+        return $this->belongsTo(Unidad::class, 'id_inmueble', 'id_inmueble');
+    }
+
+    /**
      * Get the multas for the renta.
      */
     public function multas()

@@ -59,6 +59,8 @@ class RentaController extends Controller
     {
         $model = $this->repository->findOrFail($id);
 
+        $model->loadMissing('idUnidad');
+
         return $this->validSuccessJsonResponse('Success', $model);
     }
 

@@ -54,11 +54,18 @@ class RentaCreada extends Notification
     public function toMail($notifiable)
     {
         $inmueble = $this->renta->idInmueble;
+        $unidad = $this->renta->idUnidad;
+
+        if ($unidad) {
+            $line = 'Creaste un contrato de renta para la Unidad "'.$unidad->piso.' - '.$unidad->numero.'" del Inmueble "'.$inmueble->idInmueblePadre->nombre.'"';
+        } else {
+            $line = 'Creaste un contrato de renta para el inmueble "'.$inmueble->idInmueblePadre->nombre.'"';
+        }
 
         return (new MailMessage)
             ->subject('Creaste un contrato de Renta')
             ->greeting('Hola '.$notifiable->idPersona->nombre)
-            ->line('Creaste un contrato de renta para el inmueble "'.$inmueble->idInmueblePadre->nombre.'"')
+            ->line($line)
             ->action('Ir a "Rentas"', url('/inmuebles/'.$inmueble->id_inmueble_padre.'/rentas'));
     }
 

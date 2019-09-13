@@ -54,11 +54,18 @@ class RentaActualizada extends Notification
     public function toMail($notifiable)
     {
         $inmueble = $this->renta->idInmueble;
+	$unidad = $this->renta->idUnidad;
+
+	if ($unidad) {
+            $line = 'Actualizaste el contrato de renta para la Unidad "'.$unidad->piso.' - '.$unidad->numero.'" del Inmueble "'.$inmueble->idInmueblePadre->nombre.'"';
+	} else {
+            $line = 'Actualizaste el contrato de renta para el inmueble "'.$inmueble->idInmueblePadre->nombre.'"';
+	}
 
         return (new MailMessage)
             ->subject('Actualizaste un contrato de Renta')
             ->greeting('Hola '.$notifiable->idPersona->nombre)
-            ->line('Actualizaste el contrato de renta para el inmueble "'.$inmueble->idInmueblePadre->nombre.'"')
+            ->line($line)
             ->action('Ir a "Rentas"', url('/inmuebles/'.$inmueble->id_inmueble_padre.'/rentas'));
     }
 
