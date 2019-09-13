@@ -32,6 +32,11 @@ class RentaFilters extends BaseFilters
                 $q->where('enum_tabla_hija', 'INMUEBLES_PADRE');
                 $q->where('id_tabla_hija', $query);
             }
+        )
+        ->orWhereHas(
+            'idUnidad', function ($q) use ($query) {
+                $q->where('id_inmueble_padre', $query);
+            }
         );
     }
 }
