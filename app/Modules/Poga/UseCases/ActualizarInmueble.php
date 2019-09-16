@@ -2,7 +2,7 @@
 
 namespace Raffles\Modules\Poga\UseCases;
 
-use Raffles\Modules\Poga\Models\{ InmueblePadre, User };
+use Raffles\Modules\Poga\Models\{ Inmueble, InmueblePadre, User };
 use Raffles\Modules\Poga\Repositories\{ DireccionRepository, InmuebleRepository, InmueblePadreRepository, PersonaRepository };
 use Raffles\Modules\Poga\Notifications\InmuebleActualizado;
 
@@ -62,16 +62,7 @@ class ActualizarInmueble
         $this->sincronizarCaracteristicas($inmueble);
         $this->sincronizarFormatos($inmueble);
 
-        //if ($this->data['administrador'] === 'yo' || $this->data['idAdministradorReferente'] === $this->user->id) {
-            //$inmueble->idAdministradorReferente()->create(array_merge($this->data['idPersona'],
-                //[
-                    //'id_persona' => $this->user->idPersona->id,
-                //]
-            //));
-        //}
-
-        //$this->nominarOAsignarAdministrador($rPersona, $inmueble);
-        //$this->nominarOAsignarPropietario($rPersona, $inmueble);
+        $this->nominarOAsignarPropietario($rPersona, $inmueble);
 
         $this->user->notify(new InmuebleActualizado($inmueble, $this->user));
 
@@ -79,7 +70,11 @@ class ActualizarInmueble
     }
 
     /**
-     * @param DireccionRepository $repository The DireccionRepository object.
+     * Actualizar Dirección.
+     *
+     * @param  DireccionRepository $repository The DireccionRepository object.
+     *
+     * @return \Raffles\Modules\Poga\Models\Direccion
      */
     protected function actualizarDireccion(DireccionRepository $repository)
     {
@@ -87,7 +82,11 @@ class ActualizarInmueble
     }
 
     /**
-     * @param InmuebleRepository $repository The InmuebleRepository object.
+     * Actualizar Inmueble.
+     *
+     * @param  InmuebleRepository $repository The InmuebleRepository object.
+     *
+     * @return Inmueble
      */
     protected function actualizarInmueble(InmuebleRepository $repository)
     {
@@ -95,7 +94,11 @@ class ActualizarInmueble
     }
 
     /**
-     * @param InmueblePadreRepository $repository The InmueblePadreRepository object.
+     * Actualizar InmueblePadre.
+     *
+     * @param  InmueblePadreRepository $repository The InmueblePadreRepository object.
+     *
+     * @return InmueblePadre
      */
     protected function actualizarInmueblePadre(InmueblePadreRepository $repository)
     {
@@ -105,67 +108,64 @@ class ActualizarInmueble
     }
 
     /**
-     * @param Inmueble $inmueble The Inmueble model.
+     * Sincronizar Características.
+     *
+     * @param  Inmueble $inmueble The Inmueble model.
+     *
+     * @return void
      */
     protected function sincronizarCaracteristicas($inmueble)
     {
-        $caracteristicas = $this->data['caracteristicas'];
-        if ($caracteristicas) {
+        if (array_key_exists('caracteristicas', $this->data)) {
+            $caracteristicas = $this->data['caracteristicas'];
             $inmueble->caracteristicas()->sync([]);
             foreach($caracteristicas as $caracteristica) {
                 $inmueble->caracteristicas()->attach($caracteristica, ['enum_estado' => 'ACTIVO']);
             }
         }
-
-        return $inmueble->caracteristicas;
     }
 
     /**
-     * @param Inmueble $inmueble The Inmueble model.
+     * Sincronizar Formatos.
+     *
+     * @param  Inmueble $inmueble The Inmueble model.
+     *
+     * @return void
      */
     protected function sincronizarFormatos($inmueble)
     {
         $formatos = $this->data['formatos'];
-        if ($formatos) {
-            $inmueble->formatos()->sync($formatos);
-        }
+        $inmueble->formatos()->sync($formatos);
     }
 
     /**
-     * @param PersonaRepository $repository The PersonaRepository object.
-     * @param Inmueble          $inmueble   The Inmueble model.
-     */
-    protected function nominarOAsignarAdministrador(PersonaRepository $repository, Inmueble $inmueble)
-    {
-        $id = $this->data['idAdministradorReferente'];
-
-        if ($id) {
-            $persona = $repository->find($id)->first();
-
-            if ($id !== $this->user->id) {
-                $this->dispatch(new NominarAdministradorReferenteParaInmueble($persona, $inmueble));
-            } else {
-                $this->dispatch(new RelacionarAdministradorReferente($persona, $inmueble, $this->data['idPersona']));
-            }
-        }
-    }
-
-    /**
-     * @param PersonaRepository $repository The PersonaRepository object.
-     * @param Inmueble          $inmueble   The Inmueble model.
+     * Nominar o Asignar Propietario Referente.
+     *
+     * @param  PersonaRepository $repository The PersonaRepository object.
+     * @param  Inmueble          $inmueble   The Inmueble model.
+     *
+     * @return void
      */
     protected function nominarOAsignarPropietario(PersonaRepository $repository, Inmueble $inmueble)
     {
-        $id = $this->data['idPropietarioReferente'];
+        // idPropietarioReferente no está presente en el array?
+        if (array_key_exists('idPropietarioReferente', $this->data)) {
+            $user = $this->user;
 
-        if ($id) {
-            $persona = $repository->find($id)->first();
+            $id = $this->data['idPropietarioReferente'];
 
-            if ($id !== $this->user->id) {
-                $this->dispatch(new NominarPropietarioReferenteParaInmueble($persona, $inmueble));
-            } else {
-                $this->dispatch(new RelacionarPropietarioReferente($persona, $inmueble));
+            // idPropietarioReferente no está vacío?
+            if ($id) {
+                // idPropietarioReferente es distinto al id de la persona del usuario?
+                if ($id != $user->id_persona) {
+                    $persona = $repository->findOrFail($id);
+
+                    $this->dispatch(new NominarPropietarioReferenteParaInmueble($persona, $inmueble, $this->user));
+                } else {
+                    $persona = $user->idPersona;
+                    $this->dispatch(new RelacionarPropietarioReferente($persona, $inmueble));
+                }
             }
-        }
+	}
     }
 }

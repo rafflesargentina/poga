@@ -15,16 +15,16 @@ class BorrarInmueble
     /**
      * The Inmueble and User models.
      *
-     * @var Inmueble $inmueble
-     * @var User     $user
+     * @var Inmueble
+     * @var User
      */
     protected $inmueble, $user;
 
     /**
      * Create a new job instance.
      *
-     * @param Inmueble $inmueble The Inmueble model.
-     * @param User     $user     The User model.
+     * @param  Inmueble $inmueble The Inmueble model.
+     * @param  User     $user     The User model.
      *
      * @return void
      */
@@ -37,7 +37,7 @@ class BorrarInmueble
     /**
      * Execute the job.
      *
-     * @param InmuebleRepository $repository The InmuebleRepository object.
+     * @param  InmuebleRepository $repository The InmuebleRepository object.
      *
      * @return Inmueble
      */

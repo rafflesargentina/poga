@@ -15,8 +15,8 @@ class CrearInmueble
     /**
      * The form data and the User model.
      *
-     * @var array $data
-     * @var User  $user
+     * @var array
+     * @var User
      */
     protected $data, $user;
 
@@ -51,14 +51,6 @@ class CrearInmueble
         $this->adjuntarFormatos($inmueble);
         $inmueblePadre = $this->crearInmueblePadre($rInmueblePadre, $direccion, $inmueble);
 
-        if ($this->data['administrador'] === 'yo' || $this->data['idAdministradorReferente'] === $this->user->id_persona) {
-            $inmueble->idAdministradorReferente()->create(array_merge($this->data['idPersona'],
-                [
-                    'id_persona' => $this->user->id_persona,
-                ]
-            ));
-        }
-
         $this->nominarOAsignarAdministrador($rPersona, $inmueble);
         $this->nominarOAsignarPropietario($rPersona, $inmueble);
 
@@ -68,18 +60,24 @@ class CrearInmueble
     }
 
     /**
-     * @param Inmueble $inmueble The Inmueble model.
+     * Adjuntar Formatos.
+     *
+     * @param  Inmueble $inmueble The Inmueble model.
+     *
+     * @return void
      */
     protected function adjuntarFormatos($inmueble)
     {
         $formatos = $this->data['formatos'];
-        if ($formatos) {
-            $inmueble->formatos()->attach($formatos);
-        }
+        $inmueble->formatos()->attach($formatos);
     }
 
     /**
-     * @param DireccionRepository $repository The DireccionRepository object.
+     * Crear Dirección.
+     *
+     * @param  DireccionRepository $repository The DireccionRepository object.
+     *
+     * @return Direccion
      */
     protected function crearDireccion(DireccionRepository $repository)
     {
@@ -87,7 +85,11 @@ class CrearInmueble
     }
 
     /**
-     * @param InmuebleRepository $repository The InmuebleRepository object.
+     * Crear Inmueble.
+     *
+     * @param  InmuebleRepository $repository The InmuebleRepository object.
+     *
+     * @return Inmueble
      */
     protected function crearInmueble(InmuebleRepository $repository)
     {
@@ -99,9 +101,13 @@ class CrearInmueble
     }
 
     /**
-     * @param InmueblePadreRepository $repository The InmueblePadreRepository object.
-     * @param Direccion               $direccion  The Direccion model.
-     * @param Inmueble                $inmueble   The Inmueble model.
+     * Crear InmueblePadre.
+     *
+     * @param  InmueblePadreRepository $repository The InmueblePadreRepository object.
+     * @param  Direccion               $direccion  The Direccion model.
+     * @param  Inmueble                $inmueble   The Inmueble model.
+     *
+     * @return InmueblePadre
      */
     protected function crearInmueblePadre(InmueblePadreRepository $repository, Direccion $direccion, Inmueble $inmueble)
     {
@@ -110,8 +116,7 @@ class CrearInmueble
                 'id_direccion' => $direccion->id,
                 'id_inmueble' => $inmueble->id,
             ]
-        )
-        )[1];
+        ))[1];
 
         $inmueble->id_tabla_hija = $inmueblePadre->id;
         $inmueble->save();
@@ -120,40 +125,69 @@ class CrearInmueble
     }
 
     /**
-     * @param PersonaRepository $repository The PersonaRepository object.
-     * @param Inmueble          $inmueble   The Inmueble model.
+     * Nominar o Asignar Administrador Referente.
+     *
+     * @param  PersonaRepository $repository The PersonaRepository object.
+     * @param  Inmueble          $inmueble   The Inmueble model.
+     *
+     * @return void
      */
     protected function nominarOAsignarAdministrador(PersonaRepository $repository, Inmueble $inmueble)
     {
-        $id = $this->data['idAdministradorReferente'];
+	// idAdministradorReferente presente en el array?
+	if (array_key_exists('idAdministradorReferente', $this->data)) {
+	    $user = $this->user;
 
-        if ($id) {
-            $persona = $repository->find($id)->first();
+	    $id = $this->data['idAdministradorReferente'];
 
-            if ($id !== $this->user->id) {
-                $this->dispatch(new NominarAdministradorReferenteParaInmueble($persona, $inmueble));
-            } else {
-                $this->dispatch(new RelacionarAdministradorReferente($persona, $inmueble, $this->data['idPersona']));
-            }
-        }
+            // idAdministradorReferente no está vacío?
+	    if ($id) {
+                // idAdministradorReferente es distinto al id de la persona del usuario?
+	        if ($id != $user->id_persona) {
+	            $persona = $repository->findOrFail($id);
+
+                    $this->dispatch(new NominarAdministradorReferenteParaInmueble($persona, $inmueble));
+	        } else {
+		    $persona = $user->idPersona;
+		    $data = [];
+		    if ($this->data['idInmueblePadre']['modalidad_propiedad'] === 'EN_CONDOMINIO') {
+                        $data = array_only($this->data, ['dia_cobro_mensual', 'salario']);
+		    }
+
+                    $this->dispatch(new RelacionarAdministradorReferente($persona, $inmueble, $data));
+		}
+	    }
+	}
     }
 
     /**
-     * @param PersonaRepository $repository The PersonaRepository object.
-     * @param Inmueble          $inmueble   The Inmueble model.
+     * Nominar o Asingar Propietario Referente.
+     *
+     * @param  PersonaRepository $repository The PersonaRepository object.
+     * @param  Inmueble          $inmueble   The Inmueble model.
+     *
+     * @return void
      */
     protected function nominarOAsignarPropietario(PersonaRepository $repository, Inmueble $inmueble)
     {
-        $id = $this->data['idPropietarioReferente'];
+	// idPropietarioReferente no está presente en el array?
+	if (array_key_exists('idPropietarioReferente', $this->data)) {
+            $user = $this->user;
 
-        if ($id) {
-            $persona = $repository->find($id)->first();
+            $id = $this->data['idPropietarioReferente'];
 
-            if ($id !== $this->user->id) {
-                $this->dispatch(new NominarPropietarioReferenteParaInmueble($persona, $inmueble));
-            } else {
-                $this->dispatch(new RelacionarPropietarioReferente($persona, $inmueble));
-            }
+	    // idPropietarioReferente no está vacío?
+            if ($id) {
+                // idPropietarioReferente es distinto al id de la persona del usuario?
+	        if ($id != $user->id_persona) {
+                    $persona = $repository->findOrFail($id);
+
+		    $this->dispatch(new NominarPropietarioReferenteParaInmueble($persona, $inmueble, $this->user));
+		} else {
+		    $persona = $user->idPersona;
+                    $this->dispatch(new RelacionarPropietarioReferente($persona, $inmueble));
+		}
+	    }
         }
     }
 }
