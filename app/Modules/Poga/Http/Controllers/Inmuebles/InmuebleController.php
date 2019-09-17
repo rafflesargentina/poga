@@ -3,11 +3,11 @@
 namespace Raffles\Modules\Poga\Http\Controllers\Inmuebles;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
-use Raffles\Modules\Poga\Repositories\InmueblePadreRepository;
+use Raffles\Modules\Poga\Repositories\{ InmueblePadreRepository, NominacionRepository };
 use Raffles\Modules\Poga\UseCases\{ ActualizarInmueble, BorrarInmueble, CrearInmueble };
 
-use Caffeinated\Shinobi\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
 class InmuebleController extends Controller
@@ -17,7 +17,7 @@ class InmuebleController extends Controller
     /**
      * The InmueblePadreRepository object.
      *
-     * @var InmueblePadreRepository $inmueble
+     * @var InmueblePadreRepository
      */
     protected $repository;
 
@@ -38,21 +38,22 @@ class InmuebleController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
-        $this->validate(
-            $request, [
+        $request->validate(
+            [
             'tipoListado' => 'required|in:DisponiblesAdministrar,MisInmuebles,Nominaciones,TodosInmuebles',
             'rol' => 'required_if:tipo_listado,Nominaciones'
             ]
         );
 
-        $items = [];
         $user = $request->user('api');
 
-        switch($request->tipoListado) {
+        switch ($request->tipoListado) {
         case 'DisponiblesAdministrar':
             $map = $this->repository->findDisponiblesAdministrar();
 
@@ -64,38 +65,10 @@ class InmuebleController extends Controller
             break;
 
         case 'Nominaciones':
-            $role = Role::where('slug', $request->rol)->first();
+            $repository = new NominacionRepository;
 
-            $items = $this->repository->with('idInmueble.nominaciones')
-                ->whereHas('idInmueble', function($query) use($role, $user) {
-                    return $query->where('enum_estado', 'ACTIVO')
-                        ->has('nominaciones');
-//, function($q) use($role, $user) {
-                    //return $q->where('role_id', $role->id); });
-                })->get();
-            //$user->idPersona->whereHas('nominaciones', function($query) { return $query->where('idInmueble.enum_tabla_hija', 'INMUEBLES_PADRE'); });
+            $map = $repository->dondeFuiNominado($user->id_persona, $user->role_id);
 
-            $map = $items->map(
-                function ($item) {
-                        $inmueble = $item->idInmueble;
-
-                        return [
-                        'cant_unidades' => $inmueble->unidades->count(),
-                        'direccion' => $inmueble->direccion,
-                        'divisible_en_unidades' => $item->divisible_en_unidades,
-                        'id' => $inmueble->id_inmueble_padre,
-                        'id_usuario_creador' => $inmueble->id_usuario_creador,
-                        'inmueble_completo' => $inmueble->idAdministradorReferente ? false : true,
-                        'nombre' => $inmueble->idInmueblePadre->nombre,
-                        'nombre_y_apellidos_administrador_referente' => $inmueble->nombre_y_apellidos_administrador_referente,
-                        'nombre_y_apellidos_inquilino_referente' => $inmueble->nombre_y_apellidos_inquilino_referente,
-                        'nombre_y_apellidos_propietario_referente' => $inmueble->nombre_y_apellidos_propietario_referente,
-                        'persona_id_administrador_referente' => $inmueble->persona_id_administrador_referente,
-                        'persona_id_inquilino_referente' => $inmueble->persona_id_inquilino_referente,
-                        'tipo' => $inmueble->tipo,
-                        ];
-                }
-            );
             break;
 
         case 'TodosInmuebles':
@@ -110,29 +83,66 @@ class InmuebleController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        $this->validate(
-            $request, [
-            'administrador' => 'required',
-            'formatos' => 'required|array',
+        $user = $request->user('api');
+
+        if ($request->administrador === 'yo') {
+            $request->merge(['idAdministradorReferente' => $user->id_persona]);
+        }
+
+        $request->validate(
+            [
+            'dia_cobro_mensual' => Rule::requiredIf(
+                function () use ($request, $user) {
+                    // Requerido cuando la modalidad de la propiedad es EN_CONDOMINIO,
+                    // y administrador es "yo" o idAdministradorReferente es igual a id_persona del usuario.
+                    return $request->idInmueblePadre['modalidad_propiedad'] === 'EN_CONDOMINIO'
+                    && ($request->administrador === 'yo' || $request->idAdministradorReferente == $user->id_persona);
+                }
+            ),
+            'administrador' => 'required|in:yo,otra_persona',
+            'formatos' => 'required|array|min:1',
             'idDireccion.calle_principal' => 'required',
             'idDireccion.numeracion' => 'required',
             'idInmueble.id_tipo_inmueble' => 'required',
             'idInmueble.solicitud_directa_inquilinos' => 'required',
-            'idInmueblePadre.nombre' => 'required',
-            'idInmueblePadre.cant_pisos' => 'required',
-            'idInmueblePadre.comision_administrador' => 'required',
+            'idInmueblePadre.cant_pisos' => 'required|numeric',
+            'idInmueblePadre.comision_administrador' => Rule::requiredIf(
+                function () use ($request) {
+                    // Requerido cuando la modalidad de la propiedad es UNICO_PROPIETARIO,
+                    // y administrador es "yo" o idAdministradorReferente es igual a id_persona del usuario.
+                    return $request->idInmueblePadre['modalidad_propiedad'] === 'UNICO_PROPIETARIO'
+                    && ($request->administrador === 'yo' || $request->idAdministradorReferente == $user->id_persona);
+                }
+            ),
+            'idInmueblePadre.divisible_en_unidades' => 'required_if:idInmueble.id_tipo_inmueble,1',
             'idInmueblePadre.modalidad_propiedad' => 'required_if:idInmueble.id_tipo_inmueble,1',
-            'idPropietarioReferente' => 'required_if:modalidad_propiedad,UNICO_PROPIETARIO',
+            'idInmueblePadre.nombre' => 'required',
+            'idPropietarioReferente' => Rule::requiredIf(
+                function () use ($request, $user) {
+                    // Requerido cuando la modalidad de la propiedad es UNICO_PROPIETARIO
+                    // y el tipo de inmueble es distinto de Edificio.
+                    return $request->idInmueblePadre['modalidad_propiedad'] === 'UNICO_PROPIETARIO'
+                    && $request->idInmueble['id_tipo_inmueble'] != '1';
+                }
+            ),
+            'salario' => Rule::requiredIf(
+                function () use ($request, $user) {
+                    // Requerido cuando la modalidad de la propiedad es EN_CONDOMINIO,
+                    // y administrador es "yo" o idAdministradorReferente es igual a id_persona del usuario.
+                    return $request->idInmueblePadre['modalidad_propiedad'] === 'EN_CONDOMINIO'
+                    && ($request->administrador === 'yo' || $request->idAdministradorReferente == $user->id_persona);
+                }
+            )
             ]
         );
 
         $data = $request->all();
-        $user = $request->user('api');
         $inmueblePadre = $this->dispatch(new CrearInmueble($data, $user));
 
         return $this->validSuccessJsonResponse('Success', $inmueblePadre);
@@ -141,14 +151,17 @@ class InmuebleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(Request $request, $id)
     {
         $model = $this->repository->findOrFail($id);
-
         $model->loadMissing('idInmueble.caracteristicas', 'idInmueble.formatos');
+
+        $this->authorize($request->user('api'), $model);
 
         return $this->validSuccessJsonResponse('Success', $model);
     }
@@ -156,30 +169,62 @@ class InmuebleController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int                      $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
-        $this->validate(
-            $request, [
-            'formatos' => 'required|array',
-            'idDireccion.calle_principal' => 'required',
-            'idDireccion.calle_secundaria' => 'required',
-            'idDireccion.numeracion' => 'required',
-            'idInmueble.solicitud_directa_inquilinos' => 'required',
-            'idInmueblePadre.nombre' => 'required',
-            'idInmueblePadre.cant_pisos' => 'required',
-            'idInmueblePadre.comision_administrador' => 'required',
-            'idInmueblePadre.modalidad_propiedad' => 'required_if:idInmueble.id_tipo_inmueble,1',
-            'idPropietarioReferente' => 'required_if:modalidad_propiedad,UNICO_PROPIETARIO',
-            ]
-        );
-
+        $model = $this->repository->findOrFail($id);
         $data = $request->all();
         $user = $request->user('api');
-        $model = $this->repository->findOrFail($id);
+
+        // Ciertos campos no se pueden modificar una vez creado el inmueble.
+        array_key_exists('divisible_en_unidades', $data['idInmueblePadre']) ?: $data['idInmueblePadre']['divisible_en_unidades'] = $model->divisible_en_unidades;
+        array_key_exists('id_tipo_inmueble', $data['idInmueblePadre']) ?: $data['idInmueblePadre']['id_tipo_inmueble'] = $model->id_tipo_inmueble;
+        array_key_exists('idAdministradorReferente', $data) ?: $data['idAdministradorReferente'] = ($model->idAdministradorReferente ? $model->idAdministradorReferente->id : null);
+        array_key_exists('idPropietarioReferente', $data) ?: $data['idPropietarioReferente'] = ($model->idPropietarioReferente ? $model->idPropietarioReferente->id : null);
+        array_key_exists('modalidad_propiedad', $data['idInmueblePadre']) ?: $data['idInmueblePadre']['modalidad_propiedad'] = $model->modalidad_propiedad;
+
+        $request->merge($data);
+
+        return $this->validSuccessJsonResponse('Success', $request->all());
+        $request->validate(
+            [
+            'caracteristicas' => 'array',
+            'dia_cobro_mensual' => Rule::requiredIf(
+                function () use ($model, $user) {
+                    // Requerido cuando la modalidad de la propiedad es EN_CONDOMINIO,
+                    // y administrador es "yo" o idAdministradorReferente es igual a id_persona del usuario.
+                    return $model->modalidad_propiedad === 'EN_CONDOMINIO'
+                    && ($model->idAdministradorReferente ? $model->idAdministradorReferente->id == $user->id_persona : false);
+                }
+            ),
+            'formatos' => 'required|array|min:1',
+            'idDireccion.calle_principal' => 'required',
+            'idDireccion.numeracion' => 'required',
+            'idInmueble.solicitud_directa_inquilinos' => 'required',
+            'idInmueblePadre.cant_pisos' => 'required|numeric',
+            'idInmueblePadre.comision_administrador' => Rule::requiredIf(
+                function () use ($model) {
+                    // Requerido cuando la modalidad de la propiedad es UNICO_PROPIETARIO,
+                    // y administrador es "yo" o idAdministradorReferente es igual a id_persona del usuario.
+                    return $model->modalidad_propiedad === 'UNICO_PROPIETARIO'
+                    && ($model->idAdministradorReferente ? $model->idAdministradorReferente->id == $user->id_persona : false);
+                }
+            ),
+            'idInmueblePadre.nombre' => 'required',
+            'salario' => Rule::requiredIf(
+                function () use ($model, $user) {
+                    // Requerido cuando la modalidad de la propiedad es EN_CONDOMINIO,
+                    // y administrador es "yo" o idAdministradorReferente es igual a id_persona del usuario.
+                    return $model->modalidad_propiedad === 'EN_CONDOMINIO'
+                    && ($model->idAdministradorReferente ? $model->idAdministradorReferente->id == $user->id_persona : false);
+                }
+            )
+            ]
+        );
 
         $inmueblePadre = $this->dispatch(new ActualizarInmueble($model, $data, $user));
 
@@ -189,15 +234,19 @@ class InmuebleController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Request $request, $id)
     {
         $inmueblePadre = $this->repository->findOrFail($id);
 
-        $inmueble = $this->dispatch(new BorrarInmueble($inmueblePadre->idInmueble, $request->user('api')));
+        $model = $inmueblePadre->idInmueble;
+        $user = $request->user('api');
+        $inmueble = $this->dispatchNow(new BorrarInmueble($model, $user));
 
-        return $this->validSuccessJsonResponse('Success');
+        return $this->validSuccessJsonResponse('Success', $inmueble);
     }
 }

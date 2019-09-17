@@ -19,98 +19,90 @@ class InmueblePadreRepository extends EloquentRepository
     public $tag = ['InmueblePadre'];
 
     /**
+     * Find: Disponibles para Administrar.
      *
+     * @return array
      */
     public function findDisponiblesAdministrar()
     {
-        $items = $this->whereHas('idInmueble', function($query) { return $query->doesntHave('idAdministradorReferente')->where('enum_estado', 'ACTIVO'); })
-            ->orWhereHas('unidades', function($query) { return $query->doesntHave('idInmueble.idAdministradorReferente'); })
-            ->get();
+        $items = $this->with('unidades')
+            ->whereHas(
+                'idInmueble', function ($query) {
+                    return $query->doesntHave('idAdministradorReferente'); 
+                }
+            )
+            ->orWhereHas(
+                'unidades', function ($query) {
+                    return $query->doesntHave('idInmueble.idAdministradorReferente'); 
+                }
+            )->get();
 
-        $map = $items->map(
-            function ($item) {
-                $inmueble = $item->idInmueble;
-
-                return [
-                    'cant_unidades' => $item->unidades->count(),
-                    'direccion' => $inmueble->direccion,
-                    'divisible_en_unidades' => $item->divisible_en_unidades,
-                    'id' => $item->id,
-                    'id_usuario_creador' => $inmueble->id_usuario_creador,
-                    'inmueble_completo' => $inmueble->idAdministradorReferente ? false : true,
-                    'nombre' => $item->nombre,
-                    'nombre_y_apellidos_administrador_referente' => $inmueble->nombre_y_apellidos_administrador_referente,
-                    'nombre_y_apellidos_inquilino_referente' => $inmueble->nombre_y_apellidos_inquilino_referente,
-                    'nombre_y_apellidos_propietario_referente' => $inmueble->nombre_y_apellidos_propietario_referente,
-                    'persona_id_administrador_referente' => $inmueble->persona_id_administrador_referente,
-                    'persona_id_inquilino_referente' => $inmueble->persona_id_inquilino_referente,
-                    'tipo' => $inmueble->tipo,
-                ];
-            }
-        );
-
-        return $map;
+        return $this->map($items);
     }
 
     /**
-     * User $user The User model.
+     * Find: Mis Inmuebles.
+     *
+     * @param User $user The User model.
+     *
+     * @return array
      */
     public function findMisInmuebles(User $user)
     {
         $user->idPersona->inmuebles->loadMissing('unidades');
 
-        //$items = $user->idPersona->inmuebles->where('enum_estado', 'ACTIVO')->where('enum_tabla_hija', 'INMUEBLES_PADRE');
-        $items = $this->whereHas('idInmueble', function($query) use($user) { return $query->where('inmuebles.enum_estado', 'ACTIVO')->whereHas('personas', function($q) use($user) { return $q->where('personas.id', $user->id_persona)->where('personas.enum_estado', 'ACTIVO'); }); })->get();
-
-        $map = $items->map(
-            function ($item) {
-                return [
-                    'cant_unidades' => $item->unidades->count(),
-                    'direccion' => $item->idInmueble->direccion,
-                    'divisible_en_unidades' => $item->divisible_en_unidades,
-                    'id' => $item->id,
-                    'id_usuario_creador' => $item->id_usuario_creador,
-                    'inmueble_completo' => $item->idAdministradorReferente ? false : true,
-                    'nombre' => $item->nombre,
-                    'nombre_y_apellidos_administrador_referente' => $item->nombre_y_apellidos_administrador_referente,
-                    'nombre_y_apellidos_inquilino_referente' => $item->nombre_y_apellidos_inquilino_referente,
-                    'nombre_y_apellidos_propietario_referente' => $item->nombre_y_apellidos_propietario_referente,
-                    'persona_id_administrador_referente' => $item->persona_id_administrador_referente,
-                    'persona_id_inquilino_referente' => $item->persona_id_inquilino_referente,
-                    'persona_id_propietario_referente' => $item->persona_id_propietario_referente,
-                    'tipo' => $item->idInmueble->tipo,
-                ];
+        $items = $this->whereHas(
+            'idInmueble', function ($query) use ($user) {
+                return $query->where('inmuebles.enum_estado', 'ACTIVO')->whereHas(
+                    'personas', function ($q) use ($user) {
+                        return $q->where('personas.id', $user->id_persona)->where('personas.enum_estado', 'ACTIVO'); 
+                    }
+                ); 
             }
-        );
+        )->get();
 
-        return $map;
+        return $this->map($items);
     }
 
     /**
+     * Find: Todos los inmuebles.
      *
+     * @return array
      */
     public function findTodos()
     {
         $items = $this->with('unidades')->get();
 
-        $map = $items->map(
+        return $this->map($items);
+    }
+
+    /**
+     * Map items collection.
+     *
+     * @param Collection $items
+     *
+     * @return array
+     */
+    protected function map($items)
+    {
+        return $items->map(
             function ($item) {
                 $inmueble = $item->idInmueble;
 
                 return [
-                    'cant_unidades' => $item->unidades->count(),
-                    'direccion' => $inmueble->direccion,
-                    'divisible_en_unidades' => $item->divisible_en_unidades,
-                    'id' => $item->id,
-                    'id_usuario_creador' => $inmueble->id_usuario_creador,
-                    'inmueble_completo' => $inmueble->idAdministradorReferente ? false : true,
-                    'nombre' => $item->nombre,
-                    'nombre_y_apellidos_administrador_referente' => $inmueble->nombre_y_apellidos_administrador_referente,
-                    'nombre_y_apellidos_inquilino_referente' => $inmueble->nombre_y_apellidos_inquilino_referente,
-                    'nombre_y_apellidos_propietario_referente' => $inmueble->nombre_y_apellidos_propietario_referente,
-                    'persona_id_administrador_referente' => $inmueble->persona_id_administrador_referente,
-                    'persona_id_inquilino_referente' => $inmueble->persona_id_inquilino_referente,
-                    'tipo' => $inmueble->tipo,
+                'cant_unidades' => $item->unidades->count(),
+                'direccion' => $inmueble->direccion,
+                'divisible_en_unidades' => $item->divisible_en_unidades,
+                'id' => $item->id,
+                'id_usuario_creador' => $inmueble->id_usuario_creador,
+                'inmueble_completo' => $item->modalidad_propiedad === 'UNICO_PROPIETARIO',
+                'nombre' => $item->nombre,
+                'nombre_y_apellidos_administrador_referente' => $inmueble->nombre_y_apellidos_administrador_referente,
+                'nombre_y_apellidos_inquilino_referente' => $inmueble->nombre_y_apellidos_inquilino_referente,
+                'nombre_y_apellidos_propietario_referente' => $inmueble->nombre_y_apellidos_propietario_referente,
+                'persona_id_administrador_referente' => $inmueble->persona_id_administrador_referente,
+                'persona_id_inquilino_referente' => $inmueble->persona_id_inquilino_referente,
+                'tipo' => $inmueble->tipo,
                 ];
             }
         );
