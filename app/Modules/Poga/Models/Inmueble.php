@@ -76,6 +76,14 @@ class Inmueble extends Model
     }
 
     /**
+     * Get the conserjes for the inmueble.
+     */
+    public function conserjes()
+    {
+        return $this->hasMany(InmueblePersona::class, 'id_inmueble')->where('enum_estado', 'ACTIVO')->where('enum_rol', 'CONSERJE');
+    }
+
+    /**
      * The tipos caracteristica that belong to the inmueble.
      */
     public function tipos_caracteristica()
@@ -207,6 +215,14 @@ class Inmueble extends Model
     public function pagares()
     {
         return $this->hasMany(Pagare::class, 'id_inmueble');
+    }
+
+    /**
+     * Get the proveedores for the inmueble.
+     */
+    public function proveedores()
+    {
+        return $this->hasMany(InmueblePersona::class, 'id_inmueble')->where('enum_estado', 'ACTIVO')->where('enum_rol', 'PROVEEDOR');
     }
 
     /**
