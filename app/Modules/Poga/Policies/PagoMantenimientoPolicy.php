@@ -20,6 +20,9 @@ class PagoMantenimientoPolicy
      */
     public function view(User $user, Mantenimiento $mantenimiento)
     {
+	$inmueble = $mantenimiento->idInmueble;
+	$persona = $user->idPersona;
+
         switch ($user->role_id) {
             // Administrador
             case 1:      
@@ -32,8 +35,10 @@ class PagoMantenimientoPolicy
             break;
     
             // Inquilino
-            case 3:
-                return true;
+	    case 3:
+	        return $inmueble->inquilinos()->where('id_persona', $persona->id)
+		    && $inmueble->solicitud_directa_inquilinos
+                    && $inmueble->id_tabla_hija === 'UNIDADES';		    
             break;	
     
             // Propietario
