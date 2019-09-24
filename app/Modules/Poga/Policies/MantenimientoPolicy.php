@@ -19,7 +19,34 @@ class MantenimientoPolicy
      */
     public function view(User $user, Mantenimiento $mantenimiento)
     {
-        //
+        switch ($user->role_id) {
+            // Administrador
+            case 1:      
+                return true;
+            break;
+    
+            // Conserje
+            case 2:
+                return true;
+            break;
+    
+            // Inquilino
+            case 3:
+                return true;
+            break;	
+    
+            // Propietario
+            case 4:
+                return true;
+            break;	
+    
+            // Proveedor
+            case 5:
+                return false;
+        
+            default:
+                return false;
+        }  
     }
 
     /**
@@ -28,9 +55,41 @@ class MantenimientoPolicy
      * @param  \Raffles\Modules\Poga\Models\User  $user
      * @return mixed
      */
-    public function create(User $user)
+    public function create(User $user, Mantenimiento $mantenimiento)
     {
         //
+        switch ($user->role_id) {
+            // Administrador
+            case 1:      
+            
+                $inmueble = $mantenimiento->idInmueble;                
+                return $inmueble->administradores->where('id', $user->id_persona);       
+            
+            break;
+    
+            // Conserje
+            case 2:
+                return $inmueble->conserjes->where('id', $user->id_persona);
+    
+            // Inquilino
+            case 3:
+                return $inmueble->inquilinos->where('id', $user->id_persona)
+                && $inmueble->solicitud_directa_inquilinos;
+                break;	
+            
+            // Propietario
+            case 4:
+                
+                return $inmueble->propietarios->where('id', $user->id_persona);
+                break;	
+    
+            // Proveedor
+            case 5:
+                    return false;
+        
+            default:
+                return false;
+        }
     }
 
     /**
@@ -43,6 +102,7 @@ class MantenimientoPolicy
     public function update(User $user, Mantenimiento $mantenimiento)
     {
         //
+        $this->create($user, $mantenimiento);   
     }
 
     /**
@@ -55,6 +115,7 @@ class MantenimientoPolicy
     public function delete(User $user, Mantenimiento $mantenimiento)
     {
         //
+        $this->create($user, $mantenimiento); 
     }
 
     /**
@@ -67,6 +128,7 @@ class MantenimientoPolicy
     public function restore(User $user, Mantenimiento $mantenimiento)
     {
         //
+        $this->create($user, $mantenimiento); 
     }
 
     /**
@@ -79,5 +141,6 @@ class MantenimientoPolicy
     public function forceDelete(User $user, Mantenimiento $mantenimiento)
     {
         //
+        $this->create($user, $mantenimiento); 
     }
 }

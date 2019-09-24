@@ -20,6 +20,37 @@ class SolicitudPolicy
     public function view(User $user, Solicitud $solicitud)
     {
         //
+        //
+        switch ($user->role_id) {
+            // Administrador
+            case 1:      
+                $inmueble = $solicitud->idInmueble;     
+                return  $inmueble->administradores->where('id', $user->id_persona);
+
+            break;
+    
+            // Conserje
+            case 2:
+                return true;
+            break;
+    
+            // Inquilino
+            case 3:
+                return  $inmueble->inquilinos->where('id', $user->id_persona);
+                break;	
+    
+            // Propietario
+            case 4:
+                return  $inmueble->propietarios->where('id', $user->id_persona);               
+                break;	
+    
+            // Proveedor
+            case 5:
+                return false;
+        
+            default:
+                return false;
+        }
     }
 
     /**
@@ -28,9 +59,45 @@ class SolicitudPolicy
      * @param  \Raffles\Modules\Poga\Models\User  $user
      * @return mixed
      */
-    public function create(User $user)
+    public function create(User $user, Solicitud $solicitud)
     {
         //
+        switch ($user->role_id) {
+            // Administrador
+            case 1:      
+                $inmueble = $solicitud->idInmueble;   
+                
+                return  $inmueble->administradores->where('id', $user->id_persona)
+                &&  $inmueble->enum_tabla_hija === 'INMUEBLE_PADRE';
+
+            break;
+    
+            // Conserje
+            case 2:
+                   return false;
+                break;
+    
+            // Inquilino
+            case 3:
+                 
+            return  $inmueble->inquilinos->where('id', $user->id_persona)
+            &&  $inmueble->enum_tabla_hija === 'UNIDADES';
+           // && $inmueble->administradores; como saber si tiene administradores?
+
+            break;	
+    
+            // Propietario
+            case 4:
+                return  $inmueble->propietarios->where('id', $user->id_persona); 
+                break;	
+    
+            // Proveedor
+            case 5:
+                    return false;
+        
+            default:
+                return false;
+        }
     }
 
     /**
@@ -43,6 +110,7 @@ class SolicitudPolicy
     public function update(User $user, Solicitud $solicitud)
     {
         //
+        $this->create($user, $solicitud); 
     }
 
     /**
@@ -55,6 +123,7 @@ class SolicitudPolicy
     public function delete(User $user, Solicitud $solicitud)
     {
         //
+        $this->create($user, $solicitud); 
     }
 
     /**
@@ -67,6 +136,7 @@ class SolicitudPolicy
     public function restore(User $user, Solicitud $solicitud)
     {
         //
+        $this->create($user, $solicitud); 
     }
 
     /**
@@ -79,5 +149,6 @@ class SolicitudPolicy
     public function forceDelete(User $user, Solicitud $solicitud)
     {
         //
+        $this->create($user, $solicitud); 
     }
 }

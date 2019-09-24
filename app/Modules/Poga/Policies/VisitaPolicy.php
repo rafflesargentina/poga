@@ -20,6 +20,37 @@ class VisitaPolicy
     public function view(User $user, Visita $visita)
     {
         //
+        switch ($user->role_id) {
+            // Administrador
+            case 1:                    
+                
+                return true;
+                
+
+            break;
+    
+            // Conserje
+            case 2:
+                return true;
+            break;
+    
+            // Inquilino
+            case 3:
+                return true;
+            break;	
+    
+            // Propietario
+            case 4:
+                return false;   
+            break;	
+    
+            // Proveedor
+            case 5:
+                    return false;
+        
+            default:
+                return false;
+        }
     }
 
     /**
@@ -28,9 +59,46 @@ class VisitaPolicy
      * @param  \Raffles\Modules\Poga\Models\User  $user
      * @return mixed
      */
-    public function create(User $user)
+    public function create(User $user, Evento $evento)
     {
         //
+        switch ($user->role_id) {
+            // Administrador
+            case 1:                    
+                
+                $inmueble = $evento->idInmueble;   
+                return  $evento->enum_tipo_evento == "VISITA" 
+                && $inmueble->administradores->where('id', $user->id_persona)
+                && $inmueble->enum_tabla_hija == "INMUEBLE_PADRE";
+                
+
+            break;
+    
+            // Conserje
+            case 2:
+                   return false;
+                break;
+    
+            // Inquilino
+            case 3:
+                $inmueble = $evento->idInmueble;   
+                return  $evento->enum_tipo_evento == "VISITA" 
+                && $inmueble->inquilinos->where('id', $user->id_persona)
+                && $inmueble->enum_tabla_hija == "UNIDAD"; 
+                break;	
+    
+            // Propietario
+            case 4:
+                return false;   
+                break;	
+    
+            // Proveedor
+            case 5:
+                    return false;
+        
+            default:
+                return false;
+        }
     }
 
     /**
@@ -43,6 +111,7 @@ class VisitaPolicy
     public function update(User $user, Visita $visita)
     {
         //
+        $this->create($user, $visita); 
     }
 
     /**
@@ -54,7 +123,7 @@ class VisitaPolicy
      */
     public function delete(User $user, Visita $visita)
     {
-        //
+        $this->create($user, $visita); 
     }
 
     /**
@@ -67,6 +136,7 @@ class VisitaPolicy
     public function restore(User $user, Visita $visita)
     {
         //
+        $this->create($user, $visita); 
     }
 
     /**
@@ -79,5 +149,6 @@ class VisitaPolicy
     public function forceDelete(User $user, Visita $visita)
     {
         //
+        $this->create($user, $visita); 
     }
 }
