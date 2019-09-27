@@ -19,34 +19,7 @@ class MantenimientoPolicy
      */
     public function view(User $user, Mantenimiento $mantenimiento)
     {
-        switch ($user->role_id) {
-            // Administrador
-            case 1:      
-                return true;
-            break;
-    
-            // Conserje
-            case 2:
-                return true;
-            break;
-    
-            // Inquilino
-            case 3:
-                return true;
-            break;	
-    
-            // Propietario
-            case 4:
-                return true;
-            break;	
-    
-            // Proveedor
-            case 5:
-                return false;
-        
-            default:
-                return false;
-        }  
+        $this->create($user, $mantenimiento);   
     }
 
     /**
@@ -58,11 +31,11 @@ class MantenimientoPolicy
     public function create(User $user, Mantenimiento $mantenimiento)
     {
         //
+        $inmueble = $mantenimiento->idInmueble;     
+
         switch ($user->role_id) {
             // Administrador
-            case 1:      
-            
-                $inmueble = $mantenimiento->idInmueble;                
+            case 1:   
                 return $inmueble->administradores->where('id', $user->id_persona);       
             
             break;

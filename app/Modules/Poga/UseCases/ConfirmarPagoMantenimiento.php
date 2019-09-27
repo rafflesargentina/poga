@@ -6,10 +6,11 @@ use Carbon\Carbon;
 use Raffles\Modules\Poga\Models\{ Pagare, Inmueble, InmueblePadre };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ConfirmarPagoMantenimiento
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The form data and the User model.
@@ -32,6 +33,7 @@ class ConfirmarPagoMantenimiento
         $this->data = $data;
         $this->user = $user;
 
+        
         $pagare = Pagare::findOrFail($this->data['id_pagare']);
         
         $this->pagare = $pagare;
@@ -52,6 +54,9 @@ class ConfirmarPagoMantenimiento
     }
 
     public function confirmarPago(){
+
+        $this->authorize('create', $this->pagare);
+        
 
         $isUnicoPropietario = true;
         $isInmueble = true;

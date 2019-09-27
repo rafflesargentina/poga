@@ -33,20 +33,22 @@ class EspacioPolicy
      */
     public function create(User $user, Espacio $espacio)
     {
+        $inmueble = $espacio->idInmueble;
+        
         switch ($user->role_id) {
 	    // Administrador
 	    case 1:
                 // Puede crear un espacio si la persona es administrador del condominio.
-                $inmueble = $espacio->idInmueble;
-		return $inmueble->administradores->where('id', $user->id_persona)
-		    && $inmueble->idInmueblePadre->modalidad_propiedad === 'EN_CONDOMINIO'
-		    && $inmueble->enum_tabla_hija === 'INMUEBLE_PADRE';
-	    break;
+              
+            return $inmueble->administradores->where('id', $user->id_persona)
+                && $inmueble->idInmueblePadre->modalidad_propiedad === 'EN_CONDOMINIO'
+                && $inmueble->enum_tabla_hija === 'INMUEBLE_PADRE';
+            break;
 
 	    // Conserje
 	    case 2:
-               return false;
-            break;
+            return false;
+        break;
 
 	    // Inquilino
 	    case 3:

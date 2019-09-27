@@ -3,10 +3,10 @@
 namespace Raffles\Modules\Poga\Policies;
 
 use Raffles\Modules\Poga\Models\User;
-use Raffles\Modules\Poga\Models\Visita;
+use Raffles\Modules\Poga\Models\Evento;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class VisitaPolicy
+class EventoPolicy
 {
     use HandlesAuthorization;
 
@@ -14,35 +14,51 @@ class VisitaPolicy
      * Determine whether the user can view the visita.
      *
      * @param  \Raffles\Modules\Poga\Models\User  $user
-     * @param  \Raffles\Modules\Poga\Models\Visita  $visita
+     * @param  \Raffles\Modules\Poga\Models\Evento $evento
      * @return mixed
      */
-    public function view(User $user, Visita $visita)
+    public function view(User $user, Evento $evento)
     {
         //
+        $inmueble = $evento->idInmueble;  
         switch ($user->role_id) {
             // Administrador
             case 1:                    
                 
-                return true;
+                switch($evento->enum_tipo_evento){
+                    case "VISITA":
+                        return $inmueble->administradores->where('id', $user->id_persona)
+                        && $inmueble->enum_tabla_hija == "INMUEBLE_PADRE";
+                    break;
+                }
+               
                 
 
             break;
     
             // Conserje
             case 2:
-                return true;
-            break;
+                switch($evento->enum_tipo_evento){
+                case "VISITA":
+                    return $inmueble->conserjes->where('id', $user->id_persona)
+                    && $inmueble->enum_tabla_hija == "INMUEBLE_PADRE";
+                break;
+                
     
             // Inquilino
-            case 3:
-                return true;
-            break;	
+            case 3: 
+            
+                switch($evento->enum_tipo_evento){
+                case "VISITA":
+                    return $inmueble->inquilinos->where('id', $user->id_persona)
+                    && $inmueble->enum_tabla_hija == "INMUEBLE_PADRE";
+                break;
+            }	
     
             // Propietario
             case 4:
                 return false;   
-            break;	
+                break;	
     
             // Proveedor
             case 5:
@@ -50,6 +66,7 @@ class VisitaPolicy
         
             default:
                 return false;
+            }
         }
     }
 
@@ -62,14 +79,18 @@ class VisitaPolicy
     public function create(User $user, Evento $evento)
     {
         //
+        $inmueble = $evento->idInmueble;  
         switch ($user->role_id) {
             // Administrador
             case 1:                    
                 
-                $inmueble = $evento->idInmueble;   
-                return  $evento->enum_tipo_evento == "VISITA" 
-                && $inmueble->administradores->where('id', $user->id_persona)
-                && $inmueble->enum_tabla_hija == "INMUEBLE_PADRE";
+                switch($evento->enum_tipo_evento){
+                    case "VISITA":
+                        return $inmueble->administradores->where('id', $user->id_persona)
+                        && $inmueble->enum_tabla_hija == "INMUEBLE_PADRE";
+                    break;
+                }
+               
                 
 
             break;
@@ -80,12 +101,14 @@ class VisitaPolicy
                 break;
     
             // Inquilino
-            case 3:
-                $inmueble = $evento->idInmueble;   
-                return  $evento->enum_tipo_evento == "VISITA" 
-                && $inmueble->inquilinos->where('id', $user->id_persona)
-                && $inmueble->enum_tabla_hija == "UNIDAD"; 
-                break;	
+            case 3: 
+
+                switch($evento->enum_tipo_evento){
+                case "VISITA":
+                    return $inmueble->inquilinos->where('id', $user->id_persona)
+                    && $inmueble->enum_tabla_hija == "INMUEBLE_PADRE";
+                break;
+            }	
     
             // Propietario
             case 4:
@@ -105,7 +128,7 @@ class VisitaPolicy
      * Determine whether the user can update the visita.
      *
      * @param  \Raffles\Modules\Poga\Models\User  $user
-     * @param  \Raffles\Modules\Poga\Models\Visita  $visita
+     * @param  \Raffles\Modules\Poga\Models\Evento $evento
      * @return mixed
      */
     public function update(User $user, Visita $visita)
@@ -118,7 +141,7 @@ class VisitaPolicy
      * Determine whether the user can delete the visita.
      *
      * @param  \Raffles\Modules\Poga\Models\User  $user
-     * @param  \Raffles\Modules\Poga\Models\Visita  $visita
+     * @param  \Raffles\Modules\Poga\Models\Evento $evento
      * @return mixed
      */
     public function delete(User $user, Visita $visita)
@@ -130,7 +153,7 @@ class VisitaPolicy
      * Determine whether the user can restore the visita.
      *
      * @param  \Raffles\Modules\Poga\Models\User  $user
-     * @param  \Raffles\Modules\Poga\Models\Visita  $visita
+     * @param  \Raffles\Modules\Poga\Models\Evento $evento
      * @return mixed
      */
     public function restore(User $user, Visita $visita)
@@ -143,7 +166,7 @@ class VisitaPolicy
      * Determine whether the user can permanently delete the visita.
      *
      * @param  \Raffles\Modules\Poga\Models\User  $user
-     * @param  \Raffles\Modules\Poga\Models\Visita  $visita
+     * @param  \Raffles\Modules\Poga\Models\Evento $evento
      * @return mixed
      */
     public function forceDelete(User $user, Visita $visita)

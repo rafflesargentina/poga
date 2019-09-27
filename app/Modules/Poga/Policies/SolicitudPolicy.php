@@ -62,6 +62,8 @@ class SolicitudPolicy
     public function create(User $user, Solicitud $solicitud)
     {
         //
+       
+        
         switch ($user->role_id) {
             // Administrador
             case 1:      
@@ -80,16 +82,15 @@ class SolicitudPolicy
             // Inquilino
             case 3:
                  
-            return  $inmueble->inquilinos->where('id', $user->id_persona)
-            &&  $inmueble->enum_tabla_hija === 'UNIDADES';
-           // && $inmueble->administradores; como saber si tiene administradores?
+                return  $inmueble->inquilinos->where('id', $user->id_persona)
+                &&  $inmueble->enum_tabla_hija === 'UNIDADES';
 
             break;	
     
             // Propietario
             case 4:
                 return  $inmueble->propietarios->where('id', $user->id_persona); 
-                break;	
+            break;	
     
             // Proveedor
             case 5:
