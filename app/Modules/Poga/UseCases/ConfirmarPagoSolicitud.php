@@ -52,8 +52,8 @@ class ConfirmarPagoSolicitud
     }
 
     public function confirmarPago(){      
-             
-       
+      
+        $this->authorize('create', $this->pagare);
 
         $isUnicoPropietario = true;
         $isInmueble = true;

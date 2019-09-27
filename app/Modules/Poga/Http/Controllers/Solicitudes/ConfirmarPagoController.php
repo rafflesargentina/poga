@@ -40,6 +40,8 @@ class ConfirmarPagoController extends Controller
 
         $data = $request->all();
         $user = $request->user('api');
+
+
         $retorno = $this->dispatch(new ConfirmarPagoSolicitud($data, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);

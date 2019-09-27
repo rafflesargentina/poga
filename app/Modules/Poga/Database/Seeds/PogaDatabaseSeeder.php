@@ -27,8 +27,8 @@ class PogaDatabaseSeeder extends Seeder
         $this->call(CaracteristicasTableSeeder::class);
         $this->call(TiposInmuebleTableSeeder::class);
         $this->call(CaracteristicaTipoInmuebleTableSeeder::class);
-        //$this->call(UsersTableSeeder::class);
-
+        $this->call(UsersTableSeeder::class);
+        $this->call(InmueblesFakerTableSeeder::class);
         //if (env('APP_ENV')) {
             //$this->call(InmueblesFakerTableSeeder::class);
         //}

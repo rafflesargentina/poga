@@ -24,7 +24,7 @@ class AuthServiceProvider extends ServiceProvider
         Unidad::class => UnidadPolicy::class,
         Evento::class => EventoPolicy::class,
         User::class => UserPolicy::class,
-        'Raffles\Modules\Poga\Models\Pagare' => 'Raffles\Modules\Poga\Policies\PagarePolicy',
+        Pagare::class => PagarePolicy::class
     ];
 
     /**

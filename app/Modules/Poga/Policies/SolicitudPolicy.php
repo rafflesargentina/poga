@@ -62,7 +62,7 @@ class SolicitudPolicy
     public function create(User $user, Solicitud $solicitud)
     {
         //
-       
+        echo "OK";
         
         switch ($user->role_id) {
             // Administrador

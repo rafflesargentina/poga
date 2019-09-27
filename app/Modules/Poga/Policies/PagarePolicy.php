@@ -19,8 +19,7 @@ class PagarePolicy
      * @return mixed
      */
     public function view(User $user, Pagare $pagare)
-    {
-       
+    {       
         $this->create($user, $pagare);    
     }
 
@@ -34,19 +33,19 @@ class PagarePolicy
      */
     public function create(User $user, Pagare $pagare)
     {
-        return true;
-
-        $inmueble = $pagare->idInmueble;  
+        
+        $inmueble = $pagare->idInmueble;      
 
         switch ($user->role_id) {
             // Administrador
-            case 1:      
-            
+            case 1:                 
+           
                 switch($pagare->enum_clasificacion_pagare){
                     case "MANTENIMIENTO":
                         return $inmueble->administradores->where('id', $user->id_persona);
                     break;
                     case "SOLICITUD":
+                    echo $user->role_id;
                         return $inmueble->administradores->where('id', $user->id_persona);
                     break;
                     case "EXPENSA":
