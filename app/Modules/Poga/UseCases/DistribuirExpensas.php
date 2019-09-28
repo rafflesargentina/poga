@@ -5,12 +5,13 @@ namespace Raffles\Modules\Poga\UseCases;
 use Raffles\Modules\Poga\Models\{ Inmueble, Pagare, DistribucionExpensa };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Carbon\Carbon;
 
 
 class DistribuirExpensas
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The form data and the User model.

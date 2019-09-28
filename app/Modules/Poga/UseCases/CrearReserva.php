@@ -6,10 +6,11 @@ use Raffles\Modules\Poga\Models\Evento;
 use Raffles\Modules\Poga\Repositories\EventoRepository;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CrearReserva
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The form data and the User model.
@@ -42,6 +43,8 @@ class CrearReserva
      */
     public function handle(EventoRepository $repository)
     {
+        $this->authorize('create', new Evento);
+
         $evento = $this->crearReserva($repository);
         $this->crearInvitados($evento);
 

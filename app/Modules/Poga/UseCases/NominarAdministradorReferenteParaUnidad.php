@@ -7,6 +7,7 @@ use Raffles\Modules\Poga\Repositories\{ NominacionRepository, UserRepository };
 use Raffles\Modules\Poga\Notifications\PersonaNominadaParaUnidad;
 
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class NominarAdministradorReferenteParaUnidad
 {
@@ -47,6 +48,8 @@ class NominarAdministradorReferenteParaUnidad
      */
     public function handle(NominacionRepository $repository, UserRepository $rUser)
     {
+        
+
         $data = [
             'enum_estado' => 'EN_CURSO',
             'id_inmueble' => $this->unidad->id_inmueble,

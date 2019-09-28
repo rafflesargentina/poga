@@ -6,10 +6,11 @@ use Raffles\Modules\Poga\Repositories\{ PagareRepository, UnidadRepository };
 use Raffles\Modules\Poga\Notifications\RentaCreada;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CrearPagare
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The form data and the User model.
@@ -52,6 +53,8 @@ class CrearPagare
      */
     protected function crearPagare(PagareRepository $rPagare, UnidadRepository $rUnidad)
     {
+        $this->authorize('create', new Pagare);
+
         $idUnidad = $this->data['id_unidad'];
         if ($idUnidad) {
             $unidad = $rUnidad->find($idUnidad)->first();

@@ -7,10 +7,11 @@ use Raffles\Modules\Poga\Repositories\{ DireccionRepository, InmuebleRepository,
 use Raffles\Modules\Poga\Notifications\InmuebleCreado;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CrearInmueble
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The form data and the User model.
@@ -46,6 +47,9 @@ class CrearInmueble
      */
     public function handle(DireccionRepository $rDireccion, InmuebleRepository $rInmueble, InmueblePadreRepository $rInmueblePadre, PersonaRepository $rPersona)
     {
+
+        $this->authorize('create', new Inmueble);
+
         $direccion = $this->crearDireccion($rDireccion);
         $inmueble = $this->crearInmueble($rInmueble);
         $this->adjuntarFormatos($inmueble);

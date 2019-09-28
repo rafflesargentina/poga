@@ -7,10 +7,11 @@ use Raffles\Modules\Poga\Repositories\{ InmuebleRepository, PersonaRepository, U
 use Raffles\Modules\Poga\Notifications\UnidadCreada;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ActualizarUnidad
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The Unidad model.
@@ -54,9 +55,12 @@ class ActualizarUnidad
      */
     public function handle(InmuebleRepository $rInmueble, UnidadRepository $rUnidad, PersonaRepository $rPersona)
     {
-        $inmueble = $this->actualizarInmueble($rInmueble);
+        $inmueble = Inmueble::findOrFail($this->unidad->idInmueble);
+        $this->authorize('update',$inmueble);
 
-        $unidad = $this->actualizarUnidad($rUnidad);
+        $inmueble = $this->actualizarInmueble($rInmueble,$inmueble);
+
+        $unidad = $this->actualizarUnidad($rUnidad,$inmueble);
 
         $this->nominarOAsignarPropietario($rPersona, $unidad);
 
@@ -68,17 +72,20 @@ class ActualizarUnidad
     /**
      * @param InmuebleRepository $repository The InmuebleRepository object.
      */
-    protected function actualizarInmueble(InmuebleRepository $repository)
+    protected function actualizarInmueble(InmuebleRepository $repository,Inmueble $inmueble)
     {
-        return $repository->update($this->unidad->idInmueble, $this->data['idInmueble'])[1];
+        
+        
+
+        return $repository->update($inmueble, $this->data['idInmueble'])[1];
     }
 
     /**
      * @param UnidadRepository $repository The UnidadRepository object.
      */
-    protected function actualizarUnidad(UnidadRepository $repository)
+    protected function actualizarUnidad(UnidadRepository $repository, Inmueble $inmueble)
     {
-        return $repository->update($this->unidad, $this->data['unidad'])[1];
+        return $repository->update($inmueble, $this->data['unidad'])[1];
     }
 
     /**

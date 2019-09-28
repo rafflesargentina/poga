@@ -29,11 +29,11 @@ class PagareRepository extends EloquentRepository
 
 
 
-    public function actualizarEstado($data){
+    public function actualizarEstado($pagare,$estado){
 
-        $pagare = Pagare::findOrFail($data['idPagare']);
+       
         $pagare->update([
-            'enum_estado' => $data['estado']
+            'enum_estado' => $estado
         ]);
         return $pagare;
      

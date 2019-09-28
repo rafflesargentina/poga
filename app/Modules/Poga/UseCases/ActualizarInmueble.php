@@ -5,12 +5,12 @@ namespace Raffles\Modules\Poga\UseCases;
 use Raffles\Modules\Poga\Models\{ Inmueble, InmueblePadre, User };
 use Raffles\Modules\Poga\Repositories\{ DireccionRepository, InmuebleRepository, InmueblePadreRepository, PersonaRepository };
 use Raffles\Modules\Poga\Notifications\InmuebleActualizado;
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class ActualizarInmueble
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The InmueblePadre model.
@@ -54,6 +54,10 @@ class ActualizarInmueble
      */
     public function handle(DireccionRepository $rDireccion, InmuebleRepository $rInmueble, InmueblePadreRepository $rInmueblePadre, PersonaRepository $rPersona)
     {
+
+        $inmueble = Inmueble::findOrFail($this->inmueblePadre->idInmueble);
+        $this->authorize('update',$inmueble);
+
         $inmueblePadre = $this->actualizarInmueblePadre($rInmueblePadre);
 
         $direccion = $this->actualizarDireccion($rDireccion);

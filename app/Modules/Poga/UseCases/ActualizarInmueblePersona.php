@@ -7,10 +7,11 @@ use Raffles\Modules\Poga\Notifications\InvitacionCreada;
 use Raffles\Modules\Poga\Repositories\{ InmueblePersonaRepository, PersonaRepository, RoleRepository, UserRepository };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ActualizarInmueblePersona
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The InmueblePersona and User model.
@@ -75,6 +76,9 @@ class ActualizarInmueblePersona
      */
     protected function adjuntarRoles(User $user, RoleRepository $repository)
     {
+       
+
+
         $role = $repository->findBy('slug', strtolower($this->data['enum_rol']));
 
         $user->roles()->attach($role);
@@ -105,6 +109,7 @@ class ActualizarInmueblePersona
      */
     protected function crearUsuario(Persona $persona, UserRepository $repository)
     {
+
         if ($this->data['invitar'] && !$persona->user) {
             $user = $repository->create(
                 [

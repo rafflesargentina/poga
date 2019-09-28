@@ -7,6 +7,7 @@ use Raffles\Modules\Poga\Repositories\{ NominacionRepository, UserRepository };
 use Raffles\Modules\Poga\Notifications\PersonaNominadaParaInmueble;
 
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class NominarAdministradorReferenteParaInmueble
 {

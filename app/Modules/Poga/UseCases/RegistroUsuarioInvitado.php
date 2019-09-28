@@ -7,10 +7,11 @@ use Raffles\Modules\Poga\Notifications\UsuarioRegistrado;
 use Raffles\Modules\Poga\Repositories\{ PersonaRepository, UserRepository };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class RegistroUsuarioInvitado
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The form data and the User model.

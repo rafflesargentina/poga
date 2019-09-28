@@ -5,10 +5,11 @@ namespace Raffles\Modules\Poga\UseCases;
 use Raffles\Modules\Poga\Models\{ Inmueble, Persona };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class RelacionarAdministradorReferente
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The Persona and Inmueble models.

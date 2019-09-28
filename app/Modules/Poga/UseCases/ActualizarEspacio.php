@@ -4,12 +4,12 @@ namespace Raffles\Modules\Poga\UseCases;
 
 use Raffles\Modules\Poga\Repositories\EspacioRepository;
 use Raffles\Modules\Poga\Notifications\EspacioActualizada;
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class ActualizarEspacio
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The form data, the Espacio id, and the User model.
@@ -45,6 +45,9 @@ class ActualizarEspacio
      */
     public function handle(EspacioRepository $repository)
     {
-        return $repository->update($this->id, $this->data)[1];
+        $espacio = Espacio::findOrFail($this->id);
+        $this->authorize('update',$espacio);
+
+        return $repository->update($espacio, $this->data)[1];
     }
 }

@@ -5,10 +5,11 @@ namespace Raffles\Modules\Poga\UseCases;
 use Raffles\Modules\Poga\Models\{ Pagare };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class RechazarPagoFinanzas
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The form data and the User model.
@@ -52,6 +53,8 @@ class RechazarPagoFinanzas
 
     public function rechazarPago(){
 
+        $this->authorize('update', $this->pagare);
+        
         $isUnicoPropietario = true;
         $isInmueble = true;        
 

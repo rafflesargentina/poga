@@ -6,6 +6,7 @@ use Raffles\Modules\Poga\Models\{ InmueblePersona, User };
 use Raffles\Modules\Poga\Repositories\InmueblePersonaRepository;
 
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BorrarInmueblePersona
 {

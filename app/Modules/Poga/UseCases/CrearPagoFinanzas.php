@@ -7,10 +7,11 @@ use Raffles\Modules\Poga\Models\{ Solicitud, Inmueble };
 
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CrearPagoFinanzas
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The form data and the User model.
@@ -46,6 +47,8 @@ class CrearPagoFinanzas
      */
     public function handle()
     {
+        $this->authorize('create',new Pagare);
+
         $renta = $this->crearPago();
 
         return $renta;

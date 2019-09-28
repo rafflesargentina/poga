@@ -7,6 +7,7 @@ use Raffles\Modules\Poga\Notifications\RentaBorrada;
 use Raffles\Modules\Poga\Repositories\RentaRepository;
 
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BorrarRenta
 {
@@ -42,7 +43,9 @@ class BorrarRenta
      */
     public function handle(RentaRepository $repository)
     {
-        $repository->update($this->renta->id, ['enum_estado' => 'INACTIVO'])[1];
+        $this->authorize('delete',$this->renta);
+
+        $repository->update($this->renta, ['enum_estado' => 'INACTIVO'])[1];
 
         $this->user->notify(new RentaBorrada($this->renta));
 

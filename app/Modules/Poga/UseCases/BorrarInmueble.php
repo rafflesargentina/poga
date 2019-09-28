@@ -7,6 +7,7 @@ use Raffles\Modules\Poga\Notifications\InmuebleBorrado;
 use Raffles\Modules\Poga\Repositories\InmuebleRepository;
 
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BorrarInmueble
 {
@@ -43,6 +44,8 @@ class BorrarInmueble
      */
     public function handle(InmuebleRepository $repository)
     {
+        $this->authorize('delete',$this->inmueble);
+
         $inmueble = $repository->update($this->inmueble, ['enum_estado' => 'INACTIVO'])[1];
 
         $this->user->notify(new InmuebleBorrado($inmueble, $this->user));

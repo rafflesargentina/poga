@@ -7,10 +7,11 @@ use Raffles\Modules\Poga\Repositories\RentaRepository;
 use Raffles\Modules\Poga\Notifications\RentaFinalizada;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class FinalizarContratoRenta
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
     
     /**
      * The Renta model.
@@ -52,6 +53,8 @@ class FinalizarContratoRenta
      */
     public function handle(RentaRepository $rRenta)
     {
+        $this->authorize('update',$this->renta);
+        
         $renta = $this->finalizarRenta($rRenta);
 
         $this->user->notify(new RentaFinalizada($renta));

@@ -5,7 +5,7 @@ namespace Raffles\Modules\Poga\Policies;
 use Raffles\Modules\Poga\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ProveedoresPolicy
+class UserPolicy
 {
     use HandlesAuthorization;
     /**

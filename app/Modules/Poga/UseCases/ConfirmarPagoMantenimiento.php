@@ -8,6 +8,7 @@ use Raffles\Modules\Poga\Models\{ Pagare, Inmueble, InmueblePadre };
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+
 class ConfirmarPagoMantenimiento
 {
     use DispatchesJobs,AuthorizesRequests;
@@ -48,6 +49,8 @@ class ConfirmarPagoMantenimiento
      */
     public function handle()
     {
+        $this->authorize('update', $this->pagare);
+        
         $renta = $this->confirmarPago();
 
         return $renta;

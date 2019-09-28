@@ -7,10 +7,11 @@ use Raffles\Modules\Poga\Repositories\{ InmuebleRepository, PersonaRepository, U
 use Raffles\Modules\Poga\Notifications\UnidadCreada;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CrearUnidad
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The form data and the User model.
@@ -45,6 +46,8 @@ class CrearUnidad
      */
     public function handle(InmuebleRepository $rInmueble, UnidadRepository $rUnidad, PersonaRepository $rPersona)
     {
+        $this->authorize('create', new Inmuebele);
+
         $inmueble = $this->crearInmueble($rInmueble);
 
         $unidad = $this->crearUnidad($rUnidad, $inmueble);

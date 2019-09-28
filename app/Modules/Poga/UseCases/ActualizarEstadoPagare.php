@@ -4,12 +4,12 @@ namespace Raffles\Modules\Poga\UseCases;
 
 use Raffles\Modules\Poga\Repositories\{ PagareRepository, UnidadRepository };
 use Raffles\Modules\Poga\Notifications\RentaCreada;
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class ActualizarEstadoPagare
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The form data and the User model.
@@ -42,7 +42,10 @@ class ActualizarEstadoPagare
      */
     public function handle(PagareRepository $rPagare, UnidadRepository $rUnidad)
     {
-        $pagare = $this->rPagare->actualizarEstado($this->data['idPagare'],$this->data['enum_estado']);
+        $pagare = Pagare::findOrFail($this->data['idPagare']);
+        $this->authorize('update',$pagare);
+        
+        $pagare = $this->rPagare->actualizarEstado($pagare,$this->data['enum_estado']);
         return $pagare;
     }
 

@@ -7,6 +7,7 @@ use Raffles\Modules\Poga\Models\{ Evento, User };
 use Raffles\Modules\Poga\Repositories\EventoRepository;
 
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BorrarVisita
 {
@@ -43,6 +44,8 @@ class BorrarVisita
      */
     public function handle(EventoRepository $repository)
     {
+        $this->authorize('delete',$this->visita);
+
         $visita = $repository->update($this->visita->id, ['enum_estado' => 'INACTIVO'])[1];
 
         //$this->user->notify(new EventoBorrada($this->visita, $this->user));

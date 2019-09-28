@@ -7,6 +7,7 @@ use Raffles\Modules\Poga\Notifications\UnidadBorrada;
 use Raffles\Modules\Poga\Repositories\InmuebleRepository;
 
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BorrarUnidad
 {
@@ -43,7 +44,10 @@ class BorrarUnidad
      */
     public function handle(InmuebleRepository $repository)
     {
-        $repository->update($this->unidad->idInmueble, ['enum_estado' => 'INACTIVO'])[1];
+        $inmueble = Inmueble::findOrFail($this->unidad->idInmueble);
+        $this->authorize('update',$inmueble);
+        
+        $repository->update($inmueble, ['enum_estado' => 'INACTIVO'])[1];
 
         $this->user->notify(new UnidadBorrada($this->unidad, $this->user));
 

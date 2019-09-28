@@ -7,6 +7,7 @@ use Raffles\Modules\Poga\Models\{ Espacio, User };
 use Raffles\Modules\Poga\Repositories\EspacioRepository;
 
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BorrarEspacio
 {
@@ -43,6 +44,8 @@ class BorrarEspacio
      */
     public function handle(EspacioRepository $repository)
     {
+        $this->authorize('delete',$this->espacio);
+
         $espacio = $repository->update($this->espacio->id, ['enum_estado' => 'INACTIVO'])[1];
 
         //$this->user->notify(new EspacioBorrada($this->espacio, $this->user));

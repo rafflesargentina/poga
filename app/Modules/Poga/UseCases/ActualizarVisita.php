@@ -7,10 +7,11 @@ use Raffles\Modules\Poga\Repositories\EventoRepository;
 //use Raffles\Modules\Poga\Notifications\EventoActualizada;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ActualizarVisita
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The Evento model.
@@ -51,6 +52,8 @@ class ActualizarVisita
      */
     public function handle(EventoRepository $repository)
     {
+        $this->authorize('update',$this->visita);
+
         $visita = $this->actualizarepository($repository);
 
         $this->actualizarInvitados($visita);
@@ -65,6 +68,8 @@ class ActualizarVisita
      */
     protected function actualizarepository(EventoRepository $repository)
     {
+        
+
         return $repository->update($this->visita, $this->data)[1];
     }
 

@@ -47,13 +47,15 @@ class ConfirmarPagoSolicitud
      */
     public function handle()
     {
+        
+        $this->authorize('update', $this->pagare);
+
         $renta = $this->confirmarPago();
         return $renta;
     }
 
     public function confirmarPago(){      
       
-        $this->authorize('create', $this->pagare);
 
         $isUnicoPropietario = true;
         $isInmueble = true;

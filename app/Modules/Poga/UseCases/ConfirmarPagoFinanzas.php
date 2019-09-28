@@ -6,10 +6,11 @@ namespace Raffles\Modules\Poga\UseCases;
 use Raffles\Modules\Poga\Models\{ Pagare, Inmueble, InmueblePadre };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Carbon\Carbon;
 class ConfirmarPagoFinanzas
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
 
     /**
      * The form data and the User model.
@@ -46,12 +47,17 @@ class ConfirmarPagoFinanzas
      */
     public function handle()
     {
+        $this->authorize('update', $this->pagare);
+
         $renta = $this->confirmarPago();
 
         return $renta;
     }
 
     public function confirmarPago(){
+
+
+        
 
         $isUnicoPropietario = true;
         $isInmueble = true;
