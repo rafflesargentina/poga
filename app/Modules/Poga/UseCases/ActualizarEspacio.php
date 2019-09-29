@@ -1,7 +1,7 @@
 <?php
 
 namespace Raffles\Modules\Poga\UseCases;
-
+use Raffles\Modules\Poga\Models\{ Espacio };
 use Raffles\Modules\Poga\Repositories\EspacioRepository;
 use Raffles\Modules\Poga\Notifications\EspacioActualizada;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -45,7 +45,8 @@ class ActualizarEspacio
      */
     public function handle(EspacioRepository $repository)
     {
-        $espacio = Espacio::findOrFail($this->id);
+        
+        $espacio = Espacio::findOrFail($this->id)->first();
         $this->authorize('update',$espacio);
 
         return $repository->update($espacio, $this->data)[1];

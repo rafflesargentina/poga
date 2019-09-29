@@ -10,7 +10,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BorrarInmueblePersona
 {
-    use Dispatchable;
+    use Dispatchable,AuthorizesRequests;
 
     /**
      * The InmueblePersona and User models.

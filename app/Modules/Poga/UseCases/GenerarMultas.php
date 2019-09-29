@@ -15,7 +15,7 @@ use Raffles\Modules\Poga\Models\Pagare;
 
 class GenerarMultas implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels,AuthorizesRequests;
 
     protected $rRenta;
     /**

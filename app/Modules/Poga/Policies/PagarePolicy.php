@@ -20,7 +20,7 @@ class PagarePolicy
      */
     public function view(User $user, Pagare $pagare)
     {       
-        $this->create($user, $pagare);    
+        return $this->update($user, $pagare);    
     }
 
     /**
@@ -34,30 +34,11 @@ class PagarePolicy
     public function create(User $user, Pagare $pagare)
     {
         
-        $inmueble = $pagare->idInmueble;      
 
         switch ($user->role_id) {
             // Administrador
             case 1:                 
-           
-                switch($pagare->enum_clasificacion_pagare){
-                    case "MANTENIMIENTO":
-                        return $inmueble->administradores->where('id', $user->id_persona);
-                    break;
-                    case "SOLICITUD":
-                    echo $user->role_id;
-                        return $inmueble->administradores->where('id', $user->id_persona);
-                    break;
-                    case "EXPENSA":
-                        return $inmueble->administradores->where('id', $user->id_persona);
-                    break;
-                    default:
-                        return false;
-                    break;
-                }         
-                    
-            
-            break;
+                return true;
     
             // Conserje
             case 2:         
@@ -65,57 +46,15 @@ class PagarePolicy
     
             // Inquilino
             case 3:     
-
-                switch($pagare->enum_clasificacion_pagare){
-                    case "MANTENIMIENTO":
-                        return $inmueble->inquilinos->where('id', $user->id_persona)
-                        && $pagare->idPersonaAdeudora() == $user->id_persona; 
-                        break;	
-                    break;
-                    case "SOLICITUD":
-                        return $inmueble->inquilinos->where('id', $user->id_persona)
-                        && $pagare->idPersonaAdeudora() == $user->id_persona; 
-                        break;	
-                    break;
-                    case "EXPENSA":
-                        return $inmueble->inquilinos->where('id', $user->id_persona)
-                        && $pagare->idPersonaAdeudora() == $user->id_persona; 
-                        break;	
-                    break;
-                    default:
-                        return false;
-                    break;
-                }   
-            
+                return false;
+                
             // Propietario
-            case 4:
-                
-                switch($pagare->enum_clasificacion_pagare){
-                    case "MANTENIMIENTO":
-                        return $inmueble->propietarios->where('id', $user->id_persona)
-                        && $pagare->idPersonaAdeudora() == $user->id_persona; 
-                        break;	
-                    break;
-                    case "SOLICITUD":
-                        return $inmueble->propietarios->where('id', $user->id_persona)
-                        && $pagare->idPersonaAdeudora() == $user->id_persona; 
-                        break;	
-                    break;
-                    case "EXPENSA":
-                        return $inmueble->propietarios->where('id', $user->id_persona)
-                        && $pagare->idPersonaAdeudora() == $user->id_persona; 
-                        break;	
-                    break;
-                    default:
-                        return false;
-                    break;
-                }   
-
-                
+            case 4:                
+                return false;            
     
             // Proveedor
             case 5:
-                    return false;
+                return false;
         
             default:
                 return false;
@@ -133,7 +72,50 @@ class PagarePolicy
     public function update(User $user, Pagare $pagare)
     {
         //
-        $this->create($user, $pagare);   
+        $inmueble = $pagare->idInmueble;      
+
+        
+
+        switch ($user->role_id) {
+            // Administrador
+            case 1:                 
+           
+                return $inmueble->administradores->where('id', $user->id_persona);
+                   
+            
+            break;
+    
+            // Conserje
+            case 2:         
+                return false;
+    
+            // Inquilino
+            case 3:     
+
+               
+                        return $inmueble->inquilinos->where('id', $user->id_persona)
+                        && $pagare->idPersonaAdeudora() == $user->id_persona; 
+                        break;	
+                   
+            
+            // Propietario
+            case 4:
+                
+               
+                        return $inmueble->propietarios->where('id', $user->id_persona)
+                        && $pagare->idPersonaAdeudora() == $user->id_persona; 
+                        break;	
+                   
+
+                
+    
+            // Proveedor
+            case 5:
+                    return false;
+        
+            default:
+                return false;
+        }
     }
 
     /**
@@ -146,7 +128,7 @@ class PagarePolicy
      */
     public function delete(User $user, Pagare $pagare)
     {
-        $this->create($user, $pagare); 
+        return $this->update($user, $pagare); 
     }
 
     /**
@@ -159,7 +141,7 @@ class PagarePolicy
      */
     public function restore(User $user, Pagare $pagare)
     {
-        $this->create($user, $pagare); 
+        return $this->update($user, $pagare); 
     }
 
     /**
@@ -172,6 +154,6 @@ class PagarePolicy
      */
     public function forceDelete(User $user, Pagare $pagare)
     {
-        $this->create($user, $pagare); 
+        return $this->update($user, $pagare); 
     }
 }

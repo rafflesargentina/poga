@@ -10,7 +10,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CrearNominacionParaInmueble
 {
-    use Dispatchable;
+    use Dispatchable,AuthorizesRequests;
 
     /**
      * The form data.

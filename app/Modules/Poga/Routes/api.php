@@ -45,7 +45,7 @@ Route::put('finanzas/distribuirExpensas', Finanzas\DistribuirExpensasController:
 
 Route::apiResource('monedas', Finanzas\MonedaController::class, ['only' => ['index']]);
 Route::apiResource('pagares', Finanzas\PagareController::class);
-Route::apiResource('rentas', Finanzas\RentaController::class);
+Route::apiResource('rentas', Rentas\RentaController::class);
 
 // Mantenimientos
 Route::post('mantenimientos/crearPago', Mantenimientos\CrearPagoController::class);

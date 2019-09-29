@@ -43,6 +43,10 @@ class CrearPagare
      */
     public function handle(PagareRepository $rPagare, UnidadRepository $rUnidad)
     {
+        
+       
+        $this->authorize('create', new Pagare);
+
         $renta = $this->crearPagare($rPagare, $rUnidad);
 
         return $renta;
@@ -53,7 +57,7 @@ class CrearPagare
      */
     protected function crearPagare(PagareRepository $rPagare, UnidadRepository $rUnidad)
     {
-        $this->authorize('create', new Pagare);
+       
 
         $idUnidad = $this->data['id_unidad'];
         if ($idUnidad) {

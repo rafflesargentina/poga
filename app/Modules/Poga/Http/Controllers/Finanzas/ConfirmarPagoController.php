@@ -13,7 +13,7 @@ class ConfirmarPagoController extends Controller
     use FormatsValidJsonResponses;
 
     /**
-     * Create a new CrearPagoController instance.
+     * Create a new ConfirmarPagoController instance.
      *
      * @return void
      */
@@ -31,6 +31,7 @@ class ConfirmarPagoController extends Controller
      */
     public function __invoke(Request $request)
     {
+        
         $this->validate(
             $request, [
             'id_pagare' => 'required',

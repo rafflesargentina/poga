@@ -6,6 +6,7 @@ use Raffles\Modules\Poga\Repositories\EspacioRepository;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Raffles\Modules\Poga\Models\Espacio;
 
 class CrearEspacio
 {
@@ -42,6 +43,7 @@ class CrearEspacio
      */
     public function handle(EspacioRepository $repository)
     {
+        
 
         $this->authorize('create',new Espacio);
 

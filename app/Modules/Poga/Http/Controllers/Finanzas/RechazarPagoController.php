@@ -13,7 +13,7 @@ class RechazarPagoController extends Controller
     use FormatsValidJsonResponses;
 
     /**
-     * Create a new CrearPagoController instance.
+     * Create a new RechazarPagoController instance.
      *
      * @return void
      */

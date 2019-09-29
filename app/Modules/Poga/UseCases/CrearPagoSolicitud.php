@@ -8,7 +8,7 @@ use Raffles\Modules\Poga\Models\{ Solicitud, Inmueble };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
+use Raffles\Modules\Poga\Models\Pagare;
 class CrearPagoSolicitud
 {
     use DispatchesJobs,AuthorizesRequests;

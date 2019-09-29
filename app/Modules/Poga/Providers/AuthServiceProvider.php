@@ -2,8 +2,31 @@
 
 namespace Raffles\Modules\Poga\Providers;
 
-use Raffles\Modules\Poga\Models\{ DistribucionExpensa,Espacio,Pagare };
-use Raffles\Modules\Poga\Policies\{ PagarePolicy };
+use Raffles\Modules\Poga\Models\{ 
+    
+    DistribucionExpensa,
+    Espacio,
+    Inmueble,
+    Mantenimiento,
+    Solicitud,
+    Unidad,
+    Evento,
+    User,
+    Pagare
+};
+use Raffles\Modules\Poga\Policies\{ 
+    
+    DistribucionExpensaPolicy,
+    EspacioPolicy,
+    InmueblePolicy,
+    MantenimientoPolicy,
+    SolicitudPolicy,
+    UnidadPolicy,
+    EventoPolicy,
+    UserPolicy,
+    PagarePolicy
+
+ };
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
@@ -16,8 +39,8 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        DistribucionExpensa::class => DistribucionExpensa::class,
-        Espacio::class => Espacio::class,
+        DistribucionExpensa::class => DistribucionExpensaPolicy::class,
+        Espacio::class => EspacioPolicy::class,
         Inmueble::class => InmueblePolicy::class,
         Mantenimiento::class => MantenimientoPolicy::class,
         Solicitud::class => SolicitudPolicy::class,

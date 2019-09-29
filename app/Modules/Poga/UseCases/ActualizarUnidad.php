@@ -55,7 +55,8 @@ class ActualizarUnidad
      */
     public function handle(InmuebleRepository $rInmueble, UnidadRepository $rUnidad, PersonaRepository $rPersona)
     {
-        $inmueble = Inmueble::findOrFail($this->unidad->idInmueble);
+       
+        $inmueble = Inmueble::findOrFail($this->unidad->idInmueble)->first();
         $this->authorize('update',$inmueble);
 
         $inmueble = $this->actualizarInmueble($rInmueble,$inmueble);

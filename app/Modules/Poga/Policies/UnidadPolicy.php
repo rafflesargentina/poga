@@ -20,6 +20,7 @@ class UnidadPolicy
     public function view(User $user, Unidad $unidad)
     {
         //
+        return true;
     }
 
     /**
@@ -31,6 +32,7 @@ class UnidadPolicy
     public function create(User $user)
     {
         //
+        return true;
     }
 
     /**
@@ -43,6 +45,7 @@ class UnidadPolicy
     public function update(User $user, Unidad $unidad)
     {
         //
+        return true;
     }
 
     /**
@@ -55,6 +58,7 @@ class UnidadPolicy
     public function delete(User $user, Unidad $unidad)
     {
         //
+        return true;
     }
 
     /**
@@ -67,6 +71,7 @@ class UnidadPolicy
     public function restore(User $user, Unidad $unidad)
     {
         //
+        return true;
     }
 
     /**
@@ -79,5 +84,6 @@ class UnidadPolicy
     public function forceDelete(User $user, Unidad $unidad)
     {
         //
+        return true;
     }
 }

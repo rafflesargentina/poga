@@ -67,9 +67,11 @@ class EspacioController extends Controller
         $this->validate(
             $request, [
                 'nombre' => 'required',
-                
+                'id_inmueble' => 'required'
             ]
         );
+
+        
 
         $data = $request->all();
         $user = $request->user('api');
@@ -87,6 +89,7 @@ class EspacioController extends Controller
      */
     public function update(Request $request, $id)
     {
+       
         $this->validate(
             $request, [
                 'nombre' => 'required',

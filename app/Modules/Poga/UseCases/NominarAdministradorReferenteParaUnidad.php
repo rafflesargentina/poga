@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class NominarAdministradorReferenteParaUnidad
 {
-    use Dispatchable;
+    use Dispatchable,AuthorizesRequests;
 
     /**
      * The Persona, Unidad and Usermodels.

@@ -8,6 +8,7 @@ use Raffles\Modules\Poga\Models\{ Mantenimiento, Inmueble, InmueblePadre };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Raffles\Modules\Poga\Models\Pagare;
 
 class CrearPagoMantenimiento
 {

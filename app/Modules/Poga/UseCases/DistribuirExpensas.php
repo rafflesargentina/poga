@@ -37,7 +37,7 @@ class DistribuirExpensas
 
     public function handle()
     {    
-       
+        $this->authorize('create', new DistribucionExpensa);
 
         $distribucion = DistribucionExpensa::create([
             "fecha_distribucion" => Carbon::now(),

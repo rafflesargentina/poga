@@ -53,9 +53,9 @@ class ActualizarInmueble
      * @return void
      */
     public function handle(DireccionRepository $rDireccion, InmuebleRepository $rInmueble, InmueblePadreRepository $rInmueblePadre, PersonaRepository $rPersona)
-    {
-
-        $inmueble = Inmueble::findOrFail($this->inmueblePadre->idInmueble);
+    {               
+        
+        $inmueble = Inmueble::findOrFail($this->inmueblePadre->idInmueble)->first();      
         $this->authorize('update',$inmueble);
 
         $inmueblePadre = $this->actualizarInmueblePadre($rInmueblePadre);

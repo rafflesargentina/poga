@@ -4,11 +4,12 @@ namespace Raffles\Modules\Poga\UseCases;
 
 use Raffles\Modules\Poga\Models\User;
 use Raffles\Modules\Poga\Repositories\{ RentaRepository, UnidadRepository };
+use Raffles\Modules\Poga\Models\{ Pagare };
 use Raffles\Modules\Poga\Notifications\RentaCreada;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
+use Raffles\Modules\Poga\Models\Renta;
 class CrearRenta
 {
     use DispatchesJobs,AuthorizesRequests;
@@ -44,8 +45,11 @@ class CrearRenta
      */
     public function handle(RentaRepository $rRenta, UnidadRepository $rUnidad)
     {
-        $this->authorize('create', new Renta);
+       
 
+        $this->authorize('create', new Pagare);
+
+        
         $renta = $this->crearRenta($rRenta, $rUnidad);
 
         $this->user->notify(new RentaCreada($renta));

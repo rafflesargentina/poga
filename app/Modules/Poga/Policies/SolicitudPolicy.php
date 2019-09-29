@@ -61,13 +61,47 @@ class SolicitudPolicy
      */
     public function create(User $user, Solicitud $solicitud)
     {
+        
+        
+        switch ($user->role_id) {
+            // Administrador
+            case 1:                       
+                return  true;    
+            // Conserje
+            case 2:
+                return false;            
+    
+            // Inquilino
+            case 3:
+                return  true;
+            // Propietario
+            case 4:
+                return  true; 
+           
+            case 5:
+                return false;
+        
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Determine whether the user can update the solicitud.
+     *
+     * @param  \Raffles\Modules\Poga\Models\User  $user
+     * @param  \Raffles\Modules\Poga\Models\Solicitud  $solicitud
+     * @return mixed
+     */
+    public function update(User $user, Solicitud $solicitud)
+    {
         //
-        echo "OK";
+        $inmueble = $solicitud->idInmueble;
         
         switch ($user->role_id) {
             // Administrador
             case 1:      
-                $inmueble = $solicitud->idInmueble;   
+                  
                 
                 return  $inmueble->administradores->where('id', $user->id_persona)
                 &&  $inmueble->enum_tabla_hija === 'INMUEBLE_PADRE';
@@ -102,19 +136,6 @@ class SolicitudPolicy
     }
 
     /**
-     * Determine whether the user can update the solicitud.
-     *
-     * @param  \Raffles\Modules\Poga\Models\User  $user
-     * @param  \Raffles\Modules\Poga\Models\Solicitud  $solicitud
-     * @return mixed
-     */
-    public function update(User $user, Solicitud $solicitud)
-    {
-        //
-        $this->create($user, $solicitud); 
-    }
-
-    /**
      * Determine whether the user can delete the solicitud.
      *
      * @param  \Raffles\Modules\Poga\Models\User  $user
@@ -124,7 +145,7 @@ class SolicitudPolicy
     public function delete(User $user, Solicitud $solicitud)
     {
         //
-        $this->create($user, $solicitud); 
+        return $this->update($user, $solicitud); 
     }
 
     /**
@@ -137,7 +158,7 @@ class SolicitudPolicy
     public function restore(User $user, Solicitud $solicitud)
     {
         //
-        $this->create($user, $solicitud); 
+        return $this->update($user, $solicitud); 
     }
 
     /**
@@ -150,6 +171,6 @@ class SolicitudPolicy
     public function forceDelete(User $user, Solicitud $solicitud)
     {
         //
-        $this->create($user, $solicitud); 
+        return $this->update($user, $solicitud); 
     }
 }

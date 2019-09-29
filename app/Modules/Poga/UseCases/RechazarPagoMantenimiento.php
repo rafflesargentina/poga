@@ -32,7 +32,7 @@ class RechazarPagoMantenimiento
         $this->data = $data;
         $this->user = $user;
 
-        $pagare = Pagare::findOrFail($this->data['id_pagare']);
+        $pagare = Pagare::findOrFail($this->data['id_pagare'])->first();
         
         $this->pagare = $pagare;
 

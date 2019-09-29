@@ -2,10 +2,10 @@
 
 namespace Raffles\Modules\Poga\Policies;
 
-use Raffles\Modules\Poga\Models\User;
+use Raffles\Modules\Poga\Models\{User,DistribucionExpensa};
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class DistribucionExpensasPolicy
+class DistribucionExpensaPolicy
 {
     use HandlesAuthorization;
 
@@ -15,10 +15,10 @@ class DistribucionExpensasPolicy
      * @param  \Raffles\Modules\Poga\Models\User  $user
      * @return mixed
      */
-    public function view(User $user)
+    public function view(User $user, DistribucionExpensa $distribucionExpensa)
     {
         //
-        $this->create($user);   
+        return $this->create($user,$distribucionExpensa);   
     }
 
     /**
@@ -27,19 +27,13 @@ class DistribucionExpensasPolicy
      * @param  \Raffles\Modules\Poga\Models\User  $user
      * @return mixed
      */
-    public function create(User $user)
-    {
-        //
-        $inmueble = $espacio->idInmueble;
-        
+    public function create(User $user,DistribucionExpensa $distribucionExpensa)
+    {       
         switch ($user->role_id) {
 	    // Administrador
-            case 1:
-                
-                return $inmueble->administradores->where('id', $user->id_persona);
-
+            case 1:                
+                return true;
             break;
-
             // Conserje
             case 2:
                 return false;
@@ -72,10 +66,10 @@ class DistribucionExpensasPolicy
      * @param  \Raffles\Modules\Poga\Models\User  $user
      * @return mixed
      */
-    public function update(User $user)
+    public function update(User $user,DistribucionExpensa $distribucionExpensa)
     {
         //
-        $this->create($user); 
+        return $this->create($user,$distribucionExpensa,); 
     }
 
     /**
@@ -84,10 +78,10 @@ class DistribucionExpensasPolicy
      * @param  \Raffles\Modules\Poga\Models\User  $user
      * @return mixed
      */
-    public function delete(User $user)
+    public function delete(User $user,DistribucionExpensa $distribucionExpensa)
     {
         //
-        $this->create($user); 
+        return $this->create($user,$distribucionExpensa); 
     }
 
     /**
@@ -96,10 +90,10 @@ class DistribucionExpensasPolicy
      * @param  \Raffles\Modules\Poga\Models\User  $user
      * @return mixed
      */
-    public function restore(User $user)
+    public function restore(User $user,DistribucionExpensa $distribucionExpensa)
     {
         //
-        $this->create($user); 
+        return $this->create($user,$distribucionExpensa); 
     }
 
     /**
@@ -108,9 +102,9 @@ class DistribucionExpensasPolicy
      * @param  \Raffles\Modules\Poga\Models\User  $user
      * @return mixed
      */
-    public function forceDelete(User $user)
+    public function forceDelete(User $user,DistribucionExpensa $distribucionExpensa)
     {
         //
-        $this->create($user); 
+        return $this->create($user,$distribucionExpensa); 
     }
 }

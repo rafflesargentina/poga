@@ -19,7 +19,8 @@ class InmueblePolicy
      */
     public function view(User $user, Inmueble $inmueble)
     {
-        //
+        return true;
+        
     }
 
     /**
@@ -28,9 +29,40 @@ class InmueblePolicy
      * @param  \Raffles\Modules\Poga\Models\User  $user
      * @return mixed
      */
-    public function create(User $user)
+    public function create(User $user, Inmueble $inmueble)
     {
-        //
+       
+        
+        switch ($user->role_id) {
+            // Administrador
+            case 1:
+           
+                return true;
+            
+
+            // Conserje
+            case 2:
+                return false;
+            
+
+            // Inquilino
+            case 3:
+                return false;
+
+            // Propietario
+            case 4:
+                return false;	    
+                	
+
+            // Proveedor
+            case 5:
+                    return false;
+        
+            default:
+                return false;
+        }
+
+        return false;
     }
 
     /**
@@ -43,6 +75,8 @@ class InmueblePolicy
     public function update(User $user, Inmueble $inmueble)
     {
         //
+      
+        return $this->create($user, $inmueble); 
     }
 
     /**
@@ -55,6 +89,7 @@ class InmueblePolicy
     public function delete(User $user, Inmueble $inmueble)
     {
         //
+        return $this->create($user, $inmueble); 
     }
 
     /**
@@ -67,6 +102,7 @@ class InmueblePolicy
     public function restore(User $user, Inmueble $inmueble)
     {
         //
+        return $this->create($user, $inmueble); 
     }
 
     /**
@@ -79,5 +115,6 @@ class InmueblePolicy
     public function forceDelete(User $user, Inmueble $inmueble)
     {
         //
+        return $this->create($user, $inmueble); 
     }
 }

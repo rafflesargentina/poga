@@ -78,6 +78,47 @@ class EventoPolicy
      */
     public function create(User $user, Evento $evento)
     {
+       
+        switch ($user->role_id) {
+            // Administrador
+            case 1:                    
+               return true;             
+            break;
+    
+            // Conserje
+            case 2:
+                return false;
+            break;
+    
+            // Inquilino
+            case 3: 
+                return true;
+            break;         
+    
+            // Propietario
+            case 4:
+                return false;   
+            break;	
+    
+            // Proveedor
+            case 5:
+                return false;
+        
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Determine whether the user can update the visita.
+     *
+     * @param  \Raffles\Modules\Poga\Models\User  $user
+     * @param  \Raffles\Modules\Poga\Models\Evento $evento
+     * @return mixed
+     */
+    public function update(User $user, Evento $evento)
+    {
+        //
         //
         $inmueble = $evento->idInmueble;  
         switch ($user->role_id) {
@@ -117,24 +158,11 @@ class EventoPolicy
     
             // Proveedor
             case 5:
-                    return false;
+                return false;
         
             default:
                 return false;
         }
-    }
-
-    /**
-     * Determine whether the user can update the visita.
-     *
-     * @param  \Raffles\Modules\Poga\Models\User  $user
-     * @param  \Raffles\Modules\Poga\Models\Evento $evento
-     * @return mixed
-     */
-    public function update(User $user, Visita $visita)
-    {
-        //
-        $this->create($user, $visita); 
     }
 
     /**
@@ -144,9 +172,9 @@ class EventoPolicy
      * @param  \Raffles\Modules\Poga\Models\Evento $evento
      * @return mixed
      */
-    public function delete(User $user, Visita $visita)
+    public function delete(User $user, Evento $evento)
     {
-        $this->create($user, $visita); 
+        return $this->update($user, $visita); 
     }
 
     /**
@@ -156,10 +184,10 @@ class EventoPolicy
      * @param  \Raffles\Modules\Poga\Models\Evento $evento
      * @return mixed
      */
-    public function restore(User $user, Visita $visita)
+    public function restore(User $user, Evento $evento)
     {
         //
-        $this->create($user, $visita); 
+        return $this->update($user, $visita); 
     }
 
     /**
@@ -169,9 +197,9 @@ class EventoPolicy
      * @param  \Raffles\Modules\Poga\Models\Evento $evento
      * @return mixed
      */
-    public function forceDelete(User $user, Visita $visita)
+    public function forceDelete(User $user, Evento $evento)
     {
         //
-        $this->create($user, $visita); 
+        return $this->update($user, $visita); 
     }
 }

@@ -48,6 +48,7 @@ class CrearInmueble
     public function handle(DireccionRepository $rDireccion, InmuebleRepository $rInmueble, InmueblePadreRepository $rInmueblePadre, PersonaRepository $rPersona)
     {
 
+        
         $this->authorize('create', new Inmueble);
 
         $direccion = $this->crearDireccion($rDireccion);

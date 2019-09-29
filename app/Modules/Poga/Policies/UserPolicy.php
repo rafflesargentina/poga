@@ -18,7 +18,7 @@ class UserPolicy
     public function view(User $user, User $usuario_gestionado)
     {
         //
-        $this->create($user);   
+        return $this->update($user);   
     }
 
     /**
@@ -37,35 +37,7 @@ class UserPolicy
 	    // Administrador
             case 1:
                 
-                switch($usuario_gestionado->roleid){
-                    //Administrador
-                    case 1:                            
-
-                    break;
-
-                    // Conserje
-                    case 2:
-                        return $inmueble->conserjes->where('id', $user->id_persona);
-                    break;
-
-                    // Inquilino
-                    case 3:
-                        return false;
-                    break;	
-
-                    // Propietario
-                    case 4:
-                        return false;	    
-                    break;	
-
-                    // Proveedor
-                    case 5:
-                        return $inmueble->provedores->where('id', $user->id_persona);
-                    break;
-                    default:
-                        return false;
-                }
-              
+                return true;             
 
             break;
 
@@ -105,7 +77,69 @@ class UserPolicy
     public function update(User $user, User $usuario_gestionado)
     {
         //
-        $this->create($user); 
+       //
+       $inmueble = $espacio->idInmueble;
+        
+       switch ($user->role_id) {
+       // Administrador
+           case 1:
+               
+               switch($usuario_gestionado->roleid){
+                   //Administrador
+                   case 1:                            
+
+                   break;
+
+                   // Conserje
+                   case 2:
+                       return $inmueble->conserjes->where('id', $user->id_persona);
+                   break;
+
+                   // Inquilino
+                   case 3:
+                       return false;
+                   break;	
+
+                   // Propietario
+                   case 4:
+                       return false;	    
+                   break;	
+
+                   // Proveedor
+                   case 5:
+                       return $inmueble->provedores->where('id', $user->id_persona);
+                   break;
+                   default:
+                       return false;
+               }
+             
+
+           break;
+
+           // Conserje
+           case 2:
+               return false;
+           break;
+
+           // Inquilino
+           case 3:
+               return false;
+           break;	
+
+           // Propietario
+           case 4:
+               return false;	    
+           break;	
+
+           // Proveedor
+           case 5:
+               return false;
+       
+           default:
+               return false;
+       }
+
+       return false;
     }
 
     /**
@@ -118,7 +152,7 @@ class UserPolicy
     public function delete(User $user, User $usuario_gestionado)
     {
         //
-        $this->create($user); 
+        return $this->update($user); 
     }
 
     /**
@@ -131,7 +165,7 @@ class UserPolicy
     public function restore(User $user, User $usuario_gestionado)
     {
         //
-        $this->create($user); 
+        return $this->update($user); 
     }
 
     /**
@@ -144,6 +178,6 @@ class UserPolicy
     public function forceDelete(User $user, User $usuario_gestionado)
     {
         //
-        $this->create($user); 
+        return $this->update($user); 
     }
 }

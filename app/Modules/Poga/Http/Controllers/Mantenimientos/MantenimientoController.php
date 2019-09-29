@@ -40,6 +40,7 @@ class MantenimientoController extends Controller
      */
     public function index(Request $request)
     {
+        
         $request->validate(
             [
             'idInmueblePadre' => 'required',

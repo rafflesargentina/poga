@@ -19,7 +19,7 @@ class MantenimientoPolicy
      */
     public function view(User $user, Mantenimiento $mantenimiento)
     {
-        $this->create($user, $mantenimiento);   
+        return $this->update($user, $mantenimiento);   
     }
 
     /**
@@ -30,7 +30,46 @@ class MantenimientoPolicy
      */
     public function create(User $user, Mantenimiento $mantenimiento)
     {
+      
+        switch ($user->role_id) {
+            // Administrador
+            case 1:   
+                return true;      
+            break;
+    
+            // Conserje
+            case 2:
+                return true;
+    
+            // Inquilino
+            case 3:
+                return true;
+            
+            // Propietario
+            case 4:
+                return true;	
+    
+            // Proveedor
+            case 5:
+                return false;
+        
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Determine whether the user can update the mantenimiento.
+     *
+     * @param  \Raffles\Modules\Poga\Models\User  $user
+     * @param  \Raffles\Modules\Poga\Models\Mantenimiento  $mantenimiento
+     * @return mixed
+     */
+    public function update(User $user, Mantenimiento $mantenimiento)
+    {
         //
+        //
+        
         $inmueble = $mantenimiento->idInmueble;     
 
         switch ($user->role_id) {
@@ -66,19 +105,6 @@ class MantenimientoPolicy
     }
 
     /**
-     * Determine whether the user can update the mantenimiento.
-     *
-     * @param  \Raffles\Modules\Poga\Models\User  $user
-     * @param  \Raffles\Modules\Poga\Models\Mantenimiento  $mantenimiento
-     * @return mixed
-     */
-    public function update(User $user, Mantenimiento $mantenimiento)
-    {
-        //
-        $this->create($user, $mantenimiento);   
-    }
-
-    /**
      * Determine whether the user can delete the mantenimiento.
      *
      * @param  \Raffles\Modules\Poga\Models\User  $user
@@ -88,7 +114,7 @@ class MantenimientoPolicy
     public function delete(User $user, Mantenimiento $mantenimiento)
     {
         //
-        $this->create($user, $mantenimiento); 
+        return $this->update($user, $mantenimiento); 
     }
 
     /**
@@ -101,7 +127,7 @@ class MantenimientoPolicy
     public function restore(User $user, Mantenimiento $mantenimiento)
     {
         //
-        $this->create($user, $mantenimiento); 
+        return $this->update($user, $mantenimiento); 
     }
 
     /**
@@ -114,6 +140,6 @@ class MantenimientoPolicy
     public function forceDelete(User $user, Mantenimiento $mantenimiento)
     {
         //
-        $this->create($user, $mantenimiento); 
+        return $this->update($user, $mantenimiento); 
     }
 }

@@ -4,7 +4,7 @@ namespace Raffles\Modules\Poga\UseCases;
 
 use Carbon\Carbon;
 use Raffles\Modules\Poga\Models\{ Solicitud, Inmueble };
-
+use Raffles\Modules\Poga\Models\Pagare;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -47,6 +47,9 @@ class CrearPagoFinanzas
      */
     public function handle()
     {
+       
+        
+        
         $this->authorize('create',new Pagare);
 
         $renta = $this->crearPago();
