@@ -44,8 +44,35 @@ class UnidadPolicy
      */
     public function update(User $user, Unidad $unidad)
     {
-        //
-        return true;
+        $inmueble = $unidad->idInmueble;     
+
+        switch ($user->role_id) {
+            // Administrador
+            case 1:   
+                return $inmueble->administradores->where('id', $user->id_persona);       
+            
+            break;
+    
+            // Conserje
+            case 2:
+                return $inmueble->conserjes->where('id', $user->id_persona);
+    
+            // Inquilino
+            case 3:
+                return $inmueble->inquilinos->where('id', $user->id_persona);
+            
+            // Propietario
+            case 4:
+                
+                return $inmueble->propietarios->where('id', $user->id_persona);
+    
+            // Proveedor
+            case 5:
+                    return false;
+        
+            default:
+                return false;
+        }
     }
 
     /**
