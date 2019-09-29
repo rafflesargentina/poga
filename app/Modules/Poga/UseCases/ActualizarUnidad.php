@@ -4,7 +4,7 @@ namespace Raffles\Modules\Poga\UseCases;
 
 use Raffles\Modules\Poga\Models\{ Inmueble, Unidad, User };
 use Raffles\Modules\Poga\Repositories\{ InmuebleRepository, PersonaRepository, UnidadRepository };
-use Raffles\Modules\Poga\Notifications\UnidadCreada;
+use Raffles\Modules\Poga\Notifications\UnidadActualizada;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -58,6 +58,7 @@ class ActualizarUnidad
 
         $unidad = $this->actualizarUnidad($rUnidad);
 
+        $this->nominarOAsignarAdministrador($rPersona, $unidad);
         $this->nominarOAsignarPropietario($rPersona, $unidad);
 
         $this->user->notify(new UnidadActualizada($unidad, $this->user));
@@ -85,18 +86,35 @@ class ActualizarUnidad
      * @param PersonaRepository $repository The PersonaRepository object.
      * @param Unidad            $unidad     The Unidad model.
      */
+    protected function nominarOAsignarAdministrador(PersonaRepository $repository, Unidad $unidad)
+    {
+        if (array_key_exists('idAdministradorReferente', $this->data)) {
+            $id = $this->data['idAdministradorReferente'];
+
+            $persona = $repository->findOrFail($id);
+
+            if ($id != $this->user->idPersona->id) {
+                $this->dispatch(new NominarAdministradorReferenteParaUnidad($persona, $unidad));
+            } else {
+                $this->dispatch(new RelacionarAdministradorReferente($persona, $unidad->idInmueble));
+            }
+        }
+    }
+
+    /**
+     * @param PersonaRepository $repository The PersonaRepository object.
+     * @param Unidad            $unidad     The Unidad model.
+     */
     protected function nominarOAsignarPropietario(PersonaRepository $repository, Unidad $unidad)
     {
-        $id = $this->data['idPropietarioReferente'];
+	if (array_key_exists('idPropietarioReferente', $this->data)) {
+            $id = $this->data['idPropietarioReferente'];
 
-        if ($id) {
-            $persona = $repository->find($id);
+            $persona = $repository->findOrFail($id);
 
-            if ($id !== $this->user->id_persona) {
-\Log::info("NOMINAR");
+            if ($id != $this->user->id_persona) {
                 $this->dispatch(new NominarPropietarioReferenteParaUnidad($persona, $unidad));
             } else {
-\Log::info("RELACIONAR");
                 $this->dispatch(new RelacionarPropietarioReferente($persona, $unidad->idInmueble));
             }
         }

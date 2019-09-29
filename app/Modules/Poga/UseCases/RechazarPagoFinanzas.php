@@ -2,7 +2,7 @@
 
 namespace Raffles\Modules\Poga\UseCases;
 
-use Raffles\Modules\Poga\Models\{ Pagare };
+use Raffles\Modules\Poga\Models\Pagare;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -26,7 +26,7 @@ class RechazarPagoFinanzas
      *
      * @return void
      */
-    public function __construct($data,$user)
+    public function __construct($data, $user)
     {
         $this->data = $data;
         $this->user = $user;
@@ -50,28 +50,19 @@ class RechazarPagoFinanzas
         return $retorno;
     }
 
-    public function rechazarPago(){
-
-        $isUnicoPropietario = true;
-        $isInmueble = true;        
-
-        $idPropietario = $this->pagare->idInmueble->idPropietarioReferente()->first()->id;
-        $idAdministrador = $this->pagare->idInmueble->idAdministradorReferente()->first()->id;       
+    protected function rechazarPago()
+    {
+        $idAdministrador = $this->pagare->idInmueble->idAdministradorReferente->id;       
 
         if($this->user->id == $idAdministrador ){
             $this->actualizarEstadoPago("PENDIENTE");
         }       
 
         return $this->pagare;
-
     }   
 
-    public function actualizarEstadoPago($estado){
+    protected function actualizarEstadoPago($estado){
         $this->pagare->enum_estado = $estado;
         $this->pagare->save();
     }
-
-
-
-
 }

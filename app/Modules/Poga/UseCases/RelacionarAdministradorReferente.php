@@ -34,7 +34,7 @@ class RelacionarAdministradorReferente
      *
      * @return void
      */
-    public function __construct(Persona $persona, Inmueble $inmueble, $data)
+    public function __construct(Persona $persona, Inmueble $inmueble, $data = [])
     {
         $this->persona = $persona;
         $this->inmueble = $inmueble;
@@ -48,12 +48,12 @@ class RelacionarAdministradorReferente
      */
     public function handle()
     {
-        return $this->inmueble->personas()->attach($this->persona->id, array_merge($this->data,
-            [
+        return $this->inmueble->personas()->attach($this->persona->id, array_merge($this->data, 
+	    [
                 'enum_estado' => 'ACTIVO',
                 'enum_rol' => 'ADMINISTRADOR',
                 'referente' => '1',
-            ]
+	    ]
         ));
     }
 }

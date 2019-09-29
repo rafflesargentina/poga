@@ -182,7 +182,7 @@ class CrearInmueble
 	        if ($id != $user->id_persona) {
                     $persona = $repository->findOrFail($id);
 
-		    $this->dispatch(new NominarPropietarioReferenteParaInmueble($persona, $inmueble, $this->user));
+		    $this->dispatch(new NominarPropietarioReferenteParaInmueble($persona, $inmueble, $user));
 		} else {
 		    $persona = $user->idPersona;
                     $this->dispatch(new RelacionarPropietarioReferente($persona, $inmueble));

@@ -93,10 +93,4 @@ class DistribuirExpensas
             'nro_comprobante' => $this->data['nro_comprobante']
         ]);
     }
-
-    
-
-
-
-
 }

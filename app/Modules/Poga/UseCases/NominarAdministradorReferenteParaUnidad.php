@@ -3,7 +3,7 @@
 namespace Raffles\Modules\Poga\UseCases;
 
 use Raffles\Modules\Poga\Models\{ Persona, Unidad, User };
-use Raffles\Modules\Poga\Repositories\{ NominacionRepository, UserRepository };
+use Raffles\Modules\Poga\Repositories\NominacionRepository;
 use Raffles\Modules\Poga\Notifications\PersonaNominadaParaUnidad;
 
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -13,11 +13,10 @@ class NominarAdministradorReferenteParaUnidad
     use Dispatchable;
 
     /**
-     * The Persona, Unidad and Usermodels.
+     * The Persona, Unidad and User models.
      *
      * @var Persona  $persona  The Persona model.
      * @var Unidad   $unidad   The Unidad model.
-     * @var User     $user     The User model.
      */
     protected $persona, $unidad, $user;
 
@@ -41,14 +40,14 @@ class NominarAdministradorReferenteParaUnidad
      * Execute the job.
      *
      * @param NominacionRepository $repository The NominacionRepository object.
-     * @param UserRepository       $rUser      The UserRepository object.
      *
      * @return void
      */
-    public function handle(NominacionRepository $repository, UserRepository $rUser)
+    public function handle(NominacionRepository $repository)
     {
         $data = [
-            'enum_estado' => 'EN_CURSO',
+	    'enum_estado' => 'EN_CURSO',
+            'fecha_hora' => \Carbon\Carbon::now(),
             'id_inmueble' => $this->unidad->id_inmueble,
             'id_persona_nominada' => $this->persona->id,
             'id_usuario_principal' => $this->user->id,
@@ -60,10 +59,10 @@ class NominarAdministradorReferenteParaUnidad
         $nominacion = $repository->create($data)[1];
 
         $personaNominada = $nominacion->idPersonaNominada;
-        $usuarioCreador = $rUser->find($personaNominada->id_usuario_creador);
+        $usuario = $personaNominada->user;
 
-        if ($usuarioCrador) {
-            $usuarioCreador->notify(new PersonaNominadaParaUnidad($personaNominada, $nominacion, $this->unidad));
+        if ($usuario) {
+            $usuario->notify(new PersonaNominadaParaUnidad($personaNominada, $nominacion, $this->unidad));
         }
 
         return $nominacion;

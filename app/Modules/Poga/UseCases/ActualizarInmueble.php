@@ -15,15 +15,15 @@ class ActualizarInmueble
     /**
      * The InmueblePadre model.
      *
-     * @var InmueblePadre $inmueblePadre
+     * @var InmueblePadre
      */
     protected $inmueblePadre;
 
     /**
      * The form data and the User model.
      *
-     * @var array $data
-     * @var User  $user
+     * @var array
+     * @var User
      */
     protected $data, $user;
 
@@ -116,13 +116,13 @@ class ActualizarInmueble
      */
     protected function sincronizarCaracteristicas($inmueble)
     {
-        if (array_key_exists('caracteristicas', $this->data)) {
-            $caracteristicas = $this->data['caracteristicas'];
-            $inmueble->caracteristicas()->sync([]);
-            foreach($caracteristicas as $caracteristica) {
-                $inmueble->caracteristicas()->attach($caracteristica, ['enum_estado' => 'ACTIVO']);
-            }
-        }
+        //if (array_key_exists('caracteristicas', $this->data)) {
+            //$caracteristicas = $this->data['caracteristicas'];
+            //$inmueble->caracteristicas()->sync([]);
+            //foreach($caracteristicas as $caracteristica) {
+                //$inmueble->caracteristicas()->attach($caracteristica, ['enum_estado' => 'ACTIVO']);
+            //}
+        //}
     }
 
     /**

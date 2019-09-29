@@ -2,8 +2,8 @@
 
 namespace Raffles\Modules\Poga\UseCases;
 
-use Raffles\Modules\Poga\Models\{ Inmueble, Persona, User };
-use Raffles\Modules\Poga\Repositories\{ NominacionRepository, UserRepository };
+use Raffles\Modules\Poga\Models\{ Inmueble, Persona };
+use Raffles\Modules\Poga\Repositories\NominacionRepository;
 use Raffles\Modules\Poga\Notifications\PersonaNominadaParaInmueble;
 
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -17,38 +17,35 @@ class NominarAdministradorReferenteParaInmueble
      *
      * @var Persona  $persona  The Persona model.
      * @var Inmueble $inmueble The Inmueble model.
-     * @var User     $user     The User model.
      */
-    protected $persona, $inmueble, $user;
+    protected $persona, $inmueble;
 
     /**
      * Create a new job instance.
      *
      * @param Persona  $persona  The Persona model.
      * @param Inmueble $inmueble The Inmueble model.
-     * @param User     $user     The User model.
      *
      * @return void
      */
-    public function __construct(Persona $persona, Inmueble $inmueble, User $user)
+    public function __construct(Persona $persona, Inmueble $inmueble)
     {
         $this->persona = $persona;
         $this->inmueble = $inmueble;
-        $his->user = $user;
     }
 
     /**
      * Execute the job.
      *
      * @param NominacionRepository $repository The NominacionRepository object.
-     * @param UserRepository       $rUser      The UserRepository object.
      *
      * @return void
      */
-    public function handle(NominacionRepository $repository, UserRepository $rUser;)
+    public function handle(NominacionRepository $repository)
     {
         $data = [
-            'enum_estado' => 'EN_CURSO',
+	    'enum_estado' => 'EN_CURSO',
+	    'fecha_hora' => \Carbon\Carbon::now(),
             'id_inmueble' => $this->inmueble->id,
             'id_persona_nominada' => $this->persona->id,
             'id_usuario_principal' => $this->inmueble->id_usuario_creador,
@@ -57,13 +54,13 @@ class NominarAdministradorReferenteParaInmueble
             'usu_alta' => $this->persona->id
         ];
 
-        $nominacion = $repository->create($data)[1];
+        $nominacion = $repository->updateOrCreate(['id_persona_nominada' => $data['id_persona_nominada'], 'id_inmueble' => $data['id_inmueble']], $data)[1];
 
         $personaNominada = $nominacion->idPersonaNominada;
-        $usuarioCreador = $rUser->find($personaNominada->id_usuario_creador);
+        $usuario = $personaNominada->user;
 
-        if ($usuarioCreador) {
-            $usuarioCreador->notify(new PersonaNominadaParaInmueble($personaNominada, $nominacion));
+        if ($usuario) {
+            $usuario->notify(new PersonaNominadaParaInmueble($personaNominada, $nominacion));
         }
 
         return $nominacion;

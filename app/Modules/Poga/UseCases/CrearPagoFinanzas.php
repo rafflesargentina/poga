@@ -71,8 +71,6 @@ class CrearPagoFinanzas
         if($this->inmueble->enum_tabla_hija == "UNIDADES")
             $isInmueble = false;                
 
-        
-
         if($isInmueble){          
             
             if($isUnicoPropietario){   
@@ -85,20 +83,20 @@ class CrearPagoFinanzas
 
                     
               
-                        $this->crearPagare(
+                        return $this->crearPagare(
                             $this->data['id_persona_acreedora'],
-                            $this->data['id_persona_adeudora'],
+                            $this->data['id_persona_deudora'],
                             "PENDIENTE"
                         );                   
                     
                     break;
                     case 'PAGADO':  // unico dueño
 
-                        if($this->data['id_persona_adeudora'] != $Propietario->id){
+                        if($this->data['id_persona_deudora'] != $Propietario->id){
                             
-                            $this->crearPagare(
+                            return $this->crearPagare(
                                 $this->data['id_persona_acreedora'],
-                                $this->data['id_persona_adeudora'],
+                                $this->data['id_persona_deudora'],
                                 "PAGADO"
                             ); 
                         }
@@ -113,7 +111,7 @@ class CrearPagoFinanzas
                                     "PAGADO"
                                 ); 
 
-                                $this->crearPagare(
+                                return $this->crearPagare(
                                     $this->data['id_persona_acreedora'],
                                     $Propietario->id,
                                     "PENDIENTE"
@@ -123,7 +121,7 @@ class CrearPagoFinanzas
 
                             if($this->data['enum_origen_fondos'] == "PROPIETARIO"){
 
-                                $this->crearPagare(
+                                return $this->crearPagare(
                                     $this->data['id_persona_acreedora'],
                                     $Propietario->id,
                                     "PAGADO"
@@ -196,22 +194,22 @@ class CrearPagoFinanzas
                         
                         $this->crearPagare(
                             $this->data['id_persona_acreedora'],
-                            $this->data['id_persona_adeudora'],
+                            $this->data['id_persona_deudora'],
                             "PENDIENTE"
                         );                  
     
                     break;
                     case 'PAGADO':        
                     
-                        if($this->data['id_persona_adeudora'] == $Inquilino->id){
+                        if($this->data['id_persona_deudora'] == $Inquilino->id){
                             $this->crearPagare(
                                 $this->data['id_persona_acreedora'],
-                                $this->data['id_persona_adeudora'],
+                                $this->data['id_persona_deudora'],
                                 "PAGADO"
                             );   
                         }
     
-                        if($this->data['id_persona_adeudora'] == $Propietario->id){                   
+                        if($this->data['id_persona_deudora'] == $Propietario->id){                   
                                 
                             if($this->data['enum_origen_fondos'] == "ADMINISTRADOR"){
                                 
@@ -249,7 +247,7 @@ class CrearPagoFinanzas
             }
             else{ //en condominio  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-                $deudor = $this->data['id_persona_adeudora'];
+                $deudor = $this->data['id_persona_deudora'];
                 if($this->data['enum_clasificacion_pagare'] == "EXPENSA"){
                     if($Inquilino->id){
                         
@@ -279,15 +277,15 @@ class CrearPagoFinanzas
                     break;
                     case 'PAGADO':        
                     
-                        if($this->data['id_persona_adeudora'] == $Inquilino->id){
+                        if($this->data['id_persona_deudora'] == $Inquilino->id){
                             $this->crearPagare(
                                 $this->data['id_persona_acreedora'],
-                                $this->data['id_persona_adeudora'],
+                                $this->data['id_persona_deudora'],
                                 "PAGADO"
                             );   
                         }
     
-                        if($this->data['id_persona_adeudora'] == $Propietario->id){                   
+                        if($this->data['id_persona_deudora'] == $Propietario->id){                   
                                 
                             if($this->data['enum_origen_fondos'] == "ADMINISTRADOR"){
                                 
@@ -346,7 +344,7 @@ class CrearPagoFinanzas
         $pagare = $this->inmueble->pagares()->create([
             'id_administrador_referente' => $this->inmueble->idAdministradorReferente()->first()->id,
             'id_persona_acreedora' => $this->data['id_persona_acreedora'],
-            'id_persona_adeudora' => $deudor,
+            'id_persona_deudora' => $deudor,
             'monto' => $this->data['monto'], 
             'id_moneda' => $this->data['id_moneda'],
             'fecha_pagare' => Carbon::now(),                  
@@ -360,13 +358,13 @@ class CrearPagoFinanzas
         $pagare = $this->inmueble->pagares()->create([
             'id_administrador_referente' =>  $this->inmueble->idAdministradorReferente()->first()->id,
             'id_persona_acreedora' => $acreedor,
-            'id_persona_adeudora' => $deudor,
+            'id_persona_deudora' => $deudor,
             'monto' => $this->data['monto'], 
             'id_moneda' => $this->data['id_moneda'],
             'fecha_pagare' => Carbon::now(),                          
             'enum_estado' => $estado,
             'enum_clasificacion_pagare' => $this->data['enum_clasificacion_pagare'],
-            'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
+            'pagado_con_fondos_de' => array_key_exists('enum_origen_fondos', $this->data) ? $this->data['enum_origen_fondos'] : null,
         ]);
     }
 

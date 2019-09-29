@@ -15,8 +15,8 @@ class CrearUnidad
     /**
      * The form data and the User model.
      *
-     * @var array $data
-     * @var User  $user
+     * @var array
+     * @var User
      */
     protected $data, $user;
 
@@ -37,9 +37,9 @@ class CrearUnidad
     /**
      * Execute the job.
      *
-     * @param InmuebleRepository      $rInmueble      The InmuebleRepository object.
-     * @param UnidadRepository        $rUnidad        The UnidadRepository object.
-     * @param PersonaRepository       $rPersona       The PersonaRepository object.
+     * @param InmuebleRepository $rInmueble The InmuebleRepository object.
+     * @param UnidadRepository   $rUnidad   The UnidadRepository object.
+     * @param PersonaRepository  $rPersona  The PersonaRepository object.
      *
      * @return void
      */
@@ -48,14 +48,6 @@ class CrearUnidad
         $inmueble = $this->crearInmueble($rInmueble);
 
         $unidad = $this->crearUnidad($rUnidad, $inmueble);
-
-        if ($this->data['administrador'] === 'yo' || $this->data['idAdministradorReferente'] === $this->user->id_persona) {
-            $inmueble->idAdministradorReferente()->create(array_merge($this->data['idPersona'],
-                [
-                    'id_persona' => $this->user->id_persona,
-                ]
-            ));
-        }
 
         $this->nominarOAsignarAdministrador($rPersona, $unidad);
         $this->nominarOAsignarPropietario($rPersona, $unidad);
@@ -66,7 +58,11 @@ class CrearUnidad
     }
 
     /**
-     * @param InmuebleRepository $repository The InmuebleRepository object.
+     * Crear Inmueble.
+     *
+     * @param  InmuebleRepository $repository The InmuebleRepository object.
+     *
+     * @return Inmueble 
      */
     protected function crearInmueble(InmuebleRepository $repository)
     {
@@ -80,8 +76,12 @@ class CrearUnidad
     }
 
     /**
-     * @param UnidadRepository $repository The UnidadRepository object.
-     * @param Inmueble         $inmueble The Inmueble model.
+     * Crear Unidad.
+     *
+     * @param  UnidadRepository $repository The UnidadRepository object.
+     * @param  Inmueble         $inmueble The Inmueble model.
+     *
+     * @return Unidad
      */
     protected function crearUnidad(UnidadRepository $repository, Inmueble $inmueble)
     {
@@ -98,39 +98,61 @@ class CrearUnidad
     }
 
     /**
-     * @param PersonaRepository $repository The PersonaRepository object.
-     * @param Unidad            $unidad     The Unidad model.
+     * Nominar o Asignar Administrador Referente.
+     *
+     * @param  PersonaRepository $repository The PersonaRepository object.
+     * @param  Unidad            $unidad     The Unidad model.
+     *
+     * @return void
      */
     protected function nominarOAsignarAdministrador(PersonaRepository $repository, Unidad $unidad)
     {
-        $id = $this->data['idAdministradorReferente'];
+        // idAdministradorReferente presente en el array?
+        if (array_key_exists('idAdministradorReferente', $this->data)) {
+            $user = $this->user;
 
-        if ($id) {
-            $persona = $repository->find($id);
+            $id = $this->data['idAdministradorReferente'];
 
-            if ($id !== $this->user->idPersona->id) {
-                $this->dispatch(new NominarAdministradorReferenteParaUnidad($persona, $unidad));
-            } else {
-                $this->dispatch(new RelacionarAdministradorReferente($this->data['idPersona'], $persona, $unidad->idInmueble));
+            // idAdministradorReferente no está vacío?
+            if ($id) {
+                // idAdministradorReferente es distinto al id de la persona del usuario?
+                if ($id != $user->id_persona) {
+                    $persona = $repository->findOrFail($id);
+
+                    $this->dispatch(new NominarAdministradorReferenteParaUnidad($persona, $unidad, $user));
+		} else {
+                    $this->dispatch(new RelacionarAdministradorReferente($persona, $unidad->idInmueble));
+                }
             }
-        }
+	}
     }
 
     /**
-     * @param PersonaRepository $repository The PersonaRepository object.
-     * @param Unidad            $unidad     The Unidad model.
+     * Nominar O Asignar Propietario Referente.
+     *
+     * @param  PersonaRepository $repository The PersonaRepository object.
+     * @param  Unidad            $unidad     The Unidad model.
+     *
+     * @return void
      */
     protected function nominarOAsignarPropietario(PersonaRepository $repository, Unidad $unidad)
     {
-        $id = $this->data['idPropietarioReferente'];
+        // idPropietarioReferente no está presente en el array?
+        if (array_key_exists('idPropietarioReferente', $this->data)) {
+            $user = $this->user;
 
-        if ($id) {
-            $persona = $repository->find($id);
+            $id = $this->data['idPropietarioReferente'];
 
-            if ($id !== $this->user->idPersona->id) {
-                $this->dispatch(new NominarPropietarioReferenteParaUnidad($persona, $unidad, $this->user));
-            } else {
-                $this->dispatch(new RelacionarPropietarioReferente($persona, $unidad->idInmueble));
+            // idPropietarioReferente no está vacío?
+            if ($id) {
+                // idPropietarioReferente es distinto al id de la persona del usuario?
+                if ($id != $user->id_persona) {
+                    $persona = $repository->findOrFail($id);
+                    $this->dispatch(new NominarPropietarioReferenteParaUnidad($persona, $unidad, $user));
+                } else {
+                    $persona = $user->idPersona;
+                    $this->dispatch(new RelacionarPropietarioReferente($persona, $unidad->idInmueble));
+		}
             }
         }
     }
