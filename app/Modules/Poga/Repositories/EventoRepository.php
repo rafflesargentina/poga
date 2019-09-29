@@ -22,7 +22,7 @@ class EventoRepository extends EloquentRepository
     {
         return $this->whereHas('idInmueble', function($query) use($idInmueblePadre ) {
             // Pueden ser Inmuebles o Unidades
-            return $query->where('id_tabla_hija', $idInmueblePadre);
+            return $query->where('id_tabla_hija', $idInmueblePadre)->orHas('unidades');
         })->where('enum_estado', 'ACTIVO')->where('enum_tipo_evento', 'RESERVA')->get();
     }
 

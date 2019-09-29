@@ -17,4 +17,13 @@ class ProveedorServicioRepository extends EloquentRepository
      * @var array
      */
     public $tag = ['ProveedorServicio'];
+
+    public function findMantenimientos($idInmueblePadre, $estado = 'ACTIVO')
+    {
+        return $this->whereHas('mantenimientos', function($query) use($idInmueblePadre, $estado) {
+            $query->where('enum_estado', $estado)->whereHas('idInmueble', function($q) use($idInmueblePadre) {
+                $q->where('id_inmueble_padre', $idInmueblePadre);
+            });
+	});
+    }
 }

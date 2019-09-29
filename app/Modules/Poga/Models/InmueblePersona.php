@@ -38,7 +38,7 @@ class InmueblePersona extends Pivot
      *
      * @var array
      */
-    protected $with = ['idPersona'];
+    protected $with = ['idPersona', 'idUnidad'];
 
     /**
      * Get the inmueble that own the inmueble persona.
@@ -54,5 +54,13 @@ class InmueblePersona extends Pivot
     public function idPersona()
     {
         return $this->belongsTo(Persona::class, 'id_persona');
+    }
+
+    /**
+     * Get the unidad that own the inmueble persona.
+     */
+    public function idUnidad()
+    {
+        return $this->belongsTo(Unidad::class, 'id_unidad', 'id_inmueble');
     }
 }

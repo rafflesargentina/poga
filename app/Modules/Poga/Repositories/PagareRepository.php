@@ -33,7 +33,8 @@ class PagareRepository extends EloquentRepository
 
         $pagare = Pagare::findOrFail($data['idPagare']);
         $pagare->update([
-            'enum_estado' => $data['estado']
+	    'enum_estado' => $data['estado'],
+            'enum_origen_fondos' => array_key_exists('enum_origen_fondos', $data) ? $data['enum_origen_fondos'] : null,
         ]);
         return $pagare;
      

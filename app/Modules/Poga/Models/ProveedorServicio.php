@@ -30,24 +30,26 @@ class ProveedorServicio extends Model
     ];
 
     /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    /**
-     * The "type" of the auto-incrementing ID.
-     *
-     * @var string
-     */
-    protected $keyType = 'string';
-
-    /**
-     * Get the proveedor that owns the user.
+     * Get the proveedor that owns the proveedor servicio.
      */
     public function idProveedor()
     {
         return $this->belongsTo(Persona::class, 'id_proveedor');
+    }
+
+    /**
+     * Get the servicio that owns the proveedor servicio.
+     */
+    public function idServicio()
+    {
+        return $this->belongsTo(Servicio::class, 'id_servicio');
+    }
+
+    /**
+     * Get the mantenimientos for the proveedor servicio.
+     */
+    public function mantenimientos()
+    {
+        return $this->hasMany(Mantenimiento::class, 'id_proveedor_servicio');
     }
 }
