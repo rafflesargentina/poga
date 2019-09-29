@@ -68,7 +68,7 @@ class RegisterController extends Controller
         ];
 
         return $this->registered($request, $user)
-           ?: $this->validSuccessJsonResponse('Success', $data, $this->redirectPath());
+            ?: $this->validSuccessJsonResponse('Success', $data, $this->redirectPath());
     }
 
     /**

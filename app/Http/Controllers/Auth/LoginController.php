@@ -103,9 +103,10 @@ class LoginController extends Controller
     {
         $user = $this->guard()->user();
         $user->token()->revoke();
-        event(new Logout($user));
+	event(new Logout($user));
+
         return $this->loggedOut($request)
-        ?: $this->validSuccessJsonResponse('Success', [], $this->redirectPath());
+            ?: $this->validSuccessJsonResponse('Success', [], $this->redirectPath());
     }
 
     /**
