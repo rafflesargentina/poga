@@ -30,17 +30,23 @@ class UnidadController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
-        $this->validate(
-            $request, [
+        $request->validate(
+            [
             'idInmueblePadre' => 'required',
             ]
         );
 
-        $items = $this->repository->whereHas('idInmueble', function($query) { return $query->where('inmuebles.enum_estado', 'ACTIVO'); })->where('id_inmueble_padre', $request->idInmueblePadre)->get();
+        $items = $this->repository->whereHas(
+            'idInmueble', function ($query) {
+                return $query->where('inmuebles.enum_estado', 'ACTIVO'); 
+            }
+        )->where('id_inmueble_padre', $request->idInmueblePadre)->get();
 
         return $this->validSuccessJsonResponse('Success', $items);
     }
@@ -48,17 +54,19 @@ class UnidadController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        $this->validate(
-            $request, [
-            'administrador' => 'required',
+        $request->validate(
+            [
+            'administrador' => 'required|in:yo,otra_persona',
             'idInmueble.solicitud_directa_inquilinos' => 'required',
+            'idInmueble.id_tipo_inmueble' => 'required',
             'idPropietarioReferente' => 'required',
-            'unidad.area_estacionamiento' => 'required',
+            'unidad.area_estacionamiento' => 'numeric',
             'unidad.area' => 'required',
             'unidad.id_formato_inmueble' => 'required',
             'unidad.id_inmueble_padre' => 'required',
@@ -70,7 +78,7 @@ class UnidadController extends Controller
         $data = $request->all();
         $user = $request->user('api');
 
-        $unidad = $this->dispatch(new CrearUnidad($data, $user));
+        $unidad = $this->dispatchNow(new CrearUnidad($data, $user));
 
         return $this->validSuccessJsonResponse('Success', $unidad);
     }
@@ -78,8 +86,10 @@ class UnidadController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(Request $request, $id)
     {
@@ -93,27 +103,31 @@ class UnidadController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int                      $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $request->validate(
+            [
+            'caracteristicas' => 'array',
             'idInmueble.solicitud_directa_inquilinos' => 'required',
             'idPropietarioReferente' => 'required',
-            'unidad.area_estacionamiento' => 'required',
+            'unidad.area_estacionamiento' => 'numeric',
             'unidad.area' => 'required',
             'unidad.id_formato_inmueble' => 'required',
             'unidad.numero' => 'required',
             'unidad.piso' => 'required',
-        ]);
+            ]
+        );
 
         $data = $request->all();
         $user = $request->user('api');
         $model = $this->repository->findOrFail($id);
 
-        $unidad = dispatch(new ActualizarUnidad($model, $data, $user));
+        $unidad = $this->dispatchNow(new ActualizarUnidad($model, $data, $user));
 
         return $this->validSuccessJsonResponse('Success', $unidad);
     }
@@ -122,14 +136,16 @@ class UnidadController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Request $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param int     $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Request $request, $id)
     {
         $model = $this->repository->findOrFail($id);
+        $user = $request->user('api');
 
-        $unidad = $this->dispatch(new BorrarUnidad($model, $request->user('api')));
+        $unidad = $this->dispatchNow(new BorrarUnidad($model, $user));
 
         return $this->validSuccessJsonResponse('Success', $unidad);
     }

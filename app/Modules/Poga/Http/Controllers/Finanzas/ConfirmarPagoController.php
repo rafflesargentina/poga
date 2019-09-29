@@ -3,9 +3,9 @@
 namespace Raffles\Modules\Poga\Http\Controllers\Finanzas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
+use Raffles\Modules\Poga\UseCases\ConfirmarPagoFinanzas;
 
 use Illuminate\Http\Request;
-use Raffles\Modules\Poga\UseCases\ConfirmarPagoFinanzas;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
 class ConfirmarPagoController extends Controller
@@ -13,7 +13,7 @@ class ConfirmarPagoController extends Controller
     use FormatsValidJsonResponses;
 
     /**
-     * Create a new CrearPagoController instance.
+     * Create a new ConfirmarPagoController instance.
      *
      * @return void
      */
@@ -31,10 +31,10 @@ class ConfirmarPagoController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $this->validate(
-            $request, [
+        $request->validate(
+            [
             'id_pagare' => 'required',
-            'enum_origen_fondos' => 'required'
+            'enum_origen_fondo' => 'required',
             ]
         );
 

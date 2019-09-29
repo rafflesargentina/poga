@@ -17,7 +17,7 @@ class NominacionController extends Controller
     /**
      * The InmueblePadreRepository.
      *
-     * @var InmueblePadreRepository $repository
+     * @var InmueblePadreRepository
      */
     protected $repository;
 
@@ -38,7 +38,9 @@ class NominacionController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
@@ -58,35 +60,30 @@ class NominacionController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
         $inmueblePadre = $this->repository->findOrFail($request->id_inmueble_padre);
 
-        $this->validate($request, [
+        $this->validate(
+            $request, [
             'role_id' => [
                 'required',
-                Rule::unique('nominaciones')->where(function($query) use($request, $inmueblePadre) {
-                    return $query->where('id_persona_nominada', $request->id_persona_nominada)
-                                 ->where('id_inmueble', $inmueblePadre->id_inmueble);
-                }),
+                Rule::unique('nominaciones')->where(
+                    function ($query) use ($request, $inmueblePadre) {
+                        return $query->where('id_persona_nominada', $request->id_persona_nominada)
+                            ->where('id_inmueble', $inmueblePadre->id_inmueble);
+                    }
+                ),
             ],
             'id_inmueble_padre' => 'required',
-        ]);
+            ]
+        );
 
         $data = [
             'enum_estado' => 'EN_CURSO',
@@ -105,8 +102,10 @@ class NominacionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(Request $request, $id)
     {
@@ -116,9 +115,10 @@ class NominacionController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int                      $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
@@ -128,9 +128,10 @@ class NominacionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int                      $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Request $request, $id)
     {

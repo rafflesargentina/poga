@@ -31,8 +31,8 @@ class ConfirmarPagoController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $this->validate(
-            $request, [
+        $request->validate(
+            [
             'id_pagare' => 'required',
             'enum_origen_fondos' => 'required'
             ]

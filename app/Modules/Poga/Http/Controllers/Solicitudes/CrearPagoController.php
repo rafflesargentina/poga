@@ -31,8 +31,8 @@ class CrearPagoController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $this->validate(
-            $request, [
+        $request->validate(
+            [
             'id_solicitud' => 'required',
             'enum_estado' => 'required',
             'id_moneda' => 'required',

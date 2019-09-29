@@ -65,6 +65,8 @@ class PersonaController extends Controller
      */
     public function store(Request $request)
     {
+        $data = array_only($request->all(), ['enum_rol', 'id_inmueble', 'id_persona', 'invitar']);
+
         $request->validate(
             [
             'enum_rol' => 'required',
@@ -79,9 +81,9 @@ class PersonaController extends Controller
                         ->whereHas(
                             'idPersona', function ($query) use ($value) {
                                 $query->where('mail', $value);
+                                $query->where('enum_estado', 'ACTIVO');
                             }
                         )
-                        ->where('personas.enum_estado', 'ACTIVO')
                         ->where('enum_rol', $request->enum_rol)
                     ->count();
                     if ($count > 0) {
@@ -95,7 +97,7 @@ class PersonaController extends Controller
             ]
         );
 
-        $data = $request->all();
+        //$data = $request->all();
         $user = $request->user('api');
         $inmueblePersona = $this->dispatchNow(new CrearInmueblePersona($data, $user));
 
@@ -147,9 +149,9 @@ class PersonaController extends Controller
                         ->whereHas(
                             'idPersona', function ($query) use ($value) {
                                 $query->where('mail', $value);
+                                $query->where('enum_estado', 'ACTIVO');
                             }
                         )
-                        ->where('personas.enum_estado', 'ACTIVO')
                         ->where('enum_rol', $request->enum_rol)
                         ->count();
                     if ($count > 0) {

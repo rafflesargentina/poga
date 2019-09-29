@@ -31,14 +31,15 @@ class CrearPagoController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $this->validate(
-            $request, [
+        $request->validate(
+            [
             'enum_estado' => 'required',
             'id_moneda' => 'required',
-            'id_persona_adeudora' => 'required',
+            'id_persona_deudora' => 'required',
             'id_persona_acreedora' => 'required',
             'monto' => 'required',
-            'enum_origen_fondos' => 'required',
+            'enum_clasificacion_pagare' => 'required',
+            'enum_origen_fondos' => 'required_if:enum_estado,PAGADO',
             'descripcion' => 'required',
             'id_inmueble' => 'required'
             ]
@@ -46,10 +47,8 @@ class CrearPagoController extends Controller
 
         $data = $request->all();
         $user = $request->user('api');
-        $retorno = $this->dispatch(new CrearPagoFinanzas($data, $user));
+        $retorno = $this->dispatchNow(new CrearPagoFinanzas($data, $user));
 
         return $this->validSuccessJsonResponse('Success', $retorno);
-
-        
     }
 }

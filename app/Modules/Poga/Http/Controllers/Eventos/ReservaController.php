@@ -4,7 +4,7 @@ namespace Raffles\Modules\Poga\Http\Controllers\Eventos;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 use Raffles\Modules\Poga\Repositories\EventoRepository;
-use Raffles\Modules\Poga\UseCases\CrearReserva;
+use Raffles\Modules\Poga\UseCases\{ ActualizarReserva, BorrarReserva, CrearReserva };
 
 use Illuminate\Http\Request;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
@@ -34,8 +34,8 @@ class ReservaController extends Controller
      */
     public function index(Request $request)
     {
-        $this->validate(
-            $request, [
+        $request->validate(
+            [
             'idInmueblePadre' => 'required',
             ]
         );
@@ -53,7 +53,8 @@ class ReservaController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $request->validate(
+            [
             'fecha_fin' => 'required|date',
             'fecha_inicio' => 'required|date',
             'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
@@ -62,7 +63,8 @@ class ReservaController extends Controller
             'id_inmueble' => 'required',
             'invitados' => 'array',
             'nombre' => 'required',
-        ]);
+            ]
+        );
 
         $data = $request->all();
         $user = $request->user('api');
@@ -79,7 +81,11 @@ class ReservaController extends Controller
      */
     public function show(Request $request, $id)
     {
-        //
+        $model = $this->repository->findOrFail($id);
+
+        $model->loadMissing('invitados');
+
+        return $this->validSuccessJsonResponse('Success', $model);
     }
 
     /**
@@ -91,7 +97,24 @@ class ReservaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate(
+            [
+            'fecha_fin' => 'required|date',
+            'fecha_inicio' => 'required|date',
+            'hora_fin' => 'required',
+            'hora_inicio' => 'required',
+            'id_espacio' => 'required',
+            'invitados' => 'array',
+            'nombre' => 'required',
+            ]
+        );
+
+        $data = $request->all();
+        $model = $this->repository->findOrFail($id);
+        $user = $request->user('api');
+        $evento = $this->dispatch(new ActualizarReserva($model, $data, $user));
+
+        return $this->validSuccessJsonResponse('Success', $evento);
     }
 
     /**
@@ -100,8 +123,12 @@ class ReservaController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        //
+        $model = $this->repository->findOrFail($id);
+        $user = $request->user('api');
+        $evento = $this->dispatch(new BorrarReserva($model, $user));
+
+        return $this->validSuccessJsonResponse('Success', $evento);
     }
 }
