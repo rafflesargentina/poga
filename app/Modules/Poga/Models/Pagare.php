@@ -12,31 +12,29 @@ class Pagare extends Model
      * @var array
      */
     protected $fillable = [     
-          
-            'id_inmueble',
-            'id_persona_acreedora',
-            'id_persona_adeudora',
-            'monto',
-            'id_moneda',
-            'fecha_pagare',
-            'fecha_vencimiento',
-            'fecha_pago_a_confirmar',
-            'fecha_pago_confirmado',
-            'fecha_pago_real',
-            'pagado_fuera_sistema',
-            'id_factura',
-            'enum_estado',
-            'enum_clasificacion_pagare',
-            'id_tabla',
-            'id_distribucion_expensa',
-            'id_tipo_pagare',
-            'description',
-            'mes_a_pagar',
-            'pagado_con_fondos_de',
-            'nro_comprobante',
+        'descripcion',
+        'enum_clasificacion_pagare',    
+        'enum_estado',
+	'id_distribucion_expensa',    
+        'id_factura',    
+	'id_inmueble',
+        'id_moneda',
+	'id_persona_acreedora',
+        'id_persona_deudora',
+        'id_tabla',
+        'id_tipo_pagare',
+	'fecha_pagare',
+        'fecha_vencimiento',
+        'fecha_pago_a_confirmar',
+        'fecha_pago_confirmado',
+	'fecha_pago_real',
+        'mes_a_pagar',
+        'monto',
+        'nro_comprobante',
+	'pagado_fuera_sistema',
+        'pagado_con_fondos_de',
     ];
 
-   
     /**
      * The table associated with the model.
      *
@@ -49,11 +47,18 @@ class Pagare extends Model
      *
      * @var array
      */
-    protected $with = ['idInmueble', 'idPersonaAcreedora','IdMoneda','IdFactura'];
+    protected $with = ['idInmueble', 'IdMoneda','IdFactura', 'idPersonaAcreedora'];
 
+    /**
+     * Get the factura that owns the pagare.
+     */
+    public function idFactura()
+    {
+        return $this->belongsTo(Factura::class, 'id_factura');
+    }
   
     /**
-     * Get the inmueble that owns the inmueble.
+     * Get the inmueble that owns the pagare.
      */
     public function idInmueble()
     {
@@ -61,23 +66,7 @@ class Pagare extends Model
     }
 
     /**
-     * Get the inquilino that owns the pagare.
-     */
-    public function idPersonaAcreedora()
-    {
-        return $this->belongsTo(Persona::class, 'id_persona_acreedora');
-    }
-
-    /**
-     * Get the inquilino that owns the pagare.
-     */
-    public function idPersonaAdeudora()
-    {
-        return $this->belongsTo(Persona::class, 'id_persona_adeudora');
-    }
-
-    /**
-     * Get the inquilino that owns the renta.
+     * Get the moneda that owns the pagare.
      */
     public function idMoneda()
     {
@@ -85,12 +74,26 @@ class Pagare extends Model
     }
 
     /**
-     * Get the factura that owns the renta.
+     * Get the persona acreedora that owns the pagare.
      */
-    public function idFactura()
+    public function idPersonaAcreedora()
     {
-        return $this->belongsTo(Factura::class, 'id_factura');
+        return $this->belongsTo(Persona::class, 'id_persona_acreedora');
     }
 
-  
+    /**
+     * Get the persona deudora that owns the pagare.
+     */
+    public function idPersonaDeudora()
+    {
+        return $this->belongsTo(Persona::class, 'id_persona_deudora');
+    }
+
+    /**
+     * Get the unidad that owns the pagare.
+     */
+    public function idUnidad()
+    {
+        return $this->belongsTo(Unidad::class, 'id_inmueble', 'id_inmueble');
+    }
 }

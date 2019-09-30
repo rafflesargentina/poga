@@ -63,7 +63,7 @@ class GenerarPagares implements ShouldQueue
                 $inmueble = Inmueble::find($renta->id_inmueble); 
                 $pagare = $inmueble->pagares()->create([
                     'id_persona_acreedora' => $renta->idInmueble->idPropietarioReferente()->first()->id,
-                    'id_persona_adeudora' => $renta->id_inquilino,
+                    'id_persona_deudora' => $renta->id_inquilino,
                     'monto' => $renta->monto,
                     'id_moneda' => $renta->id_moneda,
                     'fecha_pagare' => $fechaCreacionPagare,                      
@@ -84,7 +84,7 @@ class GenerarPagares implements ShouldQueue
         $inmueble = Inmueble::find($renta->id_inmueble); 
         $pagare = $inmueble->pagares()->create([
             'id_persona_acreedora' => $renta->idInmueble->idAdministradorReferente()->first()->id,
-            'id_persona_adeudora' => $renta->idInmueble->idPropietarioReferente()->first()->id,
+            'id_persona_deudora' => $renta->idInmueble->idPropietarioReferente()->first()->id,
             'monto' => $comision, 
             'id_moneda' => $renta->id_moneda,
             'fecha_pagare' => $fechaCreacionPagare,                      

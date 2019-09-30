@@ -271,7 +271,7 @@ class CrearPagoMantenimiento
         $pagare = $this->mantenimiento->idInmueble->pagares()->create([
             'id_administrador_referente' =>  $this->mantenimiento->idInmueble->idAdministradorReferente()->first()->id,
             'id_persona_acreedora' => $acreedor,
-            'id_persona_adeudora' =>  $deudor,
+            'id_persona_deudora' =>  $deudor,
             'monto' => $this->data['monto'], 
             'id_moneda' => $this->data['id_moneda'],
             'fecha_pagare' => Carbon::now(),                      

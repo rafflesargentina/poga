@@ -83,18 +83,18 @@ class CrearPagoSolicitud
 
                         $this->crearPagareSolicitud(
                             $this->solicitud->id_proveedor_servicio,
-                            $this->data['id_persona_adeudora'],
+                            $this->data['id_persona_deudora'],
                             "PENDIENTE"
                         );                   
                     
                     break;
                     case 'PAGADO':  // unico dueño                 
 
-                        if($this->data['id_persona_adeudora'] != $Propietario->id){
+                        if($this->data['id_persona_deudora'] != $Propietario->id){
                             
                             $this->crearPagareSolicitud(
                                 $this->solicitud->id_proveedor_servicio,
-                                $this->data['id_persona_adeudora'],
+                                $this->data['id_persona_deudora'],
                                 "PAGADO"
                             ); 
                         }
@@ -187,22 +187,22 @@ class CrearPagoSolicitud
                     
                     $this->crearPagareSolicitud(
                         $this->solicitud->id_proveedor_servicio,
-                        $this->data['id_persona_adeudora'],
+                        $this->data['id_persona_deudora'],
                         "PENDIENTE"
                     );                  
 
                 break;
                 case 'PAGADO':        
                 
-                    if($this->data['id_persona_adeudora'] == $Inquilino->id){
+                    if($this->data['id_persona_deudora'] == $Inquilino->id){
                         $this->crearPagareSolicitud(
                             $this->solicitud->id_proveedor_servicio,
-                            $this->data['id_persona_adeudora'],
+                            $this->data['id_persona_deudora'],
                             "PAGADO"
                         );   
                     }
 
-                    if($this->data['id_persona_adeudora'] == $Propietario->id){                   
+                    if($this->data['id_persona_deudora'] == $Propietario->id){                   
                             
                         if($this->data['enum_origen_fondos'] == "ADMINISTRADOR"){
                             
@@ -255,7 +255,7 @@ class CrearPagoSolicitud
 
         $pagare = $this->solicitud->idInmueble->pagares()->create([
             'id_administrador_referente' => $this->solicitud->idInmueble->idAdministradorReferente()->first()->id,
-            'id_persona_adeudora' => $this->data['id_persona_adeudora'],
+            'id_persona_deudora' => $this->data['id_persona_deudora'],
             'id_persona_acreedora' => $acreedor,
             'monto' => $this->data['monto'], 
             'id_moneda' => $this->data['id_moneda'],
@@ -272,7 +272,7 @@ class CrearPagoSolicitud
         $pagare = $this->solicitud->idInmueble->pagares()->create([
             'id_administrador_referente' =>   $this->solicitud->idInmueble->idAdministradorReferente()->first()->id,
             'id_persona_acreedora' => $acreedor,
-            'id_persona_adeudora' =>  $deudor,
+            'id_persona_deudora' =>  $deudor,
             'monto' => $this->data['monto'], 
             'id_moneda' => $this->data['id_moneda'],
             'fecha_pagare' => Carbon::now(),                      

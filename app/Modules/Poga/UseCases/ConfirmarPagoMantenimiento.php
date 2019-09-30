@@ -102,7 +102,7 @@ class ConfirmarPagoMantenimiento
                     $pagare = $mantenimiento->idInmueble->pagares()->create([
                         'id_administrador_referente' => $idAdministrador,
                         'id_persona_acreedora' => $idAdministrador,
-                        'id_persona_adeudora' =>  $idPropietario,
+                        'id_persona_deudora' =>  $idPropietario,
                         'monto' => $this->pagare->monto, 
                         'id_moneda' => $this->pagare->id_moneda,
                         'fecha_pagare' => Carbon::now(),                      
@@ -167,7 +167,7 @@ class ConfirmarPagoMantenimiento
                         $pagare = $inmueble->pagares()->create([
                             'id_administrador_referente' => $idAdministrador,
                             'id_persona_acreedora' => $idAdministrador,
-                            'id_persona_adeudora' =>  $idPropietario,
+                            'id_persona_deudora' =>  $idPropietario,
                             'monto' => $this->pagare->monto, 
                             'id_moneda' => $this->pagare->id_moneda,
                             'fecha_pagare' => Carbon::now(),                      
@@ -209,7 +209,7 @@ class ConfirmarPagoMantenimiento
 
     public function actualizarEstadoDeudorPago($estado,$idAdministrador){
         $this->pagare->update([
-            'id_persona_adeudora' =>  $idAdministrador,
+            'id_persona_deudora' =>  $idAdministrador,
             'enum_estado' => $estado
         ]);
     }

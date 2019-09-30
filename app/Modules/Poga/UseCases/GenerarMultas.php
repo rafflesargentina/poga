@@ -84,7 +84,7 @@ class GenerarMultas implements ShouldQueue
                         'id_inmueble' => $inmueble->id,
                         'fecha_pagare' => $fechaCreacionPagare,
                         'id_persona_acreedora' => $renta->idInmueble->idPropietarioReferente()->first()->id,
-                        'id_persona_adeudora' => $renta->id_inquilino,
+                        'id_persona_deudora' => $renta->id_inquilino,
                         'id_moneda'=> $renta->id_moneda,
                         'enum_estado'=>'PENDIENTE',
                         'enum_clasificacion_pagare'=>'MULTA_RENTA',
@@ -97,7 +97,7 @@ class GenerarMultas implements ShouldQueue
                     $monto = $pagareActual->monto + $renta->monto_multa_dia;
                 
                     $pagareActual->update([
-                        'id_persona_adeudora' => $renta->id_inquilino,
+                        'id_persona_deudora' => $renta->id_inquilino,
                         'id_moneda'=> $renta->id_moneda,
                         'enum_estado'=>'PENDIENTE',
                         'enum_clasificacion_pagare'=>'MULTA_RENTA',

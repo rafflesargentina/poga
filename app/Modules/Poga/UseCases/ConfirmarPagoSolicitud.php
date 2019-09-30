@@ -88,7 +88,7 @@ class ConfirmarPagoSolicitud
             if($this->user->id == $idAdministrador){ 
                 
                 
-                if($this->pagare->id_persona_adeudora != $idPropietario){
+                if($this->pagare->id_persona_deudora != $idPropietario){
                     $this->actualizarEstadoPago("PAGADO");
                 }
                 else{
@@ -100,7 +100,7 @@ class ConfirmarPagoSolicitud
                         $pagare = $inmueble->pagares()->create([
                             'id_administrador_referente' => $idAdministrador,
                             'id_persona_acreedora' => $idAdministrador,
-                            'id_persona_adeudora' =>  $idPropietario,
+                            'id_persona_deudora' =>  $idPropietario,
                             'monto' => $this->pagare->monto, 
                             'id_moneda' => $this->pagare->id_moneda,
                             'fecha_pagare' => Carbon::now(),                      
@@ -117,7 +117,7 @@ class ConfirmarPagoSolicitud
                           
             }
             else{
-                if($this->user->id == $this->pagare->id_persona_adeudora)
+                if($this->user->id == $this->pagare->id_persona_deudora)
                     $this->actualizarEstadoPago("PAGADO");
             }
         }
@@ -138,7 +138,7 @@ class ConfirmarPagoSolicitud
                             $pagare = $inmueble->pagares()->create([
                                 'id_administrador_referente' => $idAdministrador,
                                 'id_persona_acreedora' => $idAdministrador,
-                                'id_persona_adeudora' =>  $idPropietario,
+                                'id_persona_deudora' =>  $idPropietario,
                                 'monto' => $this->pagare->monto, 
                                 'id_moneda' => $this->pagare->id_moneda,
                                 'fecha_pagare' => Carbon::now(),                      
@@ -183,22 +183,22 @@ class ConfirmarPagoSolicitud
 
                 if($this->user->id == $idAdministrador){ 
 
-                    if($this->pagare->id_persona_adeudora == $idInquilino){
+                    if($this->pagare->id_persona_deudora == $idInquilino){
                         $this->actualizarEstadoPago("PAGADO");
                     }
 
-                    if($this->pagare->id_persona_adeudora == $idPropietario){
+                    if($this->pagare->id_persona_deudora == $idPropietario){
 
                         if($this->data['enum_origen_fondos'] == "ADMINISTRADOR"){
 
-                            if($this->pagare->id_persona_adeudora == $idPropietario){
+                            if($this->pagare->id_persona_deudora == $idPropietario){
                                 
                                 $this->actualizarEstadoDeudorPago("PAGADO",$idAdministrador);
                                 
                                 $pagare = $inmueble->pagares()->create([
                                     'id_administrador_referente' => $idAdministrador,
                                     'id_persona_acreedora' => $idAdministrador,
-                                    'id_persona_adeudora' =>  $idPropietario,
+                                    'id_persona_deudora' =>  $idPropietario,
                                     'monto' => $this->pagare->monto, 
                                     'id_moneda' => $this->pagare->id_moneda,
                                     'fecha_pagare' => Carbon::now(),                      
@@ -238,7 +238,7 @@ class ConfirmarPagoSolicitud
 
     public function actualizarEstadoDeudorPago($estado,$id_persona){
         $this->pagare->update([
-            'id_persona_adeudora' =>  $id_persona,
+            'id_persona_deudora' =>  $id_persona,
             'enum_estado' => $estado
         ]);
     }
