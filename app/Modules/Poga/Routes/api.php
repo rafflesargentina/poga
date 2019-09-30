@@ -39,6 +39,7 @@ Route::put('finanzas/confirmarPago', Finanzas\ConfirmarPagoController::class);
 Route::put('finanzas/rechazarPago', Finanzas\RechazarPagoController::class);
 Route::put('finanzas/distribuirExpensas', Finanzas\DistribuirExpensasController::class);
 Route::apiResource('monedas', Finanzas\MonedaController::class, ['only' => ['index']]);
+Route::apiResource('pagares', Finanzas\PagareController::class);
 
 // Inmuebles
 Route::put('inmuebles/desvincular', Inmuebles\DesvincularController::class);
