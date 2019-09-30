@@ -20,7 +20,7 @@ class CrearPagoMantenimiento
      * @var array $data
      * @var User  $user
      */
-    protected $data, $user, $mantenimiento;
+    protected $data, $user, $mantenimiento, $pagaresGenerados;
 
     /**
      * Create a new job instance.
@@ -50,9 +50,9 @@ class CrearPagoMantenimiento
     {
         $this->authorize('create', new Pagare);
 
-        $renta = $this->crearPago();
+        $pagares = $this->crearPago();
 
-        return $renta;
+        return $pagares;
     }
 
     /**
@@ -236,7 +236,7 @@ class CrearPagoMantenimiento
 
        
 
-            //Proovedor es el acreedor
+        return $this->pagaresGenerados;
            
         
     }
@@ -268,9 +268,15 @@ class CrearPagoMantenimiento
             'id_tabla' => $this->mantenimiento->id,
            
         ]);
+
+        $this->pagaresGenerados[] = $pagare;
     } 
 
     protected function crearPagareMantenimiento($acreedor, $deudor, $estado){
+
+        if($estado == "PENDIENTE"){
+            $this->data['enum_origen_fondos'] = null;
+        }
 
         $pagare = $this->mantenimiento->idInmueble->pagares()->create([
             'id_administrador_referente' =>  $this->mantenimiento->idInmueble->idAdministradorReferente()->first()->id,
@@ -285,6 +291,8 @@ class CrearPagoMantenimiento
             'pagado_con_fondos_de' => $this->data['enum_origen_fondos'],
             
         ]);
+
+        $this->pagaresGenerados[] = $pagare;
     }
 
 

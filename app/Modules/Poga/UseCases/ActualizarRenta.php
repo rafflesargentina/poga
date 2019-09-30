@@ -52,7 +52,8 @@ class ActualizarRenta
      * @return void
      */
     public function handle(RentaRepository $rRenta)
-    {
+    {        
+        
         $this->authorize('update',$this->renta);
 
         $renta = $this->actualizarRenta($rRenta);

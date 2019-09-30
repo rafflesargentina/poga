@@ -80,7 +80,7 @@ class EspacioPolicy
 	    // Administrador
 	    case 1:
                 // Puede crear un espacio si la persona es administrador del condominio.
-    
+           
         
             return $inmueble->administradores->where('id', $user->id_persona)
                 && $inmueble->idInmueblePadre->modalidad_propiedad === 'EN_CONDOMINIO'

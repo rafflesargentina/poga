@@ -19,7 +19,7 @@ class CrearPagoFinanzas
      * @var array $data
      * @var User  $user
      */
-    protected $data, $user, $inmueble;
+    protected $data, $user, $inmueble, $pagaresGenerados;
 
     /**
      * Create a new job instance.
@@ -52,9 +52,9 @@ class CrearPagoFinanzas
         
         $this->authorize('create',new Pagare);
 
-        $renta = $this->crearPago();
+        $pagares = $this->crearPago();
 
-        return $renta;
+        return $pagares;
     }
 
     /**
@@ -331,6 +331,8 @@ class CrearPagoFinanzas
                 }
             }
         }
+
+        return $this->pagaresGenerados;
     }
 
     protected function descontarFondoReserva($cantidad){
@@ -343,7 +345,6 @@ class CrearPagoFinanzas
 
         
         $inmueble_padre->save();
-
 
     }
 
@@ -359,10 +360,16 @@ class CrearPagoFinanzas
             'enum_estado' => $this->data['enum_estado'],
             'enum_clasificacion_pagare' => "EXPENSA",
         ]);
+
+        $this->pagaresGenerados[] = $pagare;
     } 
 
     protected function crearPagare($acreedor,$deudor,$estado){
 
+        if($estado == "PENDIENTE"){
+            $this->data['enum_origen_fondos'] = null;
+        }
+        
         $pagare = $this->inmueble->pagares()->create([
             'id_administrador_referente' =>  $this->inmueble->idAdministradorReferente()->first()->id,
             'id_persona_acreedora' => $acreedor,
@@ -374,6 +381,8 @@ class CrearPagoFinanzas
             'enum_clasificacion_pagare' => $this->data['enum_clasificacion_pagare'],
             'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
         ]);
+
+        $this->pagaresGenerados[] = $pagare;
     }
 
 

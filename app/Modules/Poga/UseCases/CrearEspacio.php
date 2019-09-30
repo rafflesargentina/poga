@@ -10,7 +10,7 @@ use Raffles\Modules\Poga\Models\Espacio;
 
 class CrearEspacio
 {
-    use DispatchesJobs,AuthorizesRequests;
+    use DispatchesJobs,AuthorizesRequests; //Validado
 
     /**
      * The form data and the User model.

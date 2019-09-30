@@ -18,7 +18,7 @@ class ConfirmarPagoSolicitud
      * @var array $data
      * @var User  $user
      */
-    protected $data, $user, $pagare;
+    protected $data, $user, $pagare, $pagaresGenerados;
 
     /**
      * Create a new job instance.
@@ -50,8 +50,8 @@ class ConfirmarPagoSolicitud
         
         $this->authorize('update', $this->pagare);
 
-        $renta = $this->confirmarPago();
-        return $renta;
+        $retorno = $this->confirmarPago();
+        return $retorno;
     }
 
     public function confirmarPago(){      
@@ -110,7 +110,9 @@ class ConfirmarPagoSolicitud
                             'fecha_pagare' => Carbon::now(),                      
                             'enum_estado' =>"PENDIENTE",
                             'enum_clasificacion_pagare' => "SOLICITUD" 
-                        ]);                 
+                        ]);   
+                        
+                        $this->pagaresGenerados[] = $pagare;
                     }
     
                     if($this->data['enum_origen_fondos'] == "PROPIETARIO"){
@@ -148,7 +150,9 @@ class ConfirmarPagoSolicitud
                                 'fecha_pagare' => Carbon::now(),                      
                                 'enum_estado' =>"PENDIENTE",
                                 'enum_clasificacion_pagare' => "SOLICITUD" 
-                            ]);                 
+                            ]);   
+                            $this->pagaresGenerados[] = $pagare;
+
                         }      
                         
                         if($this->data['enum_origen_fondos'] == "RESERVA"){
@@ -207,8 +211,9 @@ class ConfirmarPagoSolicitud
                                     'id_moneda' => $this->pagare->id_moneda,
                                     'fecha_pagare' => Carbon::now(),                      
                                     'enum_estado' =>"PENDIENTE",
-                                    'enum_clasificacion_pagare' => "solicitud" 
+                                    'enum_clasificacion_pagare' => "SOLICITUD" 
                                 ]); 
+                                $this->pagaresGenerados[] = $pagare;
                             }                
                         }
     
@@ -219,6 +224,8 @@ class ConfirmarPagoSolicitud
                 }
             }       
         }
+
+        return $this->pagaresGenerados;
     }
 
     protected function descontarFondoReserva($cantidad){
@@ -236,15 +243,19 @@ class ConfirmarPagoSolicitud
 
     public function actualizarEstadoPago($estado){
         $this->pagare->update([
-            'enum_estado' => $estado
+            'enum_estado' => $estado,
+            'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
         ]);
+        $this->pagaresGenerados[] = $this->pagare;
     }
 
     public function actualizarEstadoDeudorPago($estado,$id_persona){
         $this->pagare->update([
             'id_persona_adeudora' =>  $id_persona,
-            'enum_estado' => $estado
+            'enum_estado' => $estado,
+            'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
         ]);
+        $this->pagaresGenerados[] = $this->pagare;
     }
 
 

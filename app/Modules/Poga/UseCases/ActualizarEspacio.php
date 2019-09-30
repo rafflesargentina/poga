@@ -9,7 +9,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class ActualizarEspacio
 {
-    use DispatchesJobs,AuthorizesRequests;
+    use DispatchesJobs,AuthorizesRequests; //Validado
 
     /**
      * The form data, the Espacio id, and the User model.

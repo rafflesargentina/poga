@@ -120,9 +120,9 @@ class RentaController extends Controller
             ]
         );
 
-	$model = $this->repository->findOrFail($id);
+	    $model = $this->repository->findOrFail($id);
         $data = array_only($request->all(), ['comision_administrador', 'dias_multa', 'monto_multa_dia', 'multa', 'prim_comision_administrador']);
-	$user = $request->user('api');
+	    $user = $request->user('api');
 
         $renta = $this->dispatchNow(new ActualizarRenta($model, $data, $user));
 

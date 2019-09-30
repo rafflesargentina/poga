@@ -34,6 +34,7 @@ class ConfirmarPagoController extends Controller
         $this->validate(
             $request, [
             'id_pagare' => 'required',
+            'enum_origen_fondos' => 'required'
             ]
         );
 

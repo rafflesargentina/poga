@@ -18,7 +18,7 @@ class ConfirmarPagoFinanzas
      * @var array $data
      * @var User  $user
      */
-    protected $data, $user;
+    protected $data, $user, $pagaresGenerados;
 
     /**
      * Create a new job instance.
@@ -49,30 +49,22 @@ class ConfirmarPagoFinanzas
     {
         $this->authorize('update', $this->pagare);
 
-        $renta = $this->confirmarPago();
+        $retorno = $this->confirmarPago();
 
-        return $renta;
+        return $retorno;
     }
 
-    public function confirmarPago(){
-
-
-        
+    public function confirmarPago(){       
 
         $isUnicoPropietario = true;
         $isInmueble = true;
 
-        
-
-        
         $inmueble = Inmueble::findOrFail($this->pagare->id_inmueble);  
 
         $idPropietario = $inmueble->idPropietarioReferente()->first()->id;
         $idAdministrador = $inmueble->idAdministradorReferente()->first()->id;
 
-        $propietarios =  $inmueble->propietarios()->get();
-        
-        
+        $propietarios =  $inmueble->propietarios()->get();        
 
         if(count($propietarios) > 1){
             $isUnicoPropietario = false;
@@ -117,8 +109,9 @@ class ConfirmarPagoFinanzas
                                 'id_moneda' => $this->pagare->id_moneda,
                                 'fecha_pagare' => Carbon::now(),                      
                                 'enum_estado' =>"PENDIENTE",
-                                'enum_clasificacion_pagare' => "SOLICITUD" 
-                            ]);                 
+                                'enum_clasificacion_pagare' => $this->pagare->enum_clasificacion_pagare
+                            ]);  
+                            $this->pagaresGenerados[] = $pagare;               
                         }
         
                         if($this->data['enum_origen_fondos'] == "PROPIETARIO"){
@@ -152,9 +145,10 @@ class ConfirmarPagoFinanzas
                                 'id_moneda' => $this->pagare->id_moneda,
                                 'fecha_pagare' => Carbon::now(),                      
                                 'enum_estado' =>"PENDIENTE",
-                                'enum_clasificacion_pagare' => "SOLICITUD",
-                                'pagado_con_fondos_de' => "FONDO_ADMINISTRADOR"  
-                            ]);                 
+                                'enum_clasificacion_pagare' => $this->pagare->enum_clasificacion_pagare,
+                                'pagado_con_fondos_de' => "ADMINISTRADOR"  
+                            ]);   
+                            $this->pagaresGenerados[] = $pagare;              
                         }      
                         
                         if($this->data['enum_origen_fondos'] == "RESERVA"){
@@ -214,8 +208,9 @@ class ConfirmarPagoFinanzas
                                     'id_moneda' => $this->pagare->id_moneda,
                                     'fecha_pagare' => Carbon::now(),                      
                                     'enum_estado' =>"PENDIENTE",
-                                    'enum_clasificacion_pagare' => "solicitud" 
+                                    'enum_clasificacion_pagare' => $this->pagare->enum_clasificacion_pagare
                                 ]); 
+                                $this->pagaresGenerados[] = $pagare;
                             }                
                         }
     
@@ -226,6 +221,7 @@ class ConfirmarPagoFinanzas
                 }
             }       
         }
+        return $this->pagaresGenerados;
     }
 
     protected function descontarFondoReserva($cantidad){
@@ -236,25 +232,24 @@ class ConfirmarPagoFinanzas
         $inmueble_padre = InmueblePadre::findOrFail( $inmueble->idInmueblePadre()->first()->id);
         $inmueble_padre->monto_fondo_reserva = $monto;
 
-        
         $inmueble_padre->save();
 
     }
 
     public function actualizarEstadoPago($estado){
         $this->pagare->update([
-            'enum_estado' => $estado
+            'enum_estado' => $estado,
+            'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
         ]);
+        $this->pagaresGenerados[] = $this->pagare;
     }
 
     public function actualizarEstadoDeudorPago($estado,$id_persona){
         $this->pagare->update([
             'id_persona_adeudora' =>  $id_persona,
-            'enum_estado' => $estado
+            'enum_estado' => $estado,
+            'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
         ]);
+        $this->pagaresGenerados[] = $this->pagare;
     }
-
-
-
-
 }

@@ -12,7 +12,8 @@ use Raffles\Modules\Poga\Models\{
     Unidad,
     Evento,
     User,
-    Pagare
+    Pagare,
+    Renta
 };
 use Raffles\Modules\Poga\Policies\{ 
     
@@ -24,7 +25,8 @@ use Raffles\Modules\Poga\Policies\{
     UnidadPolicy,
     EventoPolicy,
     UserPolicy,
-    PagarePolicy
+    PagarePolicy,
+    RentaPolicy
 
  };
 use Illuminate\Support\Facades\Gate;
@@ -47,7 +49,8 @@ class AuthServiceProvider extends ServiceProvider
         Unidad::class => UnidadPolicy::class,
         Evento::class => EventoPolicy::class,
         User::class => UserPolicy::class,
-        Pagare::class => PagarePolicy::class
+        Pagare::class => PagarePolicy::class,
+        Renta::class => RentaPolicy::class
     ];
 
     /**

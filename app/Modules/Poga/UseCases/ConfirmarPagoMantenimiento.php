@@ -19,7 +19,7 @@ class ConfirmarPagoMantenimiento
      * @var array $data
      * @var User  $user
      */
-    protected $data, $user, $pagare;
+    protected $data, $user, $pagare, $pagaresGenerados;
 
     /**
      * Create a new job instance.
@@ -51,9 +51,9 @@ class ConfirmarPagoMantenimiento
     {
         $this->authorize('update', $this->pagare);
         
-        $renta = $this->confirmarPago();
+        $retorno = $this->confirmarPago();
 
-        return $renta;
+        return $retorno;
     }
 
     public function confirmarPago(){
@@ -107,7 +107,7 @@ class ConfirmarPagoMantenimiento
                     $this->actualizarEstadoPago("PAGADO");
 
                     
-                    $pagare = $mantenimiento->idInmueble->pagares()->create([
+                    $pagare =  $inmueble->pagares()->create([
                         'id_administrador_referente' => $idAdministrador,
                         'id_persona_acreedora' => $idAdministrador,
                         'id_persona_adeudora' =>  $idPropietario,
@@ -116,9 +116,10 @@ class ConfirmarPagoMantenimiento
                         'fecha_pagare' => Carbon::now(),                      
                         'enum_estado' =>"PENDIENTE",
                         'enum_clasificacion_pagare' => "MANTENIMIENTO" 
-                    ]);                 
+                    ]);      
+                    $this->pagaresGenerados[] = $pagare;           
                 }
-
+                
                 if($this->data['enum_origen_fondos'] == "PROPIETARIO"){
                     $this->actualizarEstadoPago("PAGADO");
                 }
@@ -147,7 +148,7 @@ class ConfirmarPagoMantenimiento
                         'enum_estado' =>"PENDIENTE",
                         'enum_clasificacion_pagare' => "EXPENSA"
                     ]);
-                    
+                    $this->pagaresGenerados[] = $pagare;
 
                 }
                 else{ 
@@ -182,17 +183,16 @@ class ConfirmarPagoMantenimiento
                             'enum_estado' =>"PENDIENTE",
                             'enum_clasificacion_pagare' => "MANTENIMIENTO" 
                         ]);                 
+                        $this->pagaresGenerados[] = $pagare;
                     }
     
                     if($this->data['enum_origen_fondos'] == "PROPIETARIO"){
                         $this->actualizarEstadoPago("PAGADO");
                     }
                 }
-            }
-            
-
+            }        
         }
-
+        return $this->pagaresGenerados;
     }
 
     protected function descontarFondoReserva($cantidad){
@@ -211,15 +211,19 @@ class ConfirmarPagoMantenimiento
 
     public function actualizarEstadoPago($estado){
         $this->pagare->update([
-            'enum_estado' => $estado
+            'enum_estado' => $estado,
+            'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
         ]);
+        $this->pagaresGenerados[] = $this->pagare;
     }
 
     public function actualizarEstadoDeudorPago($estado,$idAdministrador){
         $this->pagare->update([
             'id_persona_adeudora' =>  $idAdministrador,
-            'enum_estado' => $estado
+            'enum_estado' => $estado,
+            'pagado_con_fondos_de' => $this->data['enum_origen_fondos']
         ]);
+        $this->pagaresGenerados[] = $this->pagare;
     }
 
 
