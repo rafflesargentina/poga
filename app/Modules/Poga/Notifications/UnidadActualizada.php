@@ -58,7 +58,7 @@ class UnidadActualizada extends Notification
 
         return (new MailMessage)
                     ->subject('Actualizaste una Unidad de nuestros registros')
-                    ->greeting('Hola '.$notifiable->idPersona->nombre)
+                    ->greeting('Hola '.$this->user->idPersona->nombre)
                     ->line('Actualizaste la unidad "'.$this->unidad->numero.'" para el inmueble "'.$inmueblePadre->nombre.'"')
                     ->action('Ir a "Unidades de Inmueble"', url('/inmuebles/'.$inmueblePadre->id.'/unidades'));
     }
