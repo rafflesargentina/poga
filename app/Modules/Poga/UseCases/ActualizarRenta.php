@@ -7,10 +7,11 @@ use Raffles\Modules\Poga\Repositories\RentaRepository;
 use Raffles\Modules\Poga\Notifications\RentaActualizada;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ActualizarRenta
 {
-    use DispatchesJobs;
+    use DispatchesJobs,AuthorizesRequests;
     
     /**
      * The Renta model.
@@ -51,8 +52,8 @@ class ActualizarRenta
      * @return void
      */
     public function handle(RentaRepository $rRenta)
-    {
-        $this->authorize('update', $this->renta);
+    {                
+        $this->authorize('update',$this->renta);
 
         $renta = $this->actualizarRenta($rRenta);
 
