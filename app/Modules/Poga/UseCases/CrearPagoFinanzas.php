@@ -77,7 +77,8 @@ class CrearPagoFinanzas
                 
                
                switch($this->data['enum_estado']){
-                    
+
+                 
                     
                     case 'PENDIENTE': //unico dueño                  
 
