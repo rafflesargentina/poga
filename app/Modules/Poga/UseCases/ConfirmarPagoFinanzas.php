@@ -54,18 +54,14 @@ class ConfirmarPagoFinanzas
     public function confirmarPago(){
 
         $isUnicoPropietario = true;
-        $isInmueble = true;
+        $isInmueble = true;   
 
-        
-
-        
         $inmueble = Inmueble::findOrFail($this->pagare->id_inmueble);  
 
         $idPropietario = $inmueble->idPropietarioReferente()->first()->id;
         $idAdministrador = $inmueble->idAdministradorReferente()->first()->id;
 
-        $propietarios =  $inmueble->propietarios()->get();
-        
+        $propietarios =  $inmueble->propietarios()->get(); 
         
 
         if(count($propietarios) > 1){
@@ -111,7 +107,7 @@ class ConfirmarPagoFinanzas
                                 'id_moneda' => $this->pagare->id_moneda,
                                 'fecha_pagare' => Carbon::now(),                      
                                 'enum_estado' =>"PENDIENTE",
-                                'enum_clasificacion_pagare' => "SOLICITUD" 
+                                'enum_clasificacion_pagare' => $this->pagare->enum_clasificacion_pagare
                             ]);                 
                         }
         
@@ -146,7 +142,7 @@ class ConfirmarPagoFinanzas
                                 'id_moneda' => $this->pagare->id_moneda,
                                 'fecha_pagare' => Carbon::now(),                      
                                 'enum_estado' =>"PENDIENTE",
-                                'enum_clasificacion_pagare' => "SOLICITUD",
+                                'enum_clasificacion_pagare' => $this->pagare->enum_clasificacion_pagare,
                                 'pagado_con_fondos_de' => "FONDO_ADMINISTRADOR"  
                             ]);                 
                         }      
@@ -208,7 +204,7 @@ class ConfirmarPagoFinanzas
                                     'id_moneda' => $this->pagare->id_moneda,
                                     'fecha_pagare' => Carbon::now(),                      
                                     'enum_estado' =>"PENDIENTE",
-                                    'enum_clasificacion_pagare' => "solicitud" 
+                                    'enum_clasificacion_pagare' => $this->pagare->enum_clasificacion_pagare 
                                 ]); 
                             }                
                         }
