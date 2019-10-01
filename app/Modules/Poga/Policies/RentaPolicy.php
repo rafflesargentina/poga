@@ -30,7 +30,8 @@ class RentaPolicy
      * @return mixed
      */
     public function create(User $user,Renta $renta)
-    {              
+    {       
+       
         switch ($user->role_id) {
 	        // Administrador
             case 1:                
@@ -99,8 +100,6 @@ class RentaPolicy
             default:
                 return false;
         }
-
-        return false;
     }
 
     /**
@@ -139,3 +138,4 @@ class RentaPolicy
         return $this->create($user,$renta); 
     }
 }
+
