@@ -61,7 +61,7 @@ class ConfirmarPagoFinanzas
 
         $idPropietario = $inmueble->idPropietarioReferente()->first()->id;
         $idAdministrador = $inmueble->idAdministradorReferente()->first()->id;
-        $idInquilino = $inmueble->idInquilinoReferente()->first()->id;
+        
 
         $propietarios =  $inmueble->propietarios()->get(); 
         
@@ -177,9 +177,8 @@ class ConfirmarPagoFinanzas
                 }                
             }
             else{ //unidad
-
-                echo "OK";
-                exit();
+                              
+                $idInquilino = $inmueble->idInquilinoReferente()->first()->id;
 
                 if($this->user->id == $idPropietario){ 
                     
@@ -191,9 +190,18 @@ class ConfirmarPagoFinanzas
                     }                        
                 }
 
-                if($this->pagare->idPersonaAcreedora()->first()->id == $idInquilino){
-                    if($this->user->id == $idInquilino)
-                        $this->actualizarEstadoPago("PAGADO");
+                if($this->user->id == $idInquilino){
+
+                   
+
+                    if($this->pagare->idPersonaAcreedora()->first()->id == $idAdministrador){                       
+
+                        $this->actualizarEstadoPago("A_CONFIRMAR_POR_ADMIN");
+                    }                    
+
+                    if($this->pagare->idPersonaAcreedora()->first()->id == $idInquilino){                    
+                            $this->actualizarEstadoPago("PAGADO");
+                    }                    
                 }
 
                 if($this->user->id == $idAdministrador){ 
