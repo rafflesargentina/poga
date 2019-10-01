@@ -62,7 +62,7 @@ class ConfirmarPagoSolicitud
 
         $idPropietario = $inmueble->idPropietarioReferente()->first()->id;
         $idAdministrador = $inmueble->idAdministradorReferente()->first()->id;
-        $idInquilino = $inmueble->idInquilinoReferente()->first()->id;
+        
         $propietarios =  $inmueble->propietarios()->get();       
         
 
@@ -166,6 +166,8 @@ class ConfirmarPagoSolicitud
             }
             else{ //unidad
 
+                $idInquilino = $inmueble->idInquilinoReferente()->first()->id;
+                
                 if($this->user->id == $idPropietario){  
                     
                     if($this->pagare->idPersonaAcreedora()->first()->id == $idAdministrador){
