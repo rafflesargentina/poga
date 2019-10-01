@@ -325,12 +325,13 @@ class CrearPagoFinanzas
         }
     }
 
-    protected function descontarFondoReserva($cantidad){
+    protected function descontarFondoReserva($cantidad)
+    {
 
         $monto = $this->inmueble->idInmueblePadre()->first()->monto_fondo_reserva;
         $monto -= $cantidad;
 
-        $inmueble_padre = InmueblePadre::findOrFail($this->inmueble->idInmueblePadre()->first()->id);
+        $inmueble_padre = InmueblePadre::findOrFail($this->inmueble->idInmueblePadre->id_persona);
         $inmueble_padre->monto_fondo_reserva = $monto;
 
         
@@ -339,10 +340,10 @@ class CrearPagoFinanzas
 
     }
 
-    protected function crearPagareExpensa($deudor){
-
+    protected function crearPagareExpensa($deudor)
+    {
         $pagare = $this->inmueble->pagares()->create([
-            'id_administrador_referente' => $this->inmueble->idAdministradorReferente()->first()->id,
+            'id_administrador_referente' => $this->inmueble->idAdministradorReferente->id_persona,
             'id_persona_acreedora' => $this->data['id_persona_acreedora'],
             'id_persona_deudora' => $deudor,
             'monto' => $this->data['monto'], 
@@ -353,10 +354,10 @@ class CrearPagoFinanzas
         ]);
     } 
 
-    protected function crearPagare($acreedor,$deudor,$estado){
-
+    protected function crearPagare($acreedor,$deudor,$estado)
+    {
         $pagare = $this->inmueble->pagares()->create([
-            'id_administrador_referente' =>  $this->inmueble->idAdministradorReferente()->first()->id,
+            'id_administrador_referente' =>  $this->inmueble->idAdministradorReferente->id_persona,
             'id_persona_acreedora' => $acreedor,
             'id_persona_deudora' => $deudor,
             'monto' => $this->data['monto'], 
@@ -367,6 +368,4 @@ class CrearPagoFinanzas
             'pagado_con_fondos_de' => array_key_exists('enum_origen_fondos', $this->data) ? $this->data['enum_origen_fondos'] : null,
         ]);
     }
-
-
 }
