@@ -73,7 +73,33 @@ class RentaPolicy
     public function update(User $user,Renta $renta)
     {
         
-        return $this->create($user,$renta); 
+        switch ($user->role_id) {
+	        // Administrador
+            case 1:                
+                return true;
+            break;
+            // Conserje
+            case 2:
+                return false;
+            break;
+
+            // Inquilino
+            case 3:
+                return true;
+            break;	
+
+            // Propietario
+            case 4:
+                return true;	    
+            break;	
+
+            // Proveedor
+            case 5:
+                return false;
+        
+            default:
+                return false;
+        }
     }
 
     /**
