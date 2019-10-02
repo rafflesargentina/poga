@@ -62,6 +62,7 @@ class ConfirmarPagoMantenimiento
 
         $idPropietario = $inmueble->idPropietarioReferente()->first()->id;
         $idAdministrador = $inmueble->idAdministradorReferente()->first()->id;
+        $idInquilino = $inmueble->idInquilinoReferente()->first()->id;
         $propietarios =  $inmueble->propietarios()->get();
         
         

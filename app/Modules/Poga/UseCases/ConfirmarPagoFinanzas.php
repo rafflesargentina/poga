@@ -46,6 +46,7 @@ class ConfirmarPagoFinanzas
      */
     public function handle()
     {
+
         $renta = $this->confirmarPago();
 
         return $renta;
@@ -54,18 +55,15 @@ class ConfirmarPagoFinanzas
     public function confirmarPago(){
 
         $isUnicoPropietario = true;
-        $isInmueble = true;
+        $isInmueble = true;   
 
-        
-
-        
         $inmueble = Inmueble::findOrFail($this->pagare->id_inmueble);  
 
         $idPropietario = $inmueble->idPropietarioReferente()->first()->id;
         $idAdministrador = $inmueble->idAdministradorReferente()->first()->id;
-
-        $propietarios =  $inmueble->propietarios()->get();
         
+
+        $propietarios =  $inmueble->propietarios()->get(); 
         
 
         if(count($propietarios) > 1){
@@ -75,8 +73,12 @@ class ConfirmarPagoFinanzas
         if($inmueble->enum_tabla_hija == "UNIDADES")
             $isInmueble = false;       
 
-        if($isUnicoPropietario){            
+     
 
+        if($isUnicoPropietario){         
+
+            
+          
             if($this->user->id == $idPropietario){ 
                     
                 if($this->pagare->idPersonaAcreedora()->first()->id == $idAdministrador){
@@ -92,43 +94,48 @@ class ConfirmarPagoFinanzas
                 if($this->pagare->id_persona_deudora !=  $idPropietario){
                     $this->actualizarEstadoPago("PAGADO");
                 }
-                else{
+                else{                  
 
-                    if($this->pagare->id_persona_deudora != $idPropietario){
+                    if($this->data['enum_origen_fondos'] == "ADMINISTRADOR"){
+
+                        $this->actualizarEstadoDeudorPago("PAGADO",$idAdministrador);       
+                        
+                        $pagare = $inmueble->pagares()->create([
+                            'id_administrador_referente' => $idAdministrador,
+                            'id_persona_acreedora' => $idAdministrador,
+                            'id_persona_deudora' =>  $idPropietario,
+                            'monto' => $this->pagare->monto, 
+                            'id_moneda' => $this->pagare->id_moneda,
+                            'fecha_pagare' => Carbon::now(),                      
+                            'enum_estado' =>"PENDIENTE",
+                            'enum_clasificacion_pagare' => $this->pagare->enum_clasificacion_pagare
+                        ]);                 
+                    }
+    
+                    if($this->data['enum_origen_fondos'] == "PROPIETARIO"){
                         $this->actualizarEstadoPago("PAGADO");
                     }
-                    else{
-
-                        if($this->data['enum_origen_fondos'] == "ADMINISTRADOR"){
-
-                            $this->actualizarEstadoDeudorPago("PAGADO",$idAdministrador);       
-                            
-                            $pagare = $inmueble->pagares()->create([
-                                'id_administrador_referente' => $idAdministrador,
-                                'id_persona_acreedora' => $idAdministrador,
-                                'id_persona_deudora' =>  $idPropietario,
-                                'monto' => $this->pagare->monto, 
-                                'id_moneda' => $this->pagare->id_moneda,
-                                'fecha_pagare' => Carbon::now(),                      
-                                'enum_estado' =>"PENDIENTE",
-                                'enum_clasificacion_pagare' => "SOLICITUD" 
-                            ]);                 
-                        }
-        
-                        if($this->data['enum_origen_fondos'] == "PROPIETARIO"){
-                            $this->actualizarEstadoPago("PAGADO");
-                        }
-                    }
+                    
                 }          
-            }
-            else{
-                if($this->user->id == $this->pagare->id_persona_deudora)
-                    $this->actualizarEstadoPago("PAGADO");
-            }
-        }
-        else{  //en condominio
+            }            
+                
+            if($this->user->id == $this->pagare->id_persona_deudora){              
 
-            if($isInmueble){
+                if($this->pagare->idPersonaAcreedora()->first()->id == $idAdministrador){
+                    $this->actualizarEstadoPago("A_CONFIRMAR_POR_ADMIN");
+                }
+                else{                 
+                    $this->actualizarEstadoPago("PAGADO");
+                }
+            }
+            
+        }
+        else{  //en condominio      
+          
+           
+            if($isInmueble){               
+
+               
 
                 if($this->user->id == $idAdministrador){
 
@@ -146,7 +153,7 @@ class ConfirmarPagoFinanzas
                                 'id_moneda' => $this->pagare->id_moneda,
                                 'fecha_pagare' => Carbon::now(),                      
                                 'enum_estado' =>"PENDIENTE",
-                                'enum_clasificacion_pagare' => "SOLICITUD",
+                                'enum_clasificacion_pagare' => $this->pagare->enum_clasificacion_pagare,
                                 'pagado_con_fondos_de' => "FONDO_ADMINISTRADOR"  
                             ]);                 
                         }      
@@ -170,8 +177,10 @@ class ConfirmarPagoFinanzas
                 }                
             }
             else{ //unidad
+                              
+                $idInquilino = $inmueble->idInquilinoReferente()->first()->id;
 
-                if($this->user->id == $idPropietario){  
+                if($this->user->id == $idPropietario){ 
                     
                     if($this->pagare->idPersonaAcreedora()->first()->id == $idAdministrador){
                         $this->actualizarEstadoPago("A_CONFIRMAR_POR_ADMIN");
@@ -181,9 +190,18 @@ class ConfirmarPagoFinanzas
                     }                        
                 }
 
-                if($this->pagare->idPersonaAcreedora()->first()->id == $idInquilino){
-                    if($this->user->id == $idInquilino)
-                        $this->actualizarEstadoPago("PAGADO");
+                if($this->user->id == $idInquilino){
+
+                   
+
+                    if($this->pagare->idPersonaAcreedora()->first()->id == $idAdministrador){                       
+
+                        $this->actualizarEstadoPago("A_CONFIRMAR_POR_ADMIN");
+                    }                    
+
+                    if($this->pagare->idPersonaAcreedora()->first()->id == $idInquilino){                    
+                            $this->actualizarEstadoPago("PAGADO");
+                    }                    
                 }
 
                 if($this->user->id == $idAdministrador){ 
@@ -208,7 +226,7 @@ class ConfirmarPagoFinanzas
                                     'id_moneda' => $this->pagare->id_moneda,
                                     'fecha_pagare' => Carbon::now(),                      
                                     'enum_estado' =>"PENDIENTE",
-                                    'enum_clasificacion_pagare' => "solicitud" 
+                                    'enum_clasificacion_pagare' => $this->pagare->enum_clasificacion_pagare 
                                 ]); 
                             }                
                         }
