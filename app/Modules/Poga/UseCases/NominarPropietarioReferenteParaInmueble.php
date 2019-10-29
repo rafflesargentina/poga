@@ -47,7 +47,7 @@ class NominarPropietarioReferenteParaInmueble
     public function handle(NominacionRepository $repository)
     {
         $data = [
-	    'enum_estado' => 'EN_CURSO',
+	    'enum_estado' => 'PENDIENTE',
             'fecha_hora' => \Carbon\Carbon::now(),	
             'id_inmueble' => $this->inmueble->id,
             'id_persona_nominada' => $this->persona->id,
@@ -57,7 +57,11 @@ class NominarPropietarioReferenteParaInmueble
             'usu_alta' => $this->user->id,
         ];
 
-        $nominacion = $repository->create($data)[1];
+        $nominacion = $repository->updateOrCreate(
+            ['enum_estado' => 'PENDIENTE', 'id_inmueble' => $this->inmueble->id, 'id_persona_nominada' => $this->persona->id, 'role_id' => '4'],
+            $data
+        );
+        //$nominacion = $repository->create($data)[1];
 
         $personaNominada = $nominacion->idPersonaNominada;
         $user = $personaNominada->user;

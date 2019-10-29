@@ -2,7 +2,7 @@
 
 namespace Raffles\Modules\Poga\Database\Seeds;
 
-use Raffles\Modules\Poga\Models\{ Direccion, Inmueble, InmueblePadre, Unidad, User };
+use Raffles\Modules\Poga\Models\{ Direccion, Inmueble, InmueblePadre, InmueblePersona, Unidad, User };
 
 use Illuminate\Database\Seeder;
 
@@ -61,7 +61,7 @@ class InmueblesFakerTableSeeder extends Seeder
     private function _edificioConUnidadesAdministradoPorMario()
     {
         /* Mario */
-        $user = User::find(1);
+	$user = User::find(1);
 
         $direccion = Direccion::create(['calle_principal' => 'Artigas', 'calle_secundaria' => 'Choferes', 'numeracion' => '611', 'latitud' => '-25.2916367849582', 'longitud' => '-57.6425518548339']);
         $inmueble = $user->inmuebles()->create(['id_tipo_inmueble' => '1', 'enum_estado' => 'ACTIVO', 'enum_tabla_hija' => 'INMUEBLES_PADRE']);
@@ -69,9 +69,16 @@ class InmueblesFakerTableSeeder extends Seeder
         $inmueble->idInmueblePadre()->associate($inmueblePadre->id);
         $inmueble->save();
 
-        $inmueble->personas()->attach($user, ['referente' => true, 'enum_estado' => 'ACTIVO', 'enum_rol' => 'ADMINISTRADOR']);
+	$inmueble->personas()->attach($user, ['referente' => true, 'enum_estado' => 'ACTIVO', 'enum_rol' => 'ADMINISTRADOR']);
 
-        $inmueble->formatos()->attach(['1','2']);
+	/* Lorena */
+	$user = User::find(3);
+	$inmueble->personas()->attach($user, ['referente' => true, 'enum_estado' => 'ACTIVO', 'enum_rol' => 'PROPIETARIO']);
+
+
+        /* Pol */
+        $user = User::find(4);
+        $inmueble->personas()->attach($user, ['referente' => true, 'enum_estado' => 'ACTIVO', 'enum_rol' => 'INQUILINO']);
 
         $unidades = [
             ['piso' => '1', 'numero' => '101', 'id_inmueble_padre' => $inmueblePadre->id, 'id_inmueble' => Inmueble::create(['id_tipo_inmueble' => '5', 'solicitud_directa_inquilinos' => 'true', 'enum_estado' => 'ACTIVO', 'enum_tabla_hija' => 'UNIDADES', 'id_usuario_creador' => $user->id])->id, 'id_medida' => '1', 'area' => '50', 'id_formato_inmueble' => '1', 'area_estacionamiento' => '15'],
@@ -88,7 +95,12 @@ class InmueblesFakerTableSeeder extends Seeder
         foreach ($unidades as $unidad) {
             $u = Unidad::create($unidad);
             $u->idInmueble->id_tabla_hija = $u->id;
-            $u->idInmueble->save();
+	    $u->idInmueble->save();
+
+	    InmueblePersona::create(['id_inmueble' => $u->id_inmueble, 'id_persona' => '1', 'enum_rol' => 'ADMINISTRADOR', 'referente' => '1']);
+	    InmueblePersona::create(['id_inmueble' => $u->id_inmueble, 'id_persona' => '2', 'enum_rol' => 'PROPIETARIO', 'referente' => '1']);
+            //$u->idInmueble->personas()->attach(['id_persona' => '1', 'enum_rol' => 'ADMINISTRADOR', 'referente' => '1']);
+            //$u->idInmueble->personas()->attach(['id_persona' => '2', 'enum_rol' => 'PROPIETARIO', 'referente' => '1']);
         }
     }
 
@@ -121,8 +133,11 @@ class InmueblesFakerTableSeeder extends Seeder
 
         foreach ($unidades as $unidad) {
             $u = Unidad::create($unidad);
-            $u->idInmueble->id_tabla_hija = $u->id;
-            $u->idInmueble->save();
+	    $u->idInmueble->id_tabla_hija = $u->id;
+	    $u->idInmueble->save();
+
+            InmueblePersona::create(['id_inmueble' => $u->id_inmueble, 'id_persona' => '2', 'enum_rol' => 'ADMINISTRADOR', 'referente' => '1']);
+            InmueblePersona::create(['id_inmueble' => $u->id_inmueble, 'id_persona' => '1', 'enum_rol' => 'PROPIETARIO', 'referente' => '1']);
         }
     }
 

@@ -3,6 +3,7 @@
 namespace Raffles\Modules\Poga\Models;
 
 use Raffles\Modules\Poga\Filters\RentaFilters;
+use Raffles\Modules\Poga\Models\Traits\RentaTrait;
 use Raffles\Modules\Poga\Sorters\RentaSorters;
 
 use Illuminate\Database\Eloquent\Model;
@@ -10,10 +11,32 @@ use RafflesArgentina\FilterableSortable\FilterableSortableTrait;
 
 class Renta extends Model
 {
-    use FilterableSortableTrait;
+    use FilterableSortableTrait, RentaTrait;
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+	'moneda',    
+	'nombre_y_apellidos_inquilino_referente',
+        'persona_id_inquilino_referente',
+    ];
 
     protected $casts = [
+	'fecha_fin' => 'date',
+	'fecha_inicio' => 'date',
         'multa' => 'boolean',
+    ];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'fecha_fin', 'fecha_inicio', 'fecha_finalizacion_contrato',
     ];
 
     /**
@@ -31,22 +54,14 @@ class Renta extends Model
     protected $sorters = RentaSorters::class;
 
     /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    protected $dates = [
-        'fecha_fin', 'fecha_fin', 'fecha_finalizacion_contrato',
-    ];
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
         'comision_administrador',
-        'dias_multa',
+	'dia_mes_pago',
+	'dias_multa',
         'enum_estado',
         'expensas',
         'fecha_fin',
@@ -59,8 +74,9 @@ class Renta extends Model
         'monto',
         'monto_descontado_garantia_finalizacion_contrato',
         'monto_multa_dia',
-        'multa',
-        'prim_comision_admin',
+	'multa',
+	'observacion',
+        'prim_comision_administrador',
     ];
 
     /**
@@ -77,7 +93,14 @@ class Renta extends Model
      */
     protected $with = ['idInmueble', 'idInquilino'];
 
-  
+    /**
+     * Get the administradores for the renta.
+     */
+    public function administradores()
+    {
+        return $this->hasManyThrough(Inmueble::class, InmueblePersona::class, 'id_inmueble')->where('inmueble_persona.enum_estado', 'ACTIVO')->where('inmueble_persona.enum_rol', 'ADMINISTRADOR');
+    }
+
     /**
      * Get the inmueble that owns the renta.
      */

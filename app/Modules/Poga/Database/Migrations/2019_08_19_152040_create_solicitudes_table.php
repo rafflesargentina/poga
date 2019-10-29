@@ -16,7 +16,9 @@ class CreateSolicitudesTable extends Migration
         Schema::create('solicitudes', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('id_inmueble');
-            $table->foreign('id_inmueble')->references('id')->on('inmuebles');
+	    $table->foreign('id_inmueble')->references('id')->on('inmuebles');
+	    $table->unsignedInteger('id_tipo_solicitud')->nullable();
+	    $table->foreign('id_tipo_solicitud')->references('id')->on('tipos_solicitudes')->onDelete('cascade');
             $table->datetime('fecha_solicitud');
             $table->string('descripcion_solicitud');
             $table->enum('enum_estado', ['CONFIRMADO','INACTIVO','NO_REALIZADO','PENDIENTE','REALIZADO']);

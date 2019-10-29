@@ -33,7 +33,7 @@ Route::apiResource('visitas', Eventos\VisitaController::class);
 
 // Finanzas
 Route::post('finanzas/crearPago', Finanzas\CrearPagoController::class);
-Route::put('finanzas/actualizarEstadoPagare', Finanzas\ActualizarEstadoPagareController::class);
+Route::put('finanzas/actualizarEstadoPago', Finanzas\ActualizarEstadoPagareController::class);
 Route::put('finanzas/cargarFondoReserva', Finanzas\CargarFondoReservaController::class);
 Route::put('finanzas/confirmarPago', Finanzas\ConfirmarPagoController::class);
 Route::put('finanzas/rechazarPago', Finanzas\RechazarPagoController::class);
@@ -58,8 +58,8 @@ Route::put('mantenimientos/rechazarPago', Mantenimientos\RechazarPagoController:
 Route::apiResource('mantenimientos', Mantenimientos\MantenimientoController::class);
 
 // Nominaciones
-//Route::put('nominaciones/{id}/aceptar', Nominaciones\AceptarController::class);
-//Route::put('nominaciones/{id}/rechazar', Nominaciones\RechazarController::class);
+Route::put('nominaciones/{id}/aceptar', Nominaciones\AceptarController::class);
+Route::put('nominaciones/{id}/rechazar', Nominaciones\RechazarController::class);
 Route::apiResource('nominaciones', Nominaciones\NominacionController::class);
 
 // Paises
@@ -70,12 +70,18 @@ Route::apiResource('personas', PersonaController::class, ['only' => ['index']]);
 
 // Proveedores
 Route::apiResource('proveedores', ProveedorController::class);
+Route::apiResource('proveedor-servicios', ProveedorServicioController::class);
 
 // Rentas
 Route::put('rentas/{id}/finalizarContrato', Rentas\FinalizarContratoController::class);
 Route::apiResource('rentas', Rentas\RentaController::class);
 
+// Servicios
+Route::apiResource('servicios', ServicioController::class);
+
 // Solicitudes
 Route::post('solicitudes/crearPago', Solicitudes\CrearPagoController::class);
 Route::put('solicitudes/confirmarPago', Solicitudes\ConfirmarPagoController::class);
 Route::put('solicitudes/rechazarPago', Solicitudes\RechazarPagoController::class);
+Route::apiResource('solicitudes', Solicitudes\SolicitudController::class);
+Route::apiResource('tipos-solicitud', Solicitudes\TipoSolicitudController::class);

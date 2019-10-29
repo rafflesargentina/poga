@@ -21,9 +21,9 @@ Route::middleware('auth:api')->group(
     }
 );
 
-Route::post('/login', 'Auth\LoginController@login');
+Route::post('login', 'Auth\LoginController@login');
 
-Route::apiResource('document-types', 'DocumentTypeController');
+//Route::apiResource('document-types', 'DocumentTypeController');
 Route::apiResource('photos', 'PhotoController');
 Route::apiResource('users', 'UserController');
 

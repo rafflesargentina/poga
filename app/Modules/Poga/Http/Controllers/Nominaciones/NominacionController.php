@@ -3,7 +3,7 @@
 namespace Raffles\Modules\Poga\Http\Controllers\Nominaciones;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
-use Raffles\Modules\Poga\Repositories\InmueblePadreRepository;
+use Raffles\Modules\Poga\Repositories\NominacionRepository;
 use Raffles\Modules\Poga\UseCases\CrearNominacionParaInmueble;
 
 use Illuminate\Http\Request;
@@ -15,20 +15,20 @@ class NominacionController extends Controller
     use FormatsValidJsonResponses;
 
     /**
-     * The InmueblePadreRepository.
+     * The NominacionRepository.
      *
-     * @var InmueblePadreRepository
+     * @var NominacionRepository
      */
     protected $repository;
 
     /**
      * Create a new NominacionController instance.
      *
-     * @param InmueblePadreRepository $repository The InmueblePadreRepository.
+     * @param NominacionRepository $repository The NominacionRepository.
      *
      * @return void
      */
-    public function __construct(InmueblePadreRepository $repository)
+    public function __construct(NominacionRepository $repository)
     {
         $this->middleware('auth:api');
 
@@ -44,17 +44,11 @@ class NominacionController extends Controller
      */
     public function index(Request $request)
     {
-        $this->validate(
-            $request, [
+        $request->validate([
             'idInmueblePadre' => 'required',
-            ]
-        );
+        ]);
 
-        $model = $this->repository->findOrFail($request->idInmueblePadre);
-
-        $model->loadMissing('idInmueble.nominaciones');
-
-        $items = $model->idInmueble->nominaciones;
+        $items = $this->repository->findNominaciones($request->idInmueblePadre);
 
         return $this->validSuccessJsonResponse('Success', $items);
     }
@@ -76,7 +70,7 @@ class NominacionController extends Controller
                 'required',
                 Rule::unique('nominaciones')->where(
                     function ($query) use ($request, $inmueblePadre) {
-                        return $query->where('id_persona_nominada', $request->id_persona_nominada)
+                        $query->where('id_persona_nominada', $request->id_persona_nominada)
                             ->where('id_inmueble', $inmueblePadre->id_inmueble);
                     }
                 ),
@@ -86,7 +80,7 @@ class NominacionController extends Controller
         );
 
         $data = [
-            'enum_estado' => 'EN_CURSO',
+            'enum_estado' => 'PENDIENTE',
             'role_id' => $request->role_id,
             'id_persona_nominada' => $request->id_persona_nominada,
             'id_usuario_principal' => $request->id_usuario_principal ?: $request->user('api')->id,
@@ -135,6 +129,12 @@ class NominacionController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        //
+        $model = $this->repository->findOrFail($id);
+
+        $data = $request->all();
+        $user = $request->user('api');
+        //$nominacion = $this->dispatchNow(new BorrarRenta($model, $user));
+
+        return $this->validSuccessJsonResponse('Success', $model);
     }
 }

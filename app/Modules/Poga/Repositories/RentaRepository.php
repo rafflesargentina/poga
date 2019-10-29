@@ -25,7 +25,7 @@ class RentaRepository extends EloquentRepository
      */
     public function findRentas()
     {
-        $items = $this->filter()->sort()->get()->toArray();
+        $items = $this->with('idUnidad')->filter()->sort()->get()->toArray();
 
         return $items;
     }

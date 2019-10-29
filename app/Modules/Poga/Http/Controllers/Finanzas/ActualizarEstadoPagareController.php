@@ -34,16 +34,15 @@ class ActualizarEstadoPagareController extends Controller
 
     public function __invoke(Request $request)
     {
-        $this->validate(
-            $request, [
-            'idPagare' => 'required',
+        $request->validate([
+            'id_pagare' => 'required',
             'enum_estado' => 'required',
-            ]
-        );
+        ]);
+
+	$model = $this->repository->findOrFail($request->id_pagare);
 
         $data = $request->all();
-        $user = $request->user('api');
-        $pagare = $this->dispatchNow(new ActualizarEstadoPagare($data, $user));
+        $pagare = $this->dispatchNow(new ActualizarEstadoPagare($model, $request->enum_estado));
         
         return $this->validSuccessJsonResponse('Success', $pagare);
 

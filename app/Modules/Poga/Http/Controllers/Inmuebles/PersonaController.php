@@ -45,12 +45,6 @@ class PersonaController extends Controller
      */
     public function index(Request $request)
     {
-        $request->validate(
-            [
-            'idInmueblePadre' => 'required',
-            ]
-        );
-
         $items = $this->repository->findPersonas();
 
         return $this->validSuccessJsonResponse('Success', $items);

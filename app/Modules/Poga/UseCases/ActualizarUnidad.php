@@ -112,8 +112,13 @@ class ActualizarUnidad
 
             $persona = $repository->findOrFail($id);
 
-            if ($id != $this->user->id_persona) {
-                $this->dispatch(new NominarPropietarioReferenteParaUnidad($persona, $unidad));
+	    if ($id != $this->user->id_persona) {
+                // Sólo si la modalidad del inmueble padre es en condominio.
+                if ($unidad->idInmueblePadre->modalidad_propiedad === 'EN_CONDOMNIO') {
+	            $this->dispatch(new NominarPropietarioReferenteParaUnidad($persona, $unidad));
+		} else {
+                    $this->dispatch(new RelacionarPropietarioReferente($persona, $unidad->idInmueble));
+		}
             } else {
                 $this->dispatch(new RelacionarPropietarioReferente($persona, $unidad->idInmueble));
             }

@@ -2,16 +2,15 @@
 
 namespace Raffles\Modules\Poga\Models;
 
+use Raffles\Modules\Poga\Filters\ProveedorServicioFilters;
+use Raffles\Modules\Poga\Sorters\ProveedorServicioSorters;
+
 use Illuminate\Database\Eloquent\Model;
+use RafflesArgentina\FilterableSortable\FilterableSortableTrait;
 
 class ProveedorServicio extends Model
 {
-    /**
-     * The table associated with the pivot.
-     *
-     * @var string
-     */
-    protected $table = 'proveedor_servicio';
+    use FilterableSortableTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -25,8 +24,20 @@ class ProveedorServicio extends Model
         'id_servicio',
     ];
 
+    protected $filters = ProveedorServicioFilters::class;
+
+    protected $sorters = ProveedorServicioSorters::class;
+
+    /**
+     * The table associated with the pivot.
+     *
+     * @var string
+     */
+    protected $table = 'proveedor_servicio';
+
     protected $with = [
-        'idProveedor',
+	'idProveedor',
+	'idServicio',
     ];
 
     /**

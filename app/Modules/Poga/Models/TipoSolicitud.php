@@ -22,7 +22,7 @@ class TipoSolicitud extends Model
      *
      * @var string
      */
-    protected $table = 'tipos_solcitud';
+    protected $table = 'tipos_solicitud';
 
     /**
      * Get the solicitudes for the tipo solicitud.

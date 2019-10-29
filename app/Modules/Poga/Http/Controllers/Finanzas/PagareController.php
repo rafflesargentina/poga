@@ -46,7 +46,8 @@ class PagareController extends Controller
             'idInmueblePadre' => 'required',
 	]);
 
-	$items = $this->repository->findPagares($request->idInmueblePadre);
+	$user = $request->user('api');
+	$items = $this->repository->findPagares($request->idInmueblePadre, $user);
 
         return $this->validSuccessJsonResponse('Success', $items);
     }

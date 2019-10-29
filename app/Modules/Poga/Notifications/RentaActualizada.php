@@ -57,7 +57,7 @@ class RentaActualizada extends Notification
 	$unidad = $this->renta->idUnidad;
 
 	if ($unidad) {
-            $line = 'Actualizaste el contrato de renta para la Unidad "'.$unidad->piso.' - '.$unidad->numero.'" del Inmueble "'.$inmueble->idInmueblePadre->nombre.'"';
+            $line = 'Actualizaste el contrato de renta para la Unidad "'.$unidad->piso.' - '.$unidad->numero.'" del Inmueble "'.$unidad->idInmueblePadre->nombre.'"';
 	} else {
             $line = 'Actualizaste el contrato de renta para el inmueble "'.$inmueble->idInmueblePadre->nombre.'"';
 	}

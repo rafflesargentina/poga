@@ -49,6 +49,14 @@ class InmueblePersona extends Pivot
     }
 
     /**
+     * Get the inmueble padre that owns the renta.
+     */
+    public function idInmueblePadre()
+    {
+        return $this->idUnidad->idInmueblePadre() ?: $this->idInmueble->idInmueblePadre();
+    }
+
+    /**
      * Get the persona that own the inmueble persona.
      */
     public function idPersona()

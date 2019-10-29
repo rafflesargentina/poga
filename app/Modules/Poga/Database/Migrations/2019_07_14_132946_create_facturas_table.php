@@ -16,7 +16,8 @@ class CreateFacturasTable extends Migration
         Schema::create('facturas', function (Blueprint $table) {
             $table->increments('id');
             $table->date('fecha_pagado');
-            $table->enum('enum_medio_pago', ['EFECTIVO','TRANSFERENCIA_BANCARIA']);
+	    $table->enum('enum_medio_pago', ['EFECTIVO', 'GIROS_TIGO', 'TARJETA_DE_CREDITO', 'TARJETA_DE_DEBITO', 'TRANSFERENCIA_BANCARIA']);
+	    $table->string('banco')->nullable();
             $table->string('nro_operacion', 100)->nullable();
             $table->timestamps();
         });

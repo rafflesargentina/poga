@@ -59,7 +59,7 @@ class ActualizarInmueble
         $direccion = $this->actualizarDireccion($rDireccion);
         $inmueble = $this->actualizarInmueble($rInmueble);
 
-        $this->sincronizarCaracteristicas($inmueble);
+        //$this->sincronizarCaracteristicas($inmueble);
         $this->sincronizarFormatos($inmueble);
 
         $this->nominarOAsignarPropietario($rPersona, $inmueble);
@@ -78,7 +78,9 @@ class ActualizarInmueble
      */
     protected function actualizarDireccion(DireccionRepository $repository)
     {
-        return $repository->update($this->inmueblePadre->idDirecccion, $this->data['idDireccion'])[1];
+	if (array_key_exists('idDireccion', $this->data)) {
+            return $repository->update($this->inmueblePadre->idDirecccion, $this->data['idDireccion'])[1];
+	}
     }
 
     /**
@@ -102,9 +104,9 @@ class ActualizarInmueble
      */
     protected function actualizarInmueblePadre(InmueblePadreRepository $repository)
     {
-        $inmueblePadre = $repository->update($this->inmueblePadre, $this->data['idInmueblePadre'])[1];
-
-        return $inmueblePadre;
+        if (array_key_exists('idInmueblePadre', $this->data)) {
+            return $repository->update($this->inmueblePadre, $this->data['idInmueblePadre'])[1];
+	}
     }
 
     /**
@@ -114,7 +116,7 @@ class ActualizarInmueble
      *
      * @return void
      */
-    protected function sincronizarCaracteristicas($inmueble)
+    protected function sincronizarCaracteristicas(Inmueble $inmueble)
     {
         //if (array_key_exists('caracteristicas', $this->data)) {
             //$caracteristicas = $this->data['caracteristicas'];
@@ -132,10 +134,11 @@ class ActualizarInmueble
      *
      * @return void
      */
-    protected function sincronizarFormatos($inmueble)
+    protected function sincronizarFormatos(Inmueble $inmueble)
     {
-        $formatos = $this->data['formatos'];
-        $inmueble->formatos()->sync($formatos);
+	    \Log::info("asdasdasd");
+	$formatos = $this->data['formatos'];
+	$inmueble->formatos()->sync($formatos);
     }
 
     /**

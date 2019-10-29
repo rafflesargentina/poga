@@ -2,13 +2,16 @@
 
 namespace Raffles\Modules\Poga\Models;
 
+use Raffles\Modules\Poga\Filters\UnidadFilters;
 use Raffles\Modules\Poga\Models\Traits\UnidadTrait;
+use Raffles\Modules\Poga\Sorters\UnidadSorters;
 
 use Illuminate\Database\Eloquent\Model;
+use RafflesArgentina\FilterableSortable\FilterableSortableTrait;
 
 class Unidad extends Model
 {
-    use UnidadTrait;
+    use FilterableSortableTrait, UnidadTrait;
 
     /**
      * The accessors to append to the model's array form.
@@ -49,6 +52,20 @@ class Unidad extends Model
         'piso',
         'numero',
     ];
+
+    /**
+     * The associated query filters.
+     *
+     * @var RentaFilters
+     */
+    protected $filters = UnidadFilters::class;
+
+    /**
+     * The associated query sorters.
+     *
+     * @var RentaSorters
+     */
+    protected $sorters = UnidadSorters::class;
 
     /**
      * The table associated with the model.

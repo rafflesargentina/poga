@@ -33,15 +33,17 @@ class ConfirmarPagoController extends Controller
     {
         $request->validate(
             [
-            'id_pagare' => 'required',
-            'enum_origen_fondo' => 'required',
+	    'idFactura.banco' => 'sometimes|required_if:enum_medio_pago,TRANSFERENCIA_BANCARIA',
+            'idFactura.nro_operacion' => 'sometimes|required_if:enum_medio_pago,TRANSFERENCIA_BANCARIA',
+	    'id_pagare' => 'required',
+            'enum_origen_fondo' => 'sometimes|required',
             ]
         );
 
         $data = $request->all();
         $user = $request->user('api');
-        $retorno = $this->dispatchNow(new ConfirmarPagoFinanzas($data, $user));
+        $pagare = $this->dispatchNow(new ConfirmarPagoFinanzas($data, $user));
 
-        return $this->validSuccessJsonResponse('Success', $retorno);
+        return $this->validSuccessJsonResponse('Success', $pagare);
     }
 }

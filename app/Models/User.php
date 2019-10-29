@@ -57,59 +57,11 @@ class User extends Authenticatable
     protected $with = 'avatar';
 
     /**
-     * Get the user's address.
-     */
-    public function address()
-    {
-        return $this->morphOne(Address::class, 'addressable');
-    }
-
-    /**
-     * Get the user's addresses.
-     */
-    public function addresses()
-    {
-        return $this->morphMany(Address::class, 'addressable');
-    }
-
-    /**
-     * Get the user's companies.
-     */
-    public function companies()
-    {
-        return $this->hasMany(Company::class);
-    }
-
-    /**
-     * Get the user's contact.
-     */
-    public function contact()
-    {
-        return $this->morphOne(Contact::class, 'contactable');
-    }
-
-    /**
-     * Get the user's contacts.
-     */
-    public function contacts()
-    {
-        return $this->hasMany(Contact::class);
-    }
-
-    /**
      * Get the user's avatar.
      */
     public function avatar()
     {
         return $this->morphOne(FeaturedPhoto::class, 'photoable')->withDefault();
-    }
-
-    /**
-     * Get the user's featured address.
-     */
-    public function featured_address()
-    {
-        return $this->morphOne(FeaturedAddress::class, 'addressable');
     }
 
     /**
@@ -126,13 +78,5 @@ class User extends Authenticatable
     public function socialLoginProfile()
     {
         return $this->hasOne(SocialLoginProfile::class);
-    }
-
-    /**
-     * Get the user's unfeatured address.
-     */
-    public function unfeatured_address()
-    {
-        return $this->morphOne(UnfeaturedAddress::class, 'addressable');
     }
 }

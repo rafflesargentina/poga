@@ -2,7 +2,7 @@
 
 namespace Raffles\Modules\Poga\Repositories;
 
-use Raffles\Modules\Poga\Models\InmueblePersona;
+use Raffles\Modules\Poga\Models\{ InmueblePersona, User };
 
 use Caffeinated\Repository\Repositories\EloquentRepository;
 
@@ -25,7 +25,7 @@ class InmueblePersonaRepository extends EloquentRepository
      */
     public function findPersonas()
     {
-        return $this->filter()->sort()->get()
+        return $this->filter()->sort()->groupBy('id_persona')->get()
             ->map(
                 function ($item) {
                     return $item->idPersona;

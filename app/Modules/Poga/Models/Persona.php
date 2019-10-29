@@ -102,6 +102,14 @@ class Persona extends Model
     }
 
     /**
+     * Get the rentas for the persona.
+     */
+    public function rentas()
+    {
+        return $this->hasMany(Renta::class, 'id_inquilino');
+    }
+
+    /**
      * The servicios that belong to the persona.
      */
     public function servicios()

@@ -29,7 +29,7 @@ class CreateRentasTable extends Migration
             $table->foreign('id_inquilino')->references('id')->on('personas');
             $table->unsignedInteger('garantia');
             $table->unsignedInteger('dia_mes_pago');
-            $table->datetime('fecha_finalizacion_contrato')->nullable();            
+            $table->date('fecha_finalizacion_contrato')->nullable();            
             $table->unsignedInteger('monto_descontado_garantia_finalizacion_contrato')->nullable();
             $table->timestamps();
             

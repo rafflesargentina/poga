@@ -4,6 +4,7 @@ namespace Raffles\Modules\Poga\Http\Controllers\Nominaciones;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 use Raffles\Modules\Poga\Repositories\NominacionRepository;
+use Raffles\Modules\Poga\UseCases\RechazarNominacion;
 
 use Illuminate\Http\Request;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
@@ -45,7 +46,7 @@ class RechazarController extends Controller
     {
 	$model = $this->repository->findOrFail($id);
 
-	$nominacion = $this->repository->update($model, ['enum_estado' => 'RECHAZADO']);
+	$nominacion = $this->dispatchNow(new RechazarNominacion($model));
 
         return $this->validSuccessJsonResponse('Success', $nominacion);
     }

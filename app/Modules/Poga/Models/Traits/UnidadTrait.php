@@ -4,6 +4,28 @@ namespace Raffles\Modules\Poga\Models\Traits;
 
 trait UnidadTrait {
     /**
+     * Get the direccion.
+     *
+     * @return string
+     */
+    public function getDireccionAttribute()
+    {
+        $inmueblePadre = $this->idInmueblePadre;
+
+        if (!$inmueblePadre) {
+            return null;
+        }
+
+        $direccion = $inmueblePadre->idDireccion;
+
+        if (!$direccion) {
+            return null;
+        }
+
+        return $direccion->calle_principal.' c/'.$direccion->calle_secundaria.' '.$direccion->numeracion;
+    }
+
+    /**
      * Get the tipo.
      *
      * @return string

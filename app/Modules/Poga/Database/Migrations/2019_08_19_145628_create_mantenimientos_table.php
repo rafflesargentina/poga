@@ -26,7 +26,7 @@ class CreateMantenimientosTable extends Migration
             $table->enum('enum_estado', ['ACTIVO','INACTIVO','CONFIRMADO','REALIZADO']);
             $table->enum('enum_se_repite', ['TODOS_LOS_MESES','TODAS_LAS_SEMANAS','TODOS_LOS_ANNOS'])->nullable();
             $table->tinyInteger('repetir_cada')->nullable();
-            $table->string('enum_dias_semana')->nullable();
+            $table->tinyInteger('enum_dias_semana', 1)->nullable();
             $table->date('fecha_terminacion_repeticion')->nullable();
             $table->unsignedInteger('id_caracteristica_inmueble')->nullable();
             $table->foreign('id_caracteristica_inmueble')->references('id')->on('caracteristica_inmueble');

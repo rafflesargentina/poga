@@ -90,6 +90,14 @@ class Nominacion extends Model
     }
 
     /**
+     * Get the unidad that owns the renta.
+     */
+    public function idUnidad()
+    {
+        return $this->belongsTo(Unidad::class, 'id_inmueble', 'id_inmueble');
+    }
+
+    /**
      * Get the usuario principal that owns the nominacion.
      */
     public function idUsuarioPrincipal()

@@ -4,7 +4,7 @@ namespace Raffles\Modules\Poga\UseCases;
 
 use Raffles\Modules\Poga\Models\{ Renta, User };
 use Raffles\Modules\Poga\Repositories\RentaRepository;
-use Raffles\Modules\Poga\Notifications\RentaFinalizada;
+use Raffles\Modules\Poga\Notifications\{ RentaFinalizada, RentaFinalizadaInquilinoReferente, RentaFinalizadaPropietarioReferente };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -36,7 +36,7 @@ class FinalizarContratoRenta
      *
      * @return void
      */
-    public function __construct($renta, $data, $user)
+    public function __construct(Renta $renta, $data, User $user)
     {
         $this->renta = $renta;
         $this->data = $data;
@@ -46,35 +46,34 @@ class FinalizarContratoRenta
     /**
      * Execute the job.
      *
-     * @param RentaRepository $rRenta The RentaRepository object.
+     * @param RentaRepository $repository The RentaRepository object.
      *
      * @return void
      */
-    public function handle(RentaRepository $rRenta)
+    public function handle(RentaRepository $repository)
     {
-        $renta = $this->finalizarRenta($rRenta);
+        $renta = $repository->update($this->renta, array_merge($this->data, ['enum_estado' => 'FINALIZADO']))[1];
 
-        $this->user->notify(new RentaFinalizada($renta));
+	$this->handleNotifications($renta);
 
         return $renta;
     }
 
-    /**
-     * Finalizar Renta.
-     *
-     * @param RentaRepository $repository The RentaRepository object.
-     *
-     * @return \Raffles\Modules\Poga\Models\Renta
-     */
-    protected function finalizarRenta(RentaRepository $repository)
+    protected function handleNotifications(Renta $renta)
     {
-        return $repository->update(
-            $this->renta, array_merge(
-                $this->data,
-                [
-                'enum_estado' => 'FINALIZADO',
-                ]
-            )
-        )[1];
+	// Administrador
+	$this->user->notify(new RentaFinalizada($renta));
+
+        $inquilino = $renta->idInquilino;
+	$inquilinoUser = $inquilino->user;
+	if ($inquilinoUser) {
+	    $inquilinoUser->notify(new RentaFinalizadaInquilinoReferente($renta));
+	}
+
+	$propietario = $renta->idInmueble->idPropietarioReferente->idPersona;
+	$propietarioUser = $propietario->user;
+        if ($propietarioUser) {
+            $propietarioUser->notify(new RentaFinalizadaPropietarioReferente($renta));
+	}
     }
 }

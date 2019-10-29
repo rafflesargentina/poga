@@ -47,7 +47,7 @@ class Pagare extends Model
      *
      * @var array
      */
-    protected $with = ['idInmueble', 'IdMoneda','IdFactura', 'idPersonaAcreedora'];
+    protected $with = ['idInmueble', 'IdMoneda','IdFactura', 'idPersonaAcreedora', 'idUnidad'];
 
     /**
      * Get the factura that owns the pagare.

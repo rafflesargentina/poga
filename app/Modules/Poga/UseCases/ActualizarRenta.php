@@ -46,28 +46,16 @@ class ActualizarRenta
     /**
      * Execute the job.
      *
-     * @param RentaRepository $rRenta The RentaRepository object.
+     * @param RentaRepository $repository The RentaRepository object.
      *
      * @return void
      */
-    public function handle(RentaRepository $rRenta)
+    public function handle(RentaRepository $repository)
     {
-        $renta = $this->actualizarRenta($rRenta);
-
+        $renta = $repository->update($this->renta, $this->data)[1];
+    
         $this->user->notify(new RentaActualizada($renta));
-
+    
         return $renta;
-    }
-
-    /**
-     * Actualizar Renta.
-     *
-     * @param RentaRepository $repository The RentaRepository object.
-     *
-     * @return \Raffles\Modules\Poga\Models\Renta
-     */
-    protected function actualizarRenta(RentaRepository $repository)
-    {
-        return $repository->update($this->renta, $this->data)[1];
     }
 }

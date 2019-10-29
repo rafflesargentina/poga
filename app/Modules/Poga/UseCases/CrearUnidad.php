@@ -4,7 +4,7 @@ namespace Raffles\Modules\Poga\UseCases;
 
 use Raffles\Modules\Poga\Models\{ Inmueble, Unidad, User };
 use Raffles\Modules\Poga\Repositories\{ InmuebleRepository, PersonaRepository, UnidadRepository };
-use Raffles\Modules\Poga\Notifications\UnidadCreada;
+use Raffles\Modules\Poga\Notifications\{ UnidadCreada, UnidadAsignada };
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -121,6 +121,7 @@ class CrearUnidad
 
                     $this->dispatch(new NominarAdministradorReferenteParaUnidad($persona, $unidad, $user));
 		} else {
+	            $persona = $user->idPersona;
                     $this->dispatch(new RelacionarAdministradorReferente($persona, $unidad->idInmueble));
                 }
             }
@@ -144,11 +145,18 @@ class CrearUnidad
             $id = $this->data['idPropietarioReferente'];
 
             // idPropietarioReferente no está vacío?
-            if ($id) {
+	    if ($id) {
                 // idPropietarioReferente es distinto al id de la persona del usuario?
-                if ($id != $user->id_persona) {
-                    $persona = $repository->findOrFail($id);
-                    $this->dispatch(new NominarPropietarioReferenteParaUnidad($persona, $unidad, $user));
+		if ($id != $user->id_persona) {
+		    $persona = $repository->findOrFail($id);
+
+                    // Sólo si la modalidad del inmueble padre es en condominio.
+                    if ($unidad->idInmueblePadre->modalidad_propiedad === 'EN_CONDOMNIO') {
+			$this->dispatch(new NominarPropietarioReferenteParaUnidad($persona, $unidad, $user));
+		    } else {
+                        $this->dispatch(new RelacionarPropietarioReferente($persona, $unidad->idInmueble));
+		        $persona->user->notify(new UnidadAsignada($unidad));
+		    }
                 } else {
                     $persona = $user->idPersona;
                     $this->dispatch(new RelacionarPropietarioReferente($persona, $unidad->idInmueble));

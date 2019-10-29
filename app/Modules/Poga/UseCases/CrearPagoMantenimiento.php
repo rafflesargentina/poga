@@ -266,6 +266,7 @@ class CrearPagoMantenimiento
         ]);
     } 
 
+    // El mantenimiento lo paga solo el propietario
     protected function crearPagareMantenimiento($acreedor, $deudor, $estado){
 
         $pagare = $this->mantenimiento->idInmueble->pagares()->create([

@@ -24,8 +24,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+	$schedule->command('poga:generar:multas')->dailyAt('03:30');
+        $schedule->command('poga:generar:pagares')->dailyAt('03:30');
     }
 
     /**

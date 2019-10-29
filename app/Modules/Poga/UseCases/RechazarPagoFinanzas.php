@@ -3,6 +3,7 @@
 namespace Raffles\Modules\Poga\UseCases;
 
 use Raffles\Modules\Poga\Models\Pagare;
+use Raffles\Modules\Poga\Notifications\EstadoPagareActualizado;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -52,11 +53,28 @@ class RechazarPagoFinanzas
 
     protected function rechazarPago()
     {
-        $idAdministrador = $this->pagare->idInmueble->idAdministradorReferente->id;       
+	$pagare = $this->pagare;
+        $administrador = $this->pagare->idInmueble->idAdministradorReferente->idPersona->user;
+	$acreedor = $pagare->idPersonaAcreedora->user;
+	$deudor = $pagare->idPersonaDeudora->user;
 
-        if($this->user->id == $idAdministrador ){
+
+	// Solo el administrador puede rechazar un pago.
+        if ($this->user->id == $administrador->id) {
             $this->actualizarEstadoPago("PENDIENTE");
-        }       
+	
+	    $administrador->notify(new EstadoPagareActualizado($pagare));
+
+	    // El acreedor puede no tener usuario registrador.
+	    if ($acreedor) {
+                $acreedor->notify(new EstadoPagareActualizado($pagare));
+	    }
+
+            // El deudor puede no tener usuario registrador.
+	    if ($deudor) {
+                $deudor->notify(new EstadoPagareActualizado($pagare));
+	    }
+	}       
 
         return $this->pagare;
     }   

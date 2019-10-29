@@ -4,6 +4,7 @@ namespace Raffles\Modules\Poga\Http\Controllers\Nominaciones;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
 use Raffles\Modules\Poga\Repositories\NominacionRepository;
+use Raffles\Modules\Poga\UseCases\AceptarNominacion;
 
 use Illuminate\Http\Request;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
@@ -45,8 +46,8 @@ class AceptarController extends Controller
     {
 	$model = $this->repository->findOrFail($id);
 
-	$nominacion = $this->repository->update($model, ['enum_estado' => 'ACEPTADO']);
+	$resultado = $this->dispatchNow(new AceptarNominacion($model));
 
-        return $this->validSuccessJsonResponse('Success', $nominacion);
+        return $this->validSuccessJsonResponse('Success', $resultado);
     }
 }

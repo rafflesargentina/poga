@@ -2,13 +2,16 @@
 
 namespace Raffles\Modules\Poga\Models;
 
+use Raffles\Modules\Poga\Filters\SolicitudFilters;
+use Raffles\Modules\Poga\Sorters\SolicitudSorters;
 use Raffles\Modules\Poga\Models\Traits\SolicitudTrait;
 
 use Illuminate\Database\Eloquent\Model;
+use RafflesArgentina\FilterableSortable\FilterableSortableTrait;
 
 class Solicitud extends Model
 {
-    use SolicitudTrait;
+    use FilterableSortableTrait, SolicitudTrait;
 
     /**
      * The accessors to append to the model's array form.
@@ -37,6 +40,10 @@ class Solicitud extends Model
         'id_usuario_asigna',
     ];
 
+    protected $filters = SolicitudFilters::class;
+
+    protected $sorters = SolicitudSorters::class;
+
     /**
      * The table associated with the model.
      *
@@ -49,7 +56,7 @@ class Solicitud extends Model
      *
      * @var array
      */
-    protected $with = ['idServicio', 'idUsuarioCreador','idInmueble'];
+    protected $with = ['idServicio', 'idUsuarioCreador','idInmueble', 'idUnidad'];
 
     /**
      * Get the servicio that owns the solicitud.
@@ -73,5 +80,21 @@ class Solicitud extends Model
     public function idInmueble()
     {
         return $this->belongsTo(Inmueble::class, 'id_inmueble');
+    }
+
+    /**
+     * Get the tipo solicitud that owns the solicitud.
+     */
+    public function idTipoSolicitud()
+    {
+        return $this->belongsTo(TipoSolicitud::class, 'id_tipo_solicitud');
+    }
+
+    /**
+     * Get the unidad that owns the solicitud.
+     */
+    public function idUnidad()
+    {
+        return $this->belongsTo(Unidad::class, 'id_inmueble', 'id_inmueble');
     }
 }

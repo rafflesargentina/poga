@@ -2,9 +2,9 @@
 
 namespace Raffles\Modules\Poga\UseCases;
 
-use Raffles\Modules\Poga\Models\{ Renta, User };
+use Raffles\Modules\Poga\Models\{ Inmueble, Renta, User };
 use Raffles\Modules\Poga\Notifications\RentaBorrada;
-use Raffles\Modules\Poga\Repositories\RentaRepository;
+use Raffles\Modules\Poga\Repositories\{ NominacionRepository, RentaRepository };
 
 use Illuminate\Foundation\Bus\Dispatchable;
 
@@ -36,16 +36,28 @@ class BorrarRenta
     /**
      * Execute the job.
      *
-     * @param RentaRepository $repository The RentaRepository object.
+     * @param RentaRepository      $repository  The RentaRepository object.
+     * @param NominacionRepository $rNominacion The NominacionRepository object.
      *
      * @return Renta
      */
-    public function handle(RentaRepository $repository)
+    public function handle(RentaRepository $repository, NominacionRepository $rNominacion)
     {
-        $repository->update($this->renta->id, ['enum_estado' => 'INACTIVO'])[1];
+        $renta = $repository->update($this->renta, ['enum_estado' => 'INACTIVO'])[1];
 
-        $this->user->notify(new RentaBorrada($this->renta));
+        $this->borrarNominacionesPendientes($renta->idInmueble, $rNominacion);
 
-        return $this->renta;
+        $this->user->notify(new RentaBorrada($renta));
+
+        return $renta;
+    }
+
+    protected function borrarNominacionesPendientes(Inmueble $inmueble, NominacionRepository $repository)
+    {
+        $nominacionesPendientes = $repository->findWhere(['enum_estado' => 'PENDIENTE', 'id_inmueble' => $inmueble->id, 'id_persona_nominada' => $this->renta->id_inquilino]);
+    
+	foreach ($nominacionesPendientes as $nominacion) {
+            $nominacion->delete(); 
+	}
     }
 }

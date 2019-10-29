@@ -2,7 +2,8 @@
 
 namespace Raffles\Modules\Poga\Repositories;
 
-use Caffeinated\Shinobi\Models\Role;
+use Raffles\Modules\Poga\Models\Role;
+
 use Caffeinated\Repository\Repositories\EloquentRepository;
 
 class RoleRepository extends EloquentRepository

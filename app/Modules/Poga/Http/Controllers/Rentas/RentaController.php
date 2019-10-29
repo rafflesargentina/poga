@@ -3,10 +3,11 @@
 namespace Raffles\Modules\Poga\Http\Controllers\Rentas;
 
 use Raffles\Modules\Poga\Http\Controllers\Controller;
-use Raffles\Modules\Poga\Repositories\RentaRepository;
+use Raffles\Modules\Poga\Repositories\{ InmuebleRepository, RentaRepository };
 use Raffles\Modules\Poga\UseCases\{ BorrarRenta, CrearRenta, ActualizarRenta };
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
 
 class RentaController extends Controller
@@ -36,12 +37,15 @@ class RentaController extends Controller
      */
     public function index(Request $request)
     { 
+	$this->authorize('view', new $this->repository->model);
+
         $request->validate(
             [
             'idInmueblePadre' => 'required',
             ]
         );
 
+	$user = $request->user('api');
         $items = $this->repository->findRentas();
 
         return $this->validSuccessJsonResponse('Success', $items);
@@ -58,8 +62,9 @@ class RentaController extends Controller
     public function show(Request $request, $id)
     {
         $model = $this->repository->findOrFail($id);
+	$model->loadMissing('idUnidad');
 
-        $model->loadMissing('idUnidad');
+	$this->authorize('create', $model);
 
         return $this->validSuccessJsonResponse('Success', $model);
     }
@@ -73,6 +78,10 @@ class RentaController extends Controller
      */
     public function store(Request $request)
     {      
+	$this->authorize('create', new $this->repository->model);
+
+        $rInmueble = new InmuebleRepository;
+
         $request->validate(
             [
             'comision_administrador' => 'required|numeric',
@@ -83,9 +92,22 @@ class RentaController extends Controller
             'fecha_inicio' => 'required|date',
             'garantia'  => 'required|numeric',
             'id_inmueble' => 'required|numeric',
-            'id_inquilino' => 'required|numeric',
-            'id_moneda' => 'required|numeric',
-            'monto' => 'numeric',
+	    'id_inquilino' => [
+	        'required',
+		'numeric',
+		Rule::unique('rentas')->where(function($query) use($request) {
+                    $query->where('id_inmueble', $request->id_unidad ?? $request->id_inmueble);
+		    $query->whereIn('rentas.enum_estado', ['ACTIVO','PENDIENTE']);
+		})
+	    ],	    
+	    'id_moneda' => 'required|numeric',
+	    'id_unidad' => [
+	        Rule::requiredIf(function() use($request, $rInmueble) {
+		$inmueble = $rInmueble->findOrFail($request->id_inmueble);
+		    return (bool) $inmueble->idInmueblePadre->divisible_en_unidades;
+		})
+	    ],
+	    'monto' => 'numeric',
             'monto_descontado_garantia_finalizacion_contrato' => 'numeric',
             'monto_multa_dia' => 'required_if:multa,1|numeric',
             'multa'=> 'required|boolean',
@@ -121,6 +143,8 @@ class RentaController extends Controller
         );
 
 	$model = $this->repository->findOrFail($id);
+        $this->authorize('update', $model);
+
         $data = array_only($request->all(), ['comision_administrador', 'dias_multa', 'monto_multa_dia', 'multa', 'prim_comision_administrador']);
 	$user = $request->user('api');
 

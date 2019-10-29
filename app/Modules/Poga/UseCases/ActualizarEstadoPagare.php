@@ -2,8 +2,9 @@
 
 namespace Raffles\Modules\Poga\UseCases;
 
-use Raffles\Modules\Poga\Repositories\{ PagareRepository, UnidadRepository };
-use Raffles\Modules\Poga\Notifications\RentaCreada;
+use Raffles\Modules\Poga\Models\Pagare;
+use Raffles\Modules\Poga\Notifications\EstadoPagareActualizado;
+use Raffles\Modules\Poga\Repositories\PagareRepository;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -12,25 +13,31 @@ class ActualizarEstadoPagare
     use DispatchesJobs;
 
     /**
-     * The form data and the User model.
+     * The Pagare model.
      *
-     * @var array $data
-     * @var User  $user
+     * @var Pagare
      */
-    protected $data, $user;
+    protected $pagare;
+
+    /**
+     * El estado del pagaré.
+     *
+     * @var string $estado
+     */
+    protected $estado;
 
     /**
      * Create a new job instance.
      *
-     * @param array $data The form data.
-     * @param User  $user The User model.
+     * @param  Pagare $pagare The Pagare model.
+     * @param  string $estado El estado del pagaré.
      *
      * @return void
      */
-    public function __construct($data,$user)
+    public function __construct(Pagare $pagare, $estado)
     {
-        $this->data = $data;
-        $this->user = $user;
+	$this->pagare = $pagare;
+        $this->estado = $estado;
     }
 
     /**
@@ -40,11 +47,24 @@ class ActualizarEstadoPagare
      *
      * @return void
      */
-    public function handle(PagareRepository $rPagare, UnidadRepository $rUnidad)
+    public function handle(PagareRepository $repository)
     {
-        $pagare = $this->rPagare->actualizarEstado($this->data['idPagare'],$this->data['enum_estado']);
+	$pagare = $repository->update($this->pagare, ['enum_estado' => $this->estado])[1];
+
+        $administrador = $pagare->idInmueble->idAdministradorReferente->idPersona->user;
+        $acreedor = $pagare->idPersonaAcreedora->user;
+        $deudor = $pagare->idPersonaDeudora->user;
+
+        $administrador->notify(new EstadoPagareActualizado($pagare));
+
+        if ($acreedor) {
+            $acreedor->notify(new EstadoPagareActualizado($pagare));
+        }
+
+        if ($deudor) {
+            $deudor->notify(new EstadoPagareActualizado($pagare));
+        }
+
         return $pagare;
     }
-
-    
 }

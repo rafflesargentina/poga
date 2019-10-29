@@ -33,7 +33,7 @@ class CreatePersonasTable extends Migration
             $table->unsignedInteger('id_pais_cobertura')->nullable();
             $table->foreign('id_pais_cobertura')->references('id')->on('paises');
             $table->enum('enum_estado', ['ACTIVO','INACTIVO']);
-            $table->string('mail', 128);
+            $table->string('mail', 128)->nullable();
             $table->timestamps();
         });
     }

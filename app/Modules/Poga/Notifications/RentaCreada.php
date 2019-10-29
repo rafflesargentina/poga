@@ -57,7 +57,7 @@ class RentaCreada extends Notification
         $unidad = $this->renta->idUnidad;
 
         if ($unidad) {
-            $line = 'Creaste un contrato de renta para la Unidad "'.$unidad->piso.' - '.$unidad->numero.'" del Inmueble "'.$inmueble->idInmueblePadre->nombre.'"';
+            $line = 'Creaste un contrato de renta para la Unidad "'.$unidad->piso.' - '.$unidad->numero.'" del Inmueble "'.$unidad->idInmueblePadre->nombre.'"';
         } else {
             $line = 'Creaste un contrato de renta para el inmueble "'.$inmueble->idInmueblePadre->nombre.'"';
         }

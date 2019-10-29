@@ -12,7 +12,8 @@ class Factura extends Model
      * @var array
      */
     protected $fillable = [
-        'enum_medio_pago',
+	'banco',    
+	'enum_medio_pago',
         'fecha_pagado',
         'nro_operacion',
     ];
@@ -25,9 +26,10 @@ class Factura extends Model
     protected $table = 'facturas';
 
     /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
+     * Get the pagare record associated with the factura.
      */
-    public $timestamps = false;
+    public function pagare()
+    {
+        return $this->hasOne(Pagare::class);
+    }
 }

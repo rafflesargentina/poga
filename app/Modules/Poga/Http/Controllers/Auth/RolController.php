@@ -42,7 +42,7 @@ class RolController extends Controller
     {
         $user = $request->user('api');
 
-        $roles = $user ? $user->roles : $this->repository->findAll(); 
+        $roles = $user ? $user->roles : $this->repository->filter()->sort()->findAll(); 
 
         return $this->validSuccessJsonResponse('Success', $roles);
     }

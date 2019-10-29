@@ -57,7 +57,7 @@ class RentaBorrada extends Notification
         $unidad = $this->renta->idUnidad;
 
         if ($unidad) {
-            $line = 'Borraste un contrato de renta para la Unidad "'.$unidad->piso.' - '.$unidad->numero.'" del Inmueble "'.$inmueble->idInmueblePadre->nombre.'"';
+            $line = 'Borraste un contrato de renta para la Unidad "'.$unidad->piso.' - '.$unidad->numero.'" del Inmueble "'.$unidad->idInmueblePadre->nombre.'"';
         } else {
             $line = 'Borraste un contrato de renta para el inmueble "'.$inmueble->idInmueblePadre->nombre.'"';
         }

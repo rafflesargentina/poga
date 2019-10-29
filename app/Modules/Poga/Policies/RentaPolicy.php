@@ -35,7 +35,12 @@ class RentaPolicy
         switch ($user->role_id) {
             // Administrador
             case 1:
-                return true;
+		// No se pueden realizar operaaciones sin propietario referente del inmueble o la unidad.    
+		//if (!$renta->idInmueble->idPropietarioReferente) {
+                    //return false;
+		//}	
+
+		return true;
 		
 	    // Conserje
             case 2:
@@ -47,7 +52,7 @@ class RentaPolicy
 	    
 	    // Propietario
             case 4:
-                return true;
+	        return false;
 	    
 	    // Proveedor
             case 5:
@@ -73,7 +78,12 @@ class RentaPolicy
         switch ($user->role_id) {
             // Administrador
             case 1:   
-                return $renta->idInmueble->administradores->where('id', $user->id_persona);       
+                // No se pueden realizar operaaciones sin propietario referente del inmueble o la unidad.
+                if (!$renta->idInmueble->idPropietarioReferente) {
+                    return false;
+		}    
+
+		return $renta->idInmueble->administradores->where('id', $user->id_persona);       
             
             break;
     
@@ -87,9 +97,8 @@ class RentaPolicy
            
             // Propietario
             case 4:
-	        return $renta->idInmueble->propietarios->where('id', $user->id_persona)
-                    && !$renta->idInmueble->idAdministradorReferente;
-    
+                return false;
+
             // Proveedor
             case 5:
                     return false;

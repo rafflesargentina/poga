@@ -2,6 +2,7 @@
 
 namespace Raffles\Modules\Poga\Models;
 
+use Raffles\Models\{ FeaturedPhoto, UnfeaturedPhoto };
 use Raffles\Modules\Poga\Models\Traits\InmuebleTrait;
 
 use Illuminate\Database\Eloquent\Model;
@@ -98,6 +99,22 @@ class Inmueble extends Model
     {
         return $this->hasMany(Evento::class, 'id_inmueble');
     }
+
+    /**
+     * Get the investment's featured photo.
+     */
+    public function featured_photo()
+    {
+        return $this->morphOne(FeaturedPhoto::class, 'photoable')->withDefault();
+    }
+
+    /**
+     * Get the investment's featured photo.
+     */
+    public function unfeatured_photos()
+    {
+        return $this->morphMany(UnfeaturedPhoto::class, 'photoable');
+    } 
 
     /**
      * The formatos that belong to the inmueble.

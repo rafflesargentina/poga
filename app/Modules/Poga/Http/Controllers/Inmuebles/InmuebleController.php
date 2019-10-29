@@ -2,17 +2,19 @@
 
 namespace Raffles\Modules\Poga\Http\Controllers\Inmuebles;
 
-use Raffles\Modules\Poga\Http\Controllers\Controller;
-use Raffles\Modules\Poga\Repositories\{ InmueblePadreRepository, NominacionRepository };
+use Raffles\Http\Controllers\Controller;
+use Raffles\Modules\Poga\Http\Requests\InmuebleRequest;
+use Raffles\Modules\Poga\Models\Inmueble;
+use Raffles\Modules\Poga\Repositories\{ InmueblePadreRepository, InmueblePersonaRepository, NominacionRepository };
 use Raffles\Modules\Poga\UseCases\{ ActualizarInmueble, BorrarInmueble, CrearInmueble };
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use RafflesArgentina\ResourceController\Traits\FormatsValidJsonResponses;
+use RafflesArgentina\ResourceController\Traits\{ FormatsValidJsonResponses, WorksWithFileUploads };
 
 class InmuebleController extends Controller
 {
-    use FormatsValidJsonResponses;
+    use FormatsValidJsonResponses, WorksWithFileUploads;
 
     /**
      * The InmueblePadreRepository object.
@@ -44,6 +46,8 @@ class InmuebleController extends Controller
      */
     public function index(Request $request)
     {
+	$this->authorize('view', new Inmueble);
+
         $request->validate(
             [
             'tipoListado' => 'required|in:DisponiblesAdministrar,MisInmuebles,Nominaciones,TodosInmuebles',
@@ -59,7 +63,7 @@ class InmuebleController extends Controller
 
             break;
 
-        case 'MisInmuebles':
+	case 'MisInmuebles':
             $map = $this->repository->findMisInmuebles($user);
                 
             break;
@@ -89,11 +93,23 @@ class InmuebleController extends Controller
      */
     public function store(Request $request)
     {
-        $user = $request->user('api');
+        $this->authorize('create', new Inmueble);
+
+        if ($request->featured_photo) {
+            $request->validate([
+                'featured_photo[]' => 'image'
+	    ]);
+	}	
 
         if ($request->administrador === 'yo') {
             $request->merge(['idAdministradorReferente' => $user->id_persona]);
-        }
+	}
+
+	if ($request->idInmueble['id_tipo_inmueble'] !== '1') {
+            $request->merge(['idInmueblePadre.divisible_en_unidades' => 0]);
+	}
+
+	$user = $request->user('api');
 
         $request->validate(
             [
@@ -143,7 +159,11 @@ class InmuebleController extends Controller
         );
 
         $data = $request->all();
-        $inmueblePadre = $this->dispatch(new CrearInmueble($data, $user));
+	$inmueblePadre = $this->dispatchNow(new CrearInmueble($data, $user));
+
+	if ($request->featured_photo) {
+            $mergedRequest = $this->uploadFiles($request, $inmueblePadre->idInmueble);
+	}
 
         return $this->validSuccessJsonResponse('Success', $inmueblePadre);
     }
@@ -159,9 +179,9 @@ class InmuebleController extends Controller
     public function show(Request $request, $id)
     {
         $model = $this->repository->findOrFail($id);
-        $model->loadMissing('idInmueble.caracteristicas', 'idInmueble.formatos');
+	$model->loadMissing('idInmueble.caracteristicas', 'idInmueble.featured_photo', 'idInmueble.formatos', 'idInmueble.unfeatured_photos');
 
-        $this->authorize($request->user('api'), $model);
+        $this->authorize('view', $model->idInmueble);
 
         return $this->validSuccessJsonResponse('Success', $model);
     }
@@ -169,64 +189,20 @@ class InmuebleController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param int     $id
+     * @param InmuebleRequest $request
+     * @param int             $id
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(InmuebleRequest $request, $id)
     {
         $model = $this->repository->findOrFail($id);
         $data = $request->all();
         $user = $request->user('api');
 
-        // Ciertos campos no se pueden modificar una vez creado el inmueble.
-        array_key_exists('divisible_en_unidades', $data['idInmueblePadre']) ?: $data['idInmueblePadre']['divisible_en_unidades'] = $model->divisible_en_unidades;
-        array_key_exists('id_tipo_inmueble', $data['idInmueblePadre']) ?: $data['idInmueblePadre']['id_tipo_inmueble'] = $model->id_tipo_inmueble;
-        array_key_exists('idAdministradorReferente', $data) ?: $data['idAdministradorReferente'] = ($model->idAdministradorReferente ? $model->idAdministradorReferente->id : null);
-        array_key_exists('idPropietarioReferente', $data) ?: $data['idPropietarioReferente'] = ($model->idPropietarioReferente ? $model->idPropietarioReferente->id : null);
-        array_key_exists('modalidad_propiedad', $data['idInmueblePadre']) ?: $data['idInmueblePadre']['modalidad_propiedad'] = $model->modalidad_propiedad;
-
-        $request->merge($data);
-
-        return $this->validSuccessJsonResponse('Success', $request->all());
-        $request->validate(
-            [
-            'caracteristicas' => 'array',
-            'dia_cobro_mensual' => Rule::requiredIf(
-                function () use ($model, $user) {
-                    // Requerido cuando la modalidad de la propiedad es EN_CONDOMINIO,
-                    // y administrador es "yo" o idAdministradorReferente es igual a id_persona del usuario.
-                    return $model->modalidad_propiedad === 'EN_CONDOMINIO'
-                    && ($model->idAdministradorReferente ? $model->idAdministradorReferente->id == $user->id_persona : false);
-                }
-            ),
-            'formatos' => 'required|array|min:1',
-            'idDireccion.calle_principal' => 'required',
-            'idDireccion.numeracion' => 'required',
-            'idInmueble.solicitud_directa_inquilinos' => 'required',
-            'idInmueblePadre.cant_pisos' => 'required|numeric',
-            'idInmueblePadre.comision_administrador' => Rule::requiredIf(
-                function () use ($model) {
-                    // Requerido cuando la modalidad de la propiedad es UNICO_PROPIETARIO,
-                    // y administrador es "yo" o idAdministradorReferente es igual a id_persona del usuario.
-                    return $model->modalidad_propiedad === 'UNICO_PROPIETARIO'
-                    && ($model->idAdministradorReferente ? $model->idAdministradorReferente->id == $user->id_persona : false);
-                }
-            ),
-            'idInmueblePadre.nombre' => 'required',
-            'salario' => Rule::requiredIf(
-                function () use ($model, $user) {
-                    // Requerido cuando la modalidad de la propiedad es EN_CONDOMINIO,
-                    // y administrador es "yo" o idAdministradorReferente es igual a id_persona del usuario.
-                    return $model->modalidad_propiedad === 'EN_CONDOMINIO'
-                    && ($model->idAdministradorReferente ? $model->idAdministradorReferente->id == $user->id_persona : false);
-                }
-            )
-            ]
-        );
-
-        $inmueblePadre = $this->dispatch(new ActualizarInmueble($model, $data, $user));
+	$this->authorize('update', $model->idInmueble);
+	
+	$inmueblePadre = $this->dispatchNow(new ActualizarInmueble($model, $data, $user));
 
         return $this->validSuccessJsonResponse('Success', $inmueblePadre);
     }
@@ -243,7 +219,10 @@ class InmuebleController extends Controller
     {
         $inmueblePadre = $this->repository->findOrFail($id);
 
-        $model = $inmueblePadre->idInmueble;
+	$model = $inmueblePadre->idInmueble;
+
+	$this->authorize('delete', $model);
+
         $user = $request->user('api');
         $inmueble = $this->dispatchNow(new BorrarInmueble($model, $user));
 
