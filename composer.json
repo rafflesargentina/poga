@@ -25,7 +25,8 @@
         "rafflesargentina/l5-action-based-form-request": "^1.7",
         "rafflesargentina/l5-filterable-sortable": "^1.7",
         "rafflesargentina/l5-resource-controller": "^1.7",
-        "squizlabs/php_codesniffer": "^3.3"
+        "squizlabs/php_codesniffer": "^3.3",
+        "webklex/laravel-imap": "^1.4"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",
