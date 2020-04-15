@@ -75,11 +75,11 @@ class LeerMails implements ShouldQueue
                 echo "\r\n";
                
                 if( $oMessage->getSubject() == 'TRANSFERENCIA BANCARIA'){
-                    $oMessage->unsetFlag('SEEN');
-                    $oClient->expunge();
+                   
+                   // $oMessage->unsetFlag('SEEN');
+                   // $oClient->expunge();
 
-                    echo "Transferencia!";
-                    echo "\r\n";          
+                    
                     $data = $this->parsear($oMessage->getHTMLBody(true)); 
                         
                     $persona = $rPersona->findWhere(['cuenta_bancaria' => $data->nroCuenta])->first();
